@@ -154,7 +154,7 @@ class HikePet(db.Model):
                             nullable=True)
 
     hike = db.relationship("Hike", backref="hikes_pets")
-    pet = db.relationship("User", backref="hikes_pets")
+    pet = db.relationship("Pet", backref="hikes_pets")
 
     def __repr__(self):
         return f"<Hike completed by pet hike_pet_id={self.hike_pet_id} hike_id={self.hike_id} pet_id={self.pet_id} date_hiked={self.date_hiked}>"
@@ -171,8 +171,8 @@ class BookmarksList(db.Model):
                         nullable=False)
     bookmarks_list_name = db.Column(db.String,
                         nullable=False)
-    user_id = db.Column(db.Integer, 
-                        db.ForeignKey("users.user_id"), 
+    user_id = db.Column(db.Integer,
+                        db.ForeignKey("users.user_id"),
                         nullable=False)
 
     hikes = db.relationship("Hike", secondary="hikes_bookmarks_lists", backref="bookmarks_lists")
@@ -184,24 +184,24 @@ class BookmarksList(db.Model):
 class HikeBookmarksList(db.Model):
     """Association table for a hike on a bookmarks list."""
 
-    __tablename__ = 'hikes_bookmarks_lists'
+    __tablename__ = "hikes_bookmarks_lists"
 
     hike_bookmarks_list_id = db.Column(db.Integer,
                             autoincrement=True,
                             primary_key=True,
                             nullable=False)
-    hike_id = db.Column(db.Integer, 
-                    db.ForeignKey("hikes.hike_id"), 
+    hike_id = db.Column(db.Integer,
+                    db.ForeignKey("hikes.hike_id"),
                     nullable=False)
-    bookmarks_list_id = db.Column(db.Integer, 
-                    db.ForeignKey("BookmarksList.bookmarks_list_id"), 
+    bookmarks_list_id = db.Column(db.Integer,
+                    db.ForeignKey("bookmarks_lists.bookmarks_list_id"),
                     nullable=False)
 
     def __repr__(self):
         return f'<Hike on Bookmarks List hike_bookmarks_list_id={self.hike_bookmarks_list_id} hike_id={self.hike_id} bookmarks_list_id={self.bookmarks_list_id}>'
 
 
-def connect_to_db(flask_app, db_uri="postgresql:///ratings", echo=True):
+def connect_to_db(flask_app, db_uri="postgresql:///pupjourney", echo=True):
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
     flask_app.config["SQLALCHEMY_ECHO"] = echo
     flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

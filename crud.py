@@ -24,10 +24,10 @@ def create_pet(pet_name, gender, birthday, breed1, breed2, pet_imgURL):
     return pet
 
 
-def create_hike(name, difficulty, leash_rule, description, features, address, area, length, parking, resources, hike_imgURL):
+def create_hike(hike_name, difficulty, leash_rule, description, features, address, area, length, parking, resources, hike_imgURL):
     """Create and return a new hike."""
 
-    hike = Hike(name=name, 
+    hike = Hike(hike_name=hike_name, 
                 difficulty=difficulty, 
                 leash_rule=leash_rule, 
                 description=description, 
@@ -64,12 +64,18 @@ def create_hike_pet(hike, pet, date_hiked, date_started, date_completed, miles_c
     return hike_pet
 
 
-# def create_bookmarks_list(user, hike, body):
-#     """Create and return a new comment."""
+def create_bookmarks_list(bookmarks_list_name, hikes):
+    """Create and return a new bookmarks list."""
 
-#     comment = Comment(user=user, hike=hike, body=body)
+    bookmarks_list = BookmarksList(bookmarks_list_name=bookmarks_list_name, hikes=hikes)
 
-#     return comment
+    return bookmarks_list
+
+
+def get_bookmarks_lists():
+    """Return all bookmarks lists."""
+
+    return BookmarksList.query.all()
 
 
 def get_hikes():

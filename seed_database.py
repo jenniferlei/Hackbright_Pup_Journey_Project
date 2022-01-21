@@ -10,7 +10,7 @@ import model
 import server
 
 # Run dropdb and createdb to re-create database
-os.system('dropdb pupjourney')
+os.system('dropdb pupjourney --if-exists')
 os.system('createdb pupjourney')
 
 # Connect to the database and call db.create_all
@@ -23,10 +23,12 @@ with open('data/hikes.json') as f:
 
 # Now, hike_data will be a list of dictionaries that look like this:
 
-# [{"name": "Cedar Grove and Vista View Point in Griffith Park", 
-#   "difficulty": "TBD", 
-#   "leash_rule": "Hikers, dogs", 
-#   "description": "This hike on the southeast side of Griffith Park follows paved and unpaved trails to two park attractions, a quiet grove with a picnic area and a helipad with panoramic views", 
+# [{"name": "Cedar Grove and Vista View Point in Griffith Park",
+#   "difficulty": "TBD",
+#   "leash_rule": "Hikers, dogs",
+#   "description": "This hike on the southeast side of Griffith Park follows paved and 
+#                   unpaved trails to two park attractions, a quiet grove with a picnic
+#                   area and a helipad with panoramic views",
 #   "features": "",
 #   ...},
 #   ...
@@ -37,42 +39,26 @@ with open('data/hikes.json') as f:
 hikes_in_db = []
 for hike in hike_data:
     # unpack hike data
-    name, difficulty, leash_rule, description, features, address, area, length, parking, resources, hike_imgURL = (
-        hike["name"], 
-        hike["difficulty"], 
-        hike["leash_rule"], 
-        hike["description"], 
-        hike["features"], 
-        hike["address"], 
-        hike["area"], 
-        hike["length"], 
-        hike["parking"], 
-        hike["resources"], 
+    hike_name, difficulty, leash_rule, description, features, address, area, length, parking, resources, hike_imgURL = (
+        hike["hike_name"],
+        hike["difficulty"],
+        hike["leash_rule"],
+        hike["description"],
+        hike["features"],
+        hike["address"],
+        hike["area"],
+        hike["length"],
+        hike["parking"],
+        hike["resources"],
         hike["hike_imgURL"])
 
     # create hike variable with create_hike function from crud.py
-    db_hike = crud.create_hike(name, difficulty, leash_rule, description, features, address, area, length, parking, resources, hike_imgURL)
+    db_hike = crud.create_hike(hike_name, difficulty, leash_rule, description, features, address, area, length, parking, resources, hike_imgURL)
 
-    # append db_movie to movies_ind_db list
+    # append db_movie to hikes_in_db list
     hikes_in_db.append(db_hike)
 
-    
+
 model.db.session.add_all(hikes_in_db)
-
-
-# for n in range(175):
-#     email = f'user{n}@test.com'  # Voila! A unique email!
-#     password = 'test'
-
-#     user = crud.create_user(email, password)
-#     model.db.session.add(user)
-
-#     for _ in range(10):
-#         random_movie = choice(movies_in_db)
-#         score = randint (1,5)
-
-#         rating = crud.create_rating(user, random_movie, score)
-#         model.db.session.add(rating)
-
 
 model.db.session.commit()

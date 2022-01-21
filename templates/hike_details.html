@@ -1,13 +1,23 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ hike.name }} - Details{% endblock %}
+{% block title %}{{ hike.hike_name }} - Details{% endblock %}
 
 {% block body %}
-<h1>{{ hike.name }}</h1>
 
-<p>
-  {{ movie.overview }}
-</p>
+<h1>Search Hikes + All Hikes Left Sidebar</h1>
 
-<img src="{{ movie.poster_path }}">
+<h1>{{ hike.hike_name }}</h1>
+<img src="{{ hike.hike_imgURL }}" class="hike_details">
+<p>{{ hike.description }}</p>
+<ul>
+  <li><strong><span id="difficulty">Difficulty:</span></strong> {{ hike.difficulty }}</li>
+  <li><strong><span id="leash_rule">Leash Rule:</span></strong> {{ hike.leash_rule }}</li>
+  <li><strong><span id="features">Features:</span></strong> {{ hike.features }}</li>
+  <li><strong><span id="address">Address:</span></strong> {{ hike.address }}</li>
+  <li><strong><span id="area">Area:</span></strong> {{ hike.area }}</li>
+  <li><strong><span id="length">Length:</span></strong> {{ hike.length }}</li>
+  <li><strong><span id="parking">Parking:</span></strong> {{ hike.parking }}</li>
+  <li><strong><span id="resources">Resources:</span></strong> <a href="{{ hike.resources }}">{{ hike.resources }}</a></li>
+</ul>
+
 {% endblock %}

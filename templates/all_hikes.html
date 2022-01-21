@@ -1,16 +1,24 @@
 {% extends 'base.html' %}
-{% block title %}All Movies{% endblock %}
+{% block title %}All Hikes{% endblock %}
 
 {% block body %}
-  <h1>All Movies</h1>
 
-  <ul>
-    {% for movie in movies %}
-      <li>
-        <a href="/movies/{{ movie.movie_id }}">
-          {{ movie.title }}
-        </a>
-      </li>
-    {% endfor %}
-  </ul>
+  <div class="search-side-bar">
+      <h1>Search Hikes</h1>
+      <p>Search function to be added here. Will be a left sidebar.</p>
+  </div>
+  
+  <div class="container">
+    <h1>All Hikes</h1>
+
+    <ul>
+      {% for hike in hikes %}
+        <li>
+          <a href="/hikes/{{ hike.hike_id }}">
+            {{ hike.hike_name }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
 {% endblock %}

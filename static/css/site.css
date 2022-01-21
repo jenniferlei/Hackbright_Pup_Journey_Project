@@ -1,0 +1,23 @@
+#welcome-img {
+  height: 30em;
+}
+
+.container {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.search-side-bar {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.home-visuals-container {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.pet-profile-container {
+  display: inline-block;
+  vertical-align: top;
+}

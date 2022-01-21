@@ -4,12 +4,23 @@
 {% block body %}
   <h1>Welcome!</h1>
 
-  <h2>Navigation</h2>
-  <ul>
-    <li><a href="/hikes">View all hikes</a></li>
-    <li><a href="/users">View all users</a></li>
-  </ul>
 
+  {% if "login" in session %}
+  <h2>Under Construction</h2>
+  <div class="home-visuals-container">
+    <p><div class="line-graph">Line Graph goes here. A line for each pet to show date on x axis and miles on y axis.</div></p>
+    <p><div class="home-map">Map goes here to show all hikes user's pets have completed</div></p>
+  </div>
+  <div class="pet-profile-container">
+    Pet profiles go here. 
+    <br>This will be an inline block on the right side, using React to add pet profiles.
+    <br>Need to create a form so user can create a pet profile.
+    <p><a href="/add-pet">+ pet</a></p>
+  </div>
+
+  {% else %}                   
+  <img src="/static/img/homepage.jpg" id="welcome-img">
+  <p><span class="app-description">Find dog friendly hikes, bookmark your favorites, and check in for hikes your dog has done!</span></p>
   <h2>Create an Account</h2>
   <form action="/users" method="POST">
     <p>
@@ -43,4 +54,5 @@
       <input type="submit">
     </p>
   </form>
+  {% endif %}
 {% endblock %}
