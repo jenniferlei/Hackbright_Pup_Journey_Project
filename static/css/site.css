@@ -2,7 +2,12 @@
   height: 30em;
 }
 
-.container {
+.all-hikes-container {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.hike-details-container {
   display: inline-block;
   vertical-align: top;
 }

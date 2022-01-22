@@ -15,7 +15,10 @@
     Pet profiles go here. 
     <br>This will be an inline block on the right side, using React to add pet profiles.
     <br>Need to create a form so user can create a pet profile.
-    <p><a href="/add-pet">+ pet</a></p>
+    <p>
+      <a href="/add-pet">+ pet</a>
+      <br>This will be changed into a collapsible form in the future
+    </p>
   </div>
 
   {% else %}                   
@@ -36,7 +39,7 @@
     </p>
 
     <p>
-      <input type="submit">
+      <input type="submit" value="Create Account">
     </p>
   </form>
 
@@ -51,7 +54,7 @@
     </p>
 
     <p>
-      <input type="submit">
+      <input type="submit" value="Sign In">
     </p>
   </form>
   {% endif %}

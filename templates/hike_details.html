@@ -4,20 +4,50 @@
 
 {% block body %}
 
-<h1>Search Hikes + All Hikes Left Sidebar</h1>
+<div class="search-side-bar">
+  <h1>Search Hikes</h1>
+  <p>Search function to be added here. Will be a left sidebar.</p>
+</div>
 
-<h1>{{ hike.hike_name }}</h1>
-<img src="{{ hike.hike_imgURL }}" class="hike_details">
-<p>{{ hike.description }}</p>
-<ul>
-  <li><strong><span id="difficulty">Difficulty:</span></strong> {{ hike.difficulty }}</li>
-  <li><strong><span id="leash_rule">Leash Rule:</span></strong> {{ hike.leash_rule }}</li>
-  <li><strong><span id="features">Features:</span></strong> {{ hike.features }}</li>
-  <li><strong><span id="address">Address:</span></strong> {{ hike.address }}</li>
-  <li><strong><span id="area">Area:</span></strong> {{ hike.area }}</li>
-  <li><strong><span id="length">Length:</span></strong> {{ hike.length }}</li>
-  <li><strong><span id="parking">Parking:</span></strong> {{ hike.parking }}</li>
-  <li><strong><span id="resources">Resources:</span></strong> <a href="{{ hike.resources }}">{{ hike.resources }}</a></li>
-</ul>
+<div class="hike-details-container">
+  <h1>{{ hike.hike_name }}</h1>
+  <img src="{{ hike.hike_imgURL }}" class="hike_details">
+  <p>{{ hike.description }}</p>
+  <ul>
+    <li><strong><span id="difficulty">Difficulty:</span></strong> {{ hike.difficulty }}</li>
+    <li><strong><span id="leash_rule">Leash Rule:</span></strong> {{ hike.leash_rule }}</li>
+    <li><strong><span id="features">Features:</span></strong> {{ hike.features }}</li>
+    <li><strong><span id="address">Address:</span></strong> {{ hike.address }}</li>
+    <li><strong><span id="area">Area:</span></strong> {{ hike.area }}</li>
+    <li><strong><span id="length">Length:</span></strong> {{ hike.length }}</li>
+    <li><strong><span id="parking">Parking:</span></strong> {{ hike.parking }}</li>
+    <li><strong><span id="resources">Resources:</span></strong>
+    {% for hike_resource in hike_resources %}
+      <br><a href="{{ hike_resource }}" target="_blank">{{ hike_resource }}</a>
+    {% endfor %}
+    </li>
+  </ul>
+
+  <div class="add-comment">
+    <form action="/add-comment" class="form-add-comment" method="POST">
+      <h2 class="form-add-comment-heading">Add Comment</h2>
+          
+        <div>
+          <input type="text"
+                  name="comment"
+                  class="form-control input-lg"
+                  placeholder="Enter your comment here"
+                  required>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block mt-4" type="submit">Submit
+        </button>
+    </form>
+  </div>
+
+  <div class="comments">
+    <h2>Comments</h2>
+    Use AJAX/React to add comments here when a comment is submitted
+  </div>
+</div>
 
 {% endblock %}

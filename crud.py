@@ -1,6 +1,6 @@
 """CRUD operations."""
 
-from model import db, User, Pet, Hike, Comment, BookmarksList,  connect_to_db
+from model import db, User, Pet, Hike, Comment, HikePet, BookmarksList, HikeBookmarksList, connect_to_db
 
 
 def create_user(full_name, email, password):
@@ -11,15 +11,16 @@ def create_user(full_name, email, password):
     return user
 
 
-def create_pet(pet_name, gender, birthday, breed1, breed2, pet_imgURL):
+def create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, hikes_pets):
     """Create and return a new pet."""
 
-    pet = Pet(pet_name=pet_name, 
-                gender=gender, 
-                birthday=birthday, 
-                breed1=breed1, 
-                breed2=breed2, 
-                pet_imgURL=pet_imgURL)
+    pet = Pet(user=user,
+            pet_name=pet_name,
+            gender=gender,
+            birthday=birthday,
+            breed=breed,
+            pet_imgURL=pet_imgURL,
+            hikes_pets=hikes_pets)
 
     return pet
 
@@ -106,6 +107,12 @@ def get_user_by_email(email):
     """Return a user by email."""
 
     return User.query.filter(User.email == email).first()
+
+
+def get_pets():
+    """Return all pets."""
+
+    return Pet.query.all()
 
 
 if __name__ == '__main__':

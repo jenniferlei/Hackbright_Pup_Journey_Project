@@ -38,20 +38,18 @@ class Pet(db.Model):
 
     pet_id = db.Column(db.Integer,
                         autoincrement=True,
-                        primary_key=True, 
+                        primary_key=True,
                         nullable=False)
-    user_id = db.Column(db.Integer, 
-                        db.ForeignKey("users.user_id"), 
+    user_id = db.Column(db.Integer,
+                        db.ForeignKey("users.user_id"),
                         nullable=False)
-    pet_name = db.Column(db.String, 
+    pet_name = db.Column(db.Text,
                         nullable=False)
-    gender = db.Column(db.Text, 
+    gender = db.Column(db.String,
                         nullable=True)
-    birthday = db.Column(db.DateTime, 
+    birthday = db.Column(db.DateTime,
                         nullable=True)
-    breed1 = db.Column(db.String, 
-                        nullable=True)
-    breed2 = db.Column(db.String, 
+    breed = db.Column(db.String,
                         nullable=True)
     pet_imgURL = db.Column(db.String,
                         nullable=True)

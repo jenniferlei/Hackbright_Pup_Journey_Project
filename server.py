@@ -33,8 +33,10 @@ def show_hike(hike_id):
     """Show details on a particular hike."""
 
     hike = crud.get_hike_by_id(hike_id)
+    hike_resources = hike.resources.split(",")
 
-    return render_template("hike_details.html", hike=hike)
+
+    return render_template("hike_details.html", hike=hike, hike_resources=hike_resources)
 
 
 @app.route("/bookmarks")
@@ -44,6 +46,38 @@ def all_bookmarks():
     bookmarks_lists = crud.get_bookmarks_lists()
 
     return render_template("all_bookmarks.html", bookmarks_lists=bookmarks_lists)
+
+
+@app.route("/add-pet", methods=["GET"])
+def show_add_pet():
+    """Show add pet form."""
+
+    return render_template("add_pet.html")
+
+@app.route("/add-pet", methods=["POST"])
+def add_pet():
+    """Create a pet profile"""
+
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email is None:
+        flash("You must log in to add a pet profile.")
+    else:
+        user = crud.get_user_by_email(logged_in_email)
+
+        pet_name = request.form.get("pet_name")
+        gender = request.form.get("gender")
+        birthday = request.form.get("birthday")
+        breed = request.form.get("breed")
+        pet_imgURL = request.form.get("pet_imgURL")
+        hikes_pets = []
+
+        pet = crud.create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, hikes_pets)
+        db.session.add(pet)
+        db.session.commit()
+        flash(f"Success! {pet_name} has been added.")
+
+    return redirect("/")
 
 
 @app.route("/users", methods=["POST"])
