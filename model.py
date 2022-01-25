@@ -168,6 +168,7 @@ class BookmarksList(db.Model):
                         primary_key=True,
                         nullable=False)
     bookmarks_list_name = db.Column(db.String,
+                        unique=True,
                         nullable=False)
     user_id = db.Column(db.Integer,
                         db.ForeignKey("users.user_id"),

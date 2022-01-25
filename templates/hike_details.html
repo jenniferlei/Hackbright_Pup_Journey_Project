@@ -27,27 +27,162 @@
     {% endfor %}
     </li>
   </ul>
+  
+  {% if "login" in session %}
+  <p>
+    <a class="btn btn-link" data-bs-toggle="collapse" href="#collapse-hike-check-ins" role="button" aria-expanded="false" aria-controls="collapse-hike-check-ins">
+      View Check Ins
+    </a>
+  </p>
+  <div class="collapse" id="collapse-hike-check-ins">
+    <div class="card card-body">
+      View all check ins and add option to modify/delete or add new check in
 
-  <div class="add-comment">
-    <form action="/add-comment" class="form-add-comment" method="POST">
-      <h2 class="form-add-comment-heading">Add Comment</h2>
-          
-        <div>
-          <input type="text"
-                  name="comment"
-                  class="form-control input-lg"
-                  placeholder="Enter your comment here"
-                  required>
-        </div>
-        <button class="btn btn-lg btn-primary btn-block mt-4" type="submit">Submit
+      <div class="add-check-in">
+        <h3>Add Check In</h3>
+
+        <form action="/hikes/{{ hike.hike_id }}/check-in" id="form-check-in">
+
+          pet_id = db.Column(db.Integer, 
+                    db.ForeignKey("pets.pet_id"), 
+                    nullable=False)
+          date_hiked = db.Column(db.DateTime,
+                        nullable=False)
+          date_started = db.Column(db.DateTime,
+                        nullable=True)
+          date_completed = db.Column(db.DateTime,
+                            nullable=True)
+          miles_completed = db.Column(db.Float,
+                            nullable=True)
+          total_time = db.Column(db.Float,
+                        nullable=True)
+
+
+
+
+
+
+        </form>
+
+
+
+      </div>
+
+      <div class="check-ins">
+        <h3>Check Ins</h3>
+
+        Use AJAX/React to add check ins here when a check in is submitted
+      </div>
+
+
+
+    </div>
+  </div>
+
+
+  <p>
+    <a class="btn btn-link" data-bs-toggle="collapse" href="#collapse-hike-bookmarks" role="button" aria-expanded="false" aria-controls="collapse-hike-bookmarks">
+      View Bookmarks
+    </a>
+  </p>
+  <div class="collapse" id="collapse-hike-bookmarks">
+    <div class="card card-body">
+      Add option to add to an existing list (create dropdown using for loop from bookmarks database)
+      <form action="/hikes/{{ hike.hike_id }}/bookmark" id="form-hike-new-bookmark-list" method="POST">
+        <h3 id="form-hike-new-bookmark-list-heading">Add to New Bookmark List</h3>
+
+        <input type="text"
+                name="bookmarks_list_name"
+                class="form-control input-lg"
+                placeholder="Hikes I Want To Visit"
+                required
+                autofocus>
+
+        <button class="btn btn-sm btn-primary btn-block mt-4" type="submit">Save
         </button>
-    </form>
+      </form>
+
+      <form action="/hikes/{{ hike.hike_id }}/bookmark" id="form-hike-existing-bookmark-list" method="POST">
+        <h3 id="form-hike-existing-bookmark-list-heading">Add to Existing Bookmark List</h3>
+        <div>
+          <select name="bookmarks_list_name">
+            {% for bookmarks_list in bookmarks_list_by_user %}
+            <option value="{{ bookmarks_list.bookmarks_list_name }}">{{ bookmarks_list.bookmarks_list_name }}</option>
+            {% endfor %}
+          </select>
+
+          <button class="btn btn-sm btn-primary btn-block mt-4" type="submit">Save
+          </button>
+        </div>
+      </form>
+
+      {% if bookmarks_lists_by_hike != None %}
+      <br><br>You have this hike on these lists:
+      <ul>
+
+        {% for bookmarks_list in bookmarks_lists_by_hike %}
+          <li>
+              {{ bookmarks_list.bookmarks_list_name }}
+          </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  <p>
+    <a class="btn btn-link" data-bs-toggle="collapse" href="#collapse-hike-comments" role="button" aria-expanded="false" aria-controls="collapse-hike-comments">
+      View Comments
+    </a>
+  </p>
+  <div class="collapse" id="collapse-hike-comments">
+    <div class="card card-body">
+      
+      {% if "login" in session %}
+
+      <div class="add-comment">
+        <form action="/hikes/{{ hike.hike_id }}/comments" id="form-add-comment" method="POST">
+          <h3 class="form-add-comment-heading">Add Comment</h3>
+              
+            <div>
+              <input type="text"
+                      name="body"
+                      class="form-control input-lg"
+                      placeholder="Enter your comment here"
+                      required>
+            </div>
+            <button class="btn btn-sm btn-primary btn-block mt-4" type="submit">Submit
+            </button>
+        </form>
+      </div>
+    
+      {% else %}
+
+      Please <a href="/login" target="_blank">log in</a> to add a comment.
+
+      {% endif %}
+
+      <div class="comments">
+        <h3>Comments</h3>
+        Use AJAX/React to add comments here when a comment is submitted
+
+        {% for comment in comments %}
+        <p>
+          {{ comment.user.full_name }} posted:
+          <br>{{ comment.body }}
+        </p>
+        {% endfor %}
+      </div>
+    </div>
+
+
+
+
+
+    </div>
   </div>
 
-  <div class="comments">
-    <h2>Comments</h2>
-    Use AJAX/React to add comments here when a comment is submitted
-  </div>
-</div>
+
 
 {% endblock %}

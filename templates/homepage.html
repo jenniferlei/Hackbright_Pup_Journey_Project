@@ -5,19 +5,112 @@
   <h1>Welcome!</h1>
 
 
-  {% if "login" in session %}
+  {% if "user_email" in session %}
+
   <h2>Under Construction</h2>
   <div class="home-visuals-container">
     <p><div class="line-graph">Line Graph goes here. A line for each pet to show date on x axis and miles on y axis.</div></p>
+    <p><img src="https://cdn.ablebits.com/_img-blog/line-graph/line-graph-excel.png"></p>
     <p><div class="home-map">Map goes here to show all hikes user's pets have completed</div></p>
   </div>
   <div class="pet-profile-container">
-    Pet profiles go here. 
-    <br>This will be an inline block on the right side, using React to add pet profiles.
-    <br>Need to create a form so user can create a pet profile.
+    Pet profiles go here. Figure out how to use React to add.
+    <div id="pet-profiles">
+        {% for pet in pets %}
+        <ul>
+          <li>
+            Name: {{ pet.pet_name }}
+          </li>
+
+          {% if pet.gender != "" %}
+          <li>
+            Gender: {{ pet.gender }}
+          </li>
+          {% endif %}
+
+          {% if pet.birthday != None %}
+          <li>
+            Birthday: {{ pet.birthday.month }}/{{ pet.birthday.day }}/{{ pet.birthday.year }}
+          </li>
+          {% endif %}
+
+          {% if pet.breed != "" %}
+          <li>
+            Breed: {{ pet.breed }}
+          </li>
+          {% endif %}
+
+        </ul>
+        {% endfor %}
+      </ul>
+    </div>
     <p>
-      <a href="/add-pet">+ pet</a>
-      <br>This will be changed into a collapsible form in the future
+      <a class="btn btn-link" data-bs-toggle="collapse" href="#collapse-add-pet" role="button" aria-expanded="false" aria-controls="collapse-add-pet">
+        Add Pet
+      </a>
+      
+      <div class="collapse" id="collapse-add-pet">
+        <div class="card card-body">
+
+          <p>
+            <ul>
+                <li>Need to figure out how to upload and save image to server/database</li> 
+            </ul>
+            
+          </p>
+
+
+          <form action="/add-pet" id="form-add-pet" method="POST">
+
+            <h2 id="form-add-pet-heading">Please Add Your Pet Info</h2>
+        
+            <div>
+                <label for="pet_name" class="sr-only">Name</label>
+                <input type="text"
+                        name="pet_name"
+                        class="form-control input-lg"
+                        placeholder="Name"
+                        required
+                        autofocus>
+            </div>
+        
+            <div>
+                <label for="gender" class="sr-only">Gender</label>
+                <select name="gender">
+                    <option value=""></option>
+                    <option value="female">female</option>
+                    <option value="male">male</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="birthday" class="sr-only">Birthday</label>
+                <input type="date"
+                        name="birthday"
+                        class="form-control input-lg"
+                        placeholder="Birthday">
+            </div>
+
+            <div>
+                <label for="breed" class="sr-only">Breed</label>
+                <input type="text"
+                        name="breed"
+                        class="form-control input-lg"
+                        placeholder="Breed">
+            </div>
+
+            <div>
+                <label for="pet_imgURL" class="sr-only">Image</label>
+                <input type="file" 
+                        name="pet_imgURL"
+                        class="form-control input-lg">
+            </div>
+            <button class="btn btn-sm btn-primary btn-block mt-4" type="submit">Save
+            </button>
+        
+          </form>
+        </div>
+      </div>
     </p>
   </div>
 
@@ -58,4 +151,5 @@
     </p>
   </form>
   {% endif %}
+
 {% endblock %}

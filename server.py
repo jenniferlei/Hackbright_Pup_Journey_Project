@@ -16,7 +16,14 @@ app.jinja_env.undefined = StrictUndefined
 def homepage():
     """View homepage."""
 
-    return render_template("homepage.html")
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email is None:
+        return render_template("homepage.html")
+    else:
+        user = crud.get_user_by_email(logged_in_email)
+        pets = crud.get_pets_by_user_id(user.user_id)
+        return render_template("homepage.html", pets=pets)
 
 
 @app.route("/hikes")
@@ -34,25 +41,59 @@ def show_hike(hike_id):
 
     hike = crud.get_hike_by_id(hike_id)
     hike_resources = hike.resources.split(",")
+    comments = crud.get_comment_by_hike_id(hike_id)
 
+    logged_in_email = session.get("user_email")
 
-    return render_template("hike_details.html", hike=hike, hike_resources=hike_resources)
+    if logged_in_email is None:
+        return (render_template("hike_details.html", hike=hike,
+                                                    hike_resources=hike_resources,
+                                                    comments=comments))
+    else:
+        user = crud.get_user_by_email(logged_in_email)
+        bookmarks_list_by_user = crud.get_bookmarks_lists_by_user_id(user.user_id)
+        # bookmarks_lists_by_hike is returning None :(
+        # Not showing up on hike_details page, however it is working when I test interactively on python3 -i crud.py
+        bookmarks_lists_by_hike = crud.get_bookmarks_lists_by_user_id_and_hike_id(user.user_id, hike_id)
+        return (render_template("hike_details.html", hike=hike,
+                                                    hike_resources=hike_resources,
+                                                    comments=comments,
+                                                    bookmarks_list_by_user=bookmarks_list_by_user,
+                                                    bookmarks_lists_by_hike=bookmarks_lists_by_hike))
 
 
 @app.route("/bookmarks")
 def all_bookmarks():
     """View all bookmarks."""
 
-    bookmarks_lists = crud.get_bookmarks_lists()
+    if "user_email" in session:
+        user = crud.get_user_by_email(session["user_email"])
+        bookmarks_lists = crud.get_bookmarks_lists_by_user_id(user.user_id)
 
-    return render_template("all_bookmarks.html", bookmarks_lists=bookmarks_lists)
+        return render_template("all_bookmarks.html", bookmarks_lists=bookmarks_lists)
+    else:
+        flash("You must log in to view your bookmarks.")
+        return redirect("/")
 
 
-@app.route("/add-pet", methods=["GET"])
-def show_add_pet():
-    """Show add pet form."""
+@app.route("/add-bookmarks-list", methods=["POST"])
+def add_bookmarks_list():
+    """Create a bookmark list"""
 
-    return render_template("add_pet.html")
+    if "user_email" in session:
+        user = crud.get_user_by_email(session["user_email"])
+        user_id = user.user_id
+        bookmarks_list_name = request.form.get("bookmarks_list_name")
+        hikes = []
+        bookmarks_list = crud.create_bookmarks_list(bookmarks_list_name, user_id, hikes)
+        db.session.add(bookmarks_list)
+        db.session.commit()
+        flash(f"Success! {bookmarks_list_name} has been added to your bookmarks.")
+        return redirect("/bookmarks")
+    else:
+        flash("You must log in to add a bookmark list.")
+        return redirect("/")
+
 
 @app.route("/add-pet", methods=["POST"])
 def add_pet():
@@ -72,12 +113,80 @@ def add_pet():
         pet_imgURL = request.form.get("pet_imgURL")
         hikes_pets = []
 
+        if birthday == "":
+            birthday = None
+
         pet = crud.create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, hikes_pets)
         db.session.add(pet)
         db.session.commit()
         flash(f"Success! {pet_name} has been added.")
 
     return redirect("/")
+
+
+@app.route("/hikes/<hike_id>/bookmark", methods=["POST"])
+def add_hike_to_bookmark(hike_id):
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email is None:
+        flash("You must log in to bookmark a hike.")
+    else:
+        user = crud.get_user_by_email(logged_in_email)
+        hike = crud.get_hike_by_id(hike_id)
+        bookmarks_list_name = request.form.get("bookmarks_list_name")
+
+        # check list of all of user's bookmarks lists
+        # if bookmarks list object exists, add hike to bookmarks list
+        # if not, create bookmarks list then add hike
+        bookmarks_lists_names_by_user = crud.get_names_of_bookmarks_lists_by_user_id(user.user_id)
+
+        if bookmarks_list_name in bookmarks_lists_names_by_user:
+            existing_bookmarks_list_id = crud.get_bookmarks_list_by_user_id_and_bookmarks_list_name(user.user_id, bookmarks_list_name).bookmarks_list_id
+            hike_bookmark = crud.create_hike_bookmarks_list(hike_id, existing_bookmarks_list_id)
+        else:
+            hikes = [hike]
+            hike_bookmark = crud.create_bookmarks_list(bookmarks_list_name, user.user_id, hikes)
+        
+        db.session.add(hike_bookmark)
+        db.session.commit()
+
+        flash(f"A bookmark to {hike.hike_name} has been added to your {bookmarks_list_name} bookmark list.")
+
+    return redirect(f"/hikes/{hike_id}")
+
+
+
+@app.route("/hikes/<hike_id>/comments", methods=["POST"])
+def add_comment(hike_id):
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email is None:
+        flash("You must log in to add a comment.")
+    else:
+        user = crud.get_user_by_email(logged_in_email)
+        hike = crud.get_hike_by_id(hike_id)
+        body = request.form.get("body")
+
+        comment = crud.create_comment(user, hike, body)
+        db.session.add(comment)
+        db.session.commit()
+
+        flash("Your comment has been added.")
+
+    return redirect(f"/hikes/{hike_id}")
+
+
+# @app.route('/pets.json')
+# def pets():
+#     """Return a list of pet-info dictionary for all pets."""
+
+#     pets = crud.get_pets()
+#     pets_json = []
+
+#     for pet in pets:
+#         pets_json.append({"user_id": pet.user_id, "pet_name": pet.pet_name, "gender": pet.gender, "birthday": pet.birthday, "breed": pet.breed, "pet_imgURL": pet.pet_imgURL})
+
+#     return jsonify(pets_json)
 
 
 @app.route("/users", methods=["POST"])
@@ -132,6 +241,7 @@ def process_logout():
     """
 
     del session["login"]
+    del session["user_email"]
     flash("Successfully logged out!")
     return redirect("/")
 

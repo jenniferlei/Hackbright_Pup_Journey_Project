@@ -26,3 +26,13 @@
   display: inline-block;
   vertical-align: top;
 }
+
+.bookmarks-container {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.bookmarks-maps-container {
+  display: inline-block;
+  vertical-align: top;
+}

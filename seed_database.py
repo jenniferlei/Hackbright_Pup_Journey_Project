@@ -58,7 +58,13 @@ for hike in hike_data:
     # append db_movie to hikes_in_db list
     hikes_in_db.append(db_hike)
 
+test_user = crud.create_user("Test Name", "test@test", "test")
+test_pet = crud.create_pet(test_user, "Test Pet", None, None, None, None, [])
+test_bookmarks_list = crud.create_bookmarks_list("Test Bookmarks List Name", 1, [])
 
 model.db.session.add_all(hikes_in_db)
+model.db.session.add(test_user)
+model.db.session.add(test_pet)
+model.db.session.add(test_bookmarks_list)
 
 model.db.session.commit()

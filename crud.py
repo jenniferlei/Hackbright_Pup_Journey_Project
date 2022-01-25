@@ -28,16 +28,16 @@ def create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, hikes_pets):
 def create_hike(hike_name, difficulty, leash_rule, description, features, address, area, length, parking, resources, hike_imgURL):
     """Create and return a new hike."""
 
-    hike = Hike(hike_name=hike_name, 
-                difficulty=difficulty, 
-                leash_rule=leash_rule, 
-                description=description, 
-                features=features, 
-                address=address, 
-                area=area, 
-                length=length, 
-                parking=parking, 
-                resources=resources, 
+    hike = Hike(hike_name=hike_name,
+                difficulty=difficulty,
+                leash_rule=leash_rule,
+                description=description,
+                features=features,
+                address=address,
+                area=area,
+                length=length,
+                parking=parking,
+                resources=resources,
                 hike_imgURL=hike_imgURL)
 
     return hike
@@ -51,32 +51,91 @@ def create_comment(user, hike, body):
     return comment
 
 
+def get_comment_by_hike_id(hike_id):
+    """Return all comments by hike_id."""
+
+    return db.session.query(Comment).filter_by(hike_id=hike_id)
+
+
 def create_hike_pet(hike, pet, date_hiked, date_started, date_completed, miles_completed, total_time):
     """Create and return a new hike completed by a pet."""
 
-    hike_pet = HikePet(hike=hike, 
-                        pet=pet, 
-                        date_hiked=date_hiked, 
-                        date_started=date_started, 
-                        date_completed=date_completed, 
-                        miles_completed=miles_completed, 
+    hike_pet = HikePet(hike=hike,
+                        pet=pet,
+                        date_hiked=date_hiked,
+                        date_started=date_started,
+                        date_completed=date_completed,
+                        miles_completed=miles_completed,
                         total_time=total_time)
 
     return hike_pet
 
 
-def create_bookmarks_list(bookmarks_list_name, hikes):
+def create_bookmarks_list(bookmarks_list_name, user_id, hikes):
     """Create and return a new bookmarks list."""
 
-    bookmarks_list = BookmarksList(bookmarks_list_name=bookmarks_list_name, hikes=hikes)
+    bookmarks_list = (BookmarksList(bookmarks_list_name=bookmarks_list_name,
+                                    user_id=user_id,
+                                    hikes=hikes))
 
     return bookmarks_list
 
 
-def get_bookmarks_lists():
-    """Return all bookmarks lists."""
+def create_hike_bookmarks_list(hike_id, bookmarks_list_id):
+    """Create and return a new hike bookmarks list object."""
 
-    return BookmarksList.query.all()
+    hike_bookmarks_list = (HikeBookmarksList(hike_id=hike_id,
+                                            bookmarks_list_id=bookmarks_list_id))
+
+    return hike_bookmarks_list
+
+
+def get_bookmarks_lists_by_user_id(user_id):
+    """Return all bookmarks lists by user_id."""
+
+    return db.session.query(BookmarksList).filter_by(user_id=user_id).all()
+
+
+def get_names_of_bookmarks_lists_by_user_id(user_id):
+    """Return list of all names of bookmarks lists by user_id."""
+
+    bookmarks_lists_names = []
+
+    bookmarks_lists_by_user = get_bookmarks_lists_by_user_id(user_id)
+
+    for bookmarks_lists in bookmarks_lists_by_user:
+        bookmarks_lists_names.append(bookmarks_lists.bookmarks_list_name)
+
+    return bookmarks_lists_names
+    
+
+def get_bookmarks_list_by_user_id_and_bookmarks_list_name(user_id, bookmarks_list_name):
+    """Return bookmarks list by bookmarks_list_name."""
+
+    bookmarks_lists_by_user = (db.session.query(BookmarksList)
+                                        .filter(BookmarksList.user_id==user_id,
+                                                BookmarksList.bookmarks_list_name==bookmarks_list_name)
+                                        .one())
+
+    return bookmarks_lists_by_user
+
+
+def get_bookmarks_lists_by_user_id_and_hike_id(user_id, hike_id):
+    """Return all bookmarks lists objects for a given user_id and hike_id."""
+
+    user_bookmarks_lists = (db.session.query(BookmarksList)
+                                .options(db.joinedload('hikes'))
+                                .filter_by(user_id=user_id)
+                                .all())
+
+    hike_user_bookmarks_lists = []
+
+    for bookmarks_list in user_bookmarks_lists:
+        for hike in bookmarks_list.hikes:
+            if hike.hike_id == hike_id:
+                hike_user_bookmarks_lists.append(bookmarks_list)
+        
+    return hike_user_bookmarks_lists
 
 
 def get_hikes():
@@ -109,10 +168,10 @@ def get_user_by_email(email):
     return User.query.filter(User.email == email).first()
 
 
-def get_pets():
-    """Return all pets."""
+def get_pets_by_user_id(user_id):
+    """Return all pets by user_id."""
 
-    return Pet.query.all()
+    return db.session.query(Pet).filter_by(user_id=user_id).all()
 
 
 if __name__ == '__main__':
