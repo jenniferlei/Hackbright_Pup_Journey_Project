@@ -2,37 +2,35 @@
 {% block title %}All Bookmarks{% endblock %}
 
 {% block body %}
-  <div class="bookmarks-container">
+  <div class="card card-body" id="bookmarks-container">
 
-    <h1>All Bookmarks</h1>
+    <h2>All Bookmarks</h2>
 
 
-    <a class="btn btn-link" data-bs-toggle="collapse" href="#collapse-add-bookmark" role="button" aria-expanded="false" aria-controls="collapse-add-bookmark">
+    <a class="btn btn-link text-start" data-bs-toggle="collapse" href="#collapse-add-bookmark" role="button" aria-expanded="false" aria-controls="collapse-add-bookmark">
       Add Bookmark List
     </a>
-    <div class="collapse" id="collapse-add-bookmark">
-      <div class="card card-body">
-        <form action="/add-bookmarks-list" id="form-add-bookmarks-list" method="POST">
+    <div class="collapse card card-body" id="collapse-add-bookmark">
+      <form action="/add-bookmarks-list" id="form-add-bookmarks-list" method="POST">
 
-          <div>
-              <label for="bookmarks_list_name" class="sr-only">Name your bookmark list</label>
-              <input type="text"
-                      name="bookmarks_list_name"
-                      class="form-control input-lg"
-                      placeholder="Hikes I Want To Visit"
-                      required
-                      autofocus>
-          </div>
-          <button class="btn btn-sm btn-primary btn-block mt-4" type="submit">Save
-          </button>
-        </form>
-      </div>
+        <div>
+            <label for="bookmarks_list_name" class="sr-only">Name your bookmark list</label>
+            <input type="text"
+                    name="bookmarks_list_name"
+                    class="form-control input-lg"
+                    placeholder="Hikes I Want To Visit"
+                    required
+                    autofocus>
+        </div>
+
+        <div>
+          <button class="btn btn-sm btn-primary btn-block mt-4" type="submit">Save</button>
+        </div>
+      </form>
     </div>
 
 
-    <p>Clicking a link should expand to show all bookmarks in list instead of going to a new link.
-      <br>Nice to have: Be able to search/filter bookmarks lists or within each list.
-    </p>
+    <p>Nice to have: Be able to sort alphabetically?</p>
     <ul>
       {% for bookmarks_list in bookmarks_lists %}
         <li>
@@ -50,8 +48,8 @@
   </div>
 
 
-  <div class="bookmarks-maps-container">
-    <h1>Bookmarks Map</h1>
+  <div class="card card-body" id="bookmarks-maps-container">
+    <h2>Bookmarks Map</h2>
     Map should show all locations of the selected bookmarks list
   </div>
 {% endblock %}

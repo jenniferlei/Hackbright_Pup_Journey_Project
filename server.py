@@ -53,6 +53,10 @@ def show_hike(hike_id):
     else:
         user = crud.get_user_by_email(logged_in_email)
         pets = crud.get_pets_by_user_id(user.user_id)
+        check_ins = crud.get_check_ins_by_user_id_and_hike_id(user.user_id, hike.hike_id)
+
+        sorted_check_ins = sorted(check_ins, key=lambda x: x.date_hiked, reverse=True)
+
         bookmarks_list_by_user = crud.get_bookmarks_lists_by_user_id(user.user_id)
         bookmarks_lists_by_user_hike = crud.get_bookmarks_lists_by_user_id_and_hike_id(user.user_id, hike.hike_id)
         
@@ -60,6 +64,7 @@ def show_hike(hike_id):
                                                     hike_resources=hike_resources,
                                                     comments=comments,
                                                     pets=pets,
+                                                    check_ins=sorted_check_ins,
                                                     bookmarks_list_by_user=bookmarks_list_by_user,
                                                     bookmarks_lists_by_user_hike=bookmarks_lists_by_user_hike))
 

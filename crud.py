@@ -125,10 +125,15 @@ def get_bookmarks_list_by_user_id_and_bookmarks_list_name(user_id, bookmarks_lis
 def get_bookmarks_lists_by_user_id_and_hike_id(user_id, hike_id):
     """Return all bookmarks lists objects for a given user_id and hike_id."""
 
+    # Find all bookmarks lists for a given user_id
     user_bookmarks_lists = (db.session.query(BookmarksList)
                                 .options(db.joinedload('hikes'))
                                 .filter_by(user_id=user_id)
                                 .all())
+
+
+    # For each list, check if there is a hike that matches the given hike_id
+    # If so, add the bookmark list to a new list of bookmark lists and return this list
 
     hike_user_bookmarks_lists = []
 
@@ -138,6 +143,35 @@ def get_bookmarks_lists_by_user_id_and_hike_id(user_id, hike_id):
                 hike_user_bookmarks_lists.append(bookmarks_list)
         
     return hike_user_bookmarks_lists
+
+
+def get_check_ins_by_user_id_and_hike_id(user_id, hike_id):
+    """Return all check ins for a given hike_id and user_id"""
+
+    # Find all check ins for a given hike_id
+    hike_check_ins = (db.session.query(CheckIn)
+                                .options(db.joinedload('pet'))
+                                .filter_by(hike_id=hike_id)
+                                .all())
+
+    # For each check in, check each pet with user_id matching given user_id
+    # If so, add the check to a new list of check ins
+    hike_pet_check_ins = []
+
+    for hike_check_in in hike_check_ins:
+        if hike_check_in.pet.user_id == user_id:
+            hike_pet_check_ins.append(hike_check_in)
+
+    return hike_pet_check_ins
+
+
+def get_check_ins_by_pet_id(pet_id):
+    """Return all check ins for a give pet"""
+
+    check_ins = db.session.query(CheckIn).filter_by(pet_id=pet_id).all()
+
+    return check_ins
+
 
 
 def get_hikes():

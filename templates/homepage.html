@@ -2,44 +2,82 @@
 {% block title %}Pup Journey Home{% endblock %}
 
 {% block body %}
-  <h1>Welcome!</h1>
-
 
   {% if "user_email" in session %}
 
-  <h2>Under Construction</h2>
-  <div class="home-visuals-container">
+  <div class="card card-body" id="home-visuals-container">
+    <h2>Graph</h2>
     <p><div class="line-graph">Line Graph goes here. A line for each pet to show date on x axis and miles on y axis.</div></p>
     <p><img src="https://cdn.ablebits.com/_img-blog/line-graph/line-graph-excel.png"></p>
+    <h2>Map</h2>
     <p><div class="home-map">Map goes here to show all hikes user's pets have completed</div></p>
   </div>
-  <div class="pet-profile-container">
+
+
+
+  <div class="card card-body" id="pet-profile-container">
+    <h2>Pets</h2>
     Pet profiles go here. Figure out how to use React to add.
     <div id="pet-profiles">
         {% for pet in pets %}
         <ul>
           <li>
             Name: {{ pet.pet_name }}
-          </li>
 
           {% if pet.gender != "" %}
-          <li>
-            Gender: {{ pet.gender }}
-          </li>
+            <br>Gender: {{ pet.gender }}
           {% endif %}
 
           {% if pet.birthday != None %}
-          <li>
-            Birthday: {{ pet.birthday.month }}/{{ pet.birthday.day }}/{{ pet.birthday.year }}
-          </li>
+            <br>Birthday: {{ pet.birthday.month }}/{{ pet.birthday.day }}/{{ pet.birthday.year }}
           {% endif %}
 
           {% if pet.breed != "" %}
-          <li>
-            Breed: {{ pet.breed }}
-          </li>
+            <br>Breed: {{ pet.breed }}
           {% endif %}
 
+          <br>Create new buttons to Edit/Delete
+          <br>If delete, must delete all connections (check_ins)
+          <br>
+          
+          <a class="btn btn-link" 
+              data-bs-toggle="collapse" 
+              href="#collapse-view-check-ins-{{ pet.pet_id }}" 
+              role="button" 
+              aria-expanded="false"
+              aria-controls="collapse-view-check-ins-{{ pet.pet_id }}">
+            View Check Ins
+          </a>
+
+          <div class="collapse card card-body" id="collapse-view-check-ins-{{ pet.pet_id }}">
+            <ul>
+              {% for check_in in pet.check_ins|sort(attribute='date_hiked') %}
+              <li>
+                {{ pet.pet_name }} hiked {{ check_in.hike.hike_name }} on {{ check_in.date_hiked.month }}/{{ check_in.date_hiked.day }}/{{ check_in.date_hiked.year }}!
+                
+                {% if check_in.date_started != None %}
+                <br>Date started: {{ check_in.date_started.month }}/{{ check_in.date_started.day }}/{{ check_in.date_started.year }}
+                {% endif %}
+                
+                {% if check_in.date_completed != None %}
+                <br>Date completed: {{ check_in.date_completed.month }}/{{ check_in.date_completed.day }}/{{ check_in.date_completed.year }}
+                {% endif %}
+                
+                {% if check_in.miles_completed != None %}
+                <br>Miles completed: {{ check_in.miles_completed }}
+                {% endif %}
+                
+                {% if check_in.total_time != None %}
+                <br>Total time: {{ check_in.total_time }} hours
+                {% endif %}
+
+                <br>Edit/Delete
+          
+              </li>
+            {% endfor %}
+          </ul>
+          </div>
+          </li>
         </ul>
         {% endfor %}
       </ul>

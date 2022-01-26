@@ -3,13 +3,13 @@
 
 {% block body %}
 
-  <div class="search-side-bar">
-      <h1>Search Hikes</h1>
-      <p>Search function to be added here. Will be a left sidebar.</p>
+  <div class="card card-body" id="search-side-bar">
+    <h2>Search Hikes</h2>
+    <p>Search function to be added here. Will be a left sidebar.</p>
   </div>
   
-  <div class="all-hikes-container">
-    <h1>All Hikes</h1>
+  <div class="card card-body" id="all-hikes-container">
+    <h2>All Hikes</h2>
 
     <ul>
       {% for hike in hikes %}

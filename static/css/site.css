@@ -2,7 +2,7 @@
   height: 30em;
 }
 
-.all-hikes-container {
+#all-hikes-container {
   display: inline-block;
   vertical-align: top;
 }
@@ -12,27 +12,27 @@
   vertical-align: top;
 }
 
-.search-side-bar {
+#search-side-bar {
   display: inline-block;
   vertical-align: top;
 }
 
-.home-visuals-container {
+#home-visuals-container {
   display: inline-block;
   vertical-align: top;
 }
 
-.pet-profile-container {
+#pet-profile-container {
   display: inline-block;
   vertical-align: top;
 }
 
-.bookmarks-container {
+#bookmarks-container {
   display: inline-block;
   vertical-align: top;
 }
 
-.bookmarks-maps-container {
+#bookmarks-maps-container {
   display: inline-block;
   vertical-align: top;
 }
