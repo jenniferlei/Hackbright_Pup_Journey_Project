@@ -46,20 +46,22 @@ def show_hike(hike_id):
     logged_in_email = session.get("user_email")
 
     if logged_in_email is None:
+        
         return (render_template("hike_details.html", hike=hike,
                                                     hike_resources=hike_resources,
                                                     comments=comments))
     else:
         user = crud.get_user_by_email(logged_in_email)
+        pets = crud.get_pets_by_user_id(user.user_id)
         bookmarks_list_by_user = crud.get_bookmarks_lists_by_user_id(user.user_id)
-        # bookmarks_lists_by_hike is returning None :(
-        # Not showing up on hike_details page, however it is working when I test interactively on python3 -i crud.py
-        bookmarks_lists_by_hike = crud.get_bookmarks_lists_by_user_id_and_hike_id(user.user_id, hike_id)
+        bookmarks_lists_by_user_hike = crud.get_bookmarks_lists_by_user_id_and_hike_id(user.user_id, hike.hike_id)
+        
         return (render_template("hike_details.html", hike=hike,
                                                     hike_resources=hike_resources,
                                                     comments=comments,
+                                                    pets=pets,
                                                     bookmarks_list_by_user=bookmarks_list_by_user,
-                                                    bookmarks_lists_by_hike=bookmarks_lists_by_hike))
+                                                    bookmarks_lists_by_user_hike=bookmarks_lists_by_user_hike))
 
 
 @app.route("/bookmarks")
@@ -111,12 +113,12 @@ def add_pet():
         birthday = request.form.get("birthday")
         breed = request.form.get("breed")
         pet_imgURL = request.form.get("pet_imgURL")
-        hikes_pets = []
+        check_ins = []
 
         if birthday == "":
             birthday = None
 
-        pet = crud.create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, hikes_pets)
+        pet = crud.create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, check_ins)
         db.session.add(pet)
         db.session.commit()
         flash(f"Success! {pet_name} has been added.")
@@ -124,8 +126,51 @@ def add_pet():
     return redirect("/")
 
 
+@app.route("/hikes/<hike_id>/check-in", methods=["POST"])
+def add_check_in(hike_id):
+    """Add check in for a hike."""
+
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email is None:
+        flash("You must log in to check in.")
+    else:
+        user = crud.get_user_by_email(logged_in_email)
+        hike = crud.get_hike_by_id(hike_id)
+        pet_id = request.form.get("pet_id")
+        pet = crud.get_pet_by_id(pet_id)
+        date_hiked = request.form.get("date_hiked")
+        date_started = request.form.get("date_started")
+
+        if date_started == "":
+            date_started = None
+
+        date_completed = request.form.get("date_completed")
+
+        if date_completed == "":
+            date_completed = None
+
+        miles_completed = request.form.get("miles_completed")
+
+        if miles_completed == "":
+            miles_completed = None
+
+        total_time = request.form.get("total_time")
+
+        if total_time == "":
+            total_time = None
+
+        check_in = crud.create_check_in(hike, pet, date_hiked, date_started, date_completed, miles_completed, total_time)
+        db.session.add(check_in)
+        db.session.commit()
+        flash(f"Success! {pet.pet_name} has been checked into {hike.hike_name}.")
+
+    return redirect(f"/hikes/{hike_id}") 
+
+
 @app.route("/hikes/<hike_id>/bookmark", methods=["POST"])
 def add_hike_to_bookmark(hike_id):
+    """Add hike to a bookmarks list"""
     logged_in_email = session.get("user_email")
 
     if logged_in_email is None:
@@ -158,6 +203,7 @@ def add_hike_to_bookmark(hike_id):
 
 @app.route("/hikes/<hike_id>/comments", methods=["POST"])
 def add_comment(hike_id):
+    """Add a comment for a hike"""
     logged_in_email = session.get("user_email")
 
     if logged_in_email is None:
@@ -244,46 +290,6 @@ def process_logout():
     del session["user_email"]
     flash("Successfully logged out!")
     return redirect("/")
-
-# @app.route("/movies/<movie_id>/ratings", methods=["POST"])
-# def create_rating(movie_id):
-
-#     logged_in_email = session.get("user_email")
-#     rating_score = request.form.get("rating")
-
-#     if logged_in_email is None:
-#         flash("You must log in to rate a movie.")
-#     elif not rating_score:
-#         flash("Error: you didn't select a score for your rating.")
-#     else:
-#         user = crud.get_user_by_email(logged_in_email)
-#         movie = crud.get_movie_by_id(movie_id)
-
-#         rating = crud.create_rating(user, movie, int(rating_score))
-#         db.session.add(rating)
-#         db.session.commit()
-
-#         flash(f"You rated this movie {rating_score} out of 5.")
-
-#     return redirect(f"/movies/{movie_id}")   
-
-
-# @app.route("/users")
-# def all_users():
-#     """View all users."""
-
-#     users = crud.get_users()
-
-#     return render_template("all_users.html", users=users)
-
-
-# @app.route("/users/<user_id>")
-# def show_user(user_id):
-#     """Show details on a particular user."""
-
-#     user = crud.get_user_by_id(user_id)
-
-#     return render_template("user_details.html", user=user)
 
 
 if __name__ == "__main__":

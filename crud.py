@@ -1,17 +1,19 @@
 """CRUD operations."""
 
-from model import db, User, Pet, Hike, Comment, HikePet, BookmarksList, HikeBookmarksList, connect_to_db
+from model import db, User, Pet, Hike, Comment, CheckIn, BookmarksList, HikeBookmarksList, connect_to_db
 
 
 def create_user(full_name, email, password):
     """Create and return a new user."""
 
-    user = User(full_name=full_name, email=email, password=password)
+    user = User(full_name=full_name,
+                email=email,
+                password=password)
 
     return user
 
 
-def create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, hikes_pets):
+def create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, check_ins):
     """Create and return a new pet."""
 
     pet = Pet(user=user,
@@ -20,7 +22,7 @@ def create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, hikes_pets):
             birthday=birthday,
             breed=breed,
             pet_imgURL=pet_imgURL,
-            hikes_pets=hikes_pets)
+            check_ins=check_ins)
 
     return pet
 
@@ -57,10 +59,10 @@ def get_comment_by_hike_id(hike_id):
     return db.session.query(Comment).filter_by(hike_id=hike_id)
 
 
-def create_hike_pet(hike, pet, date_hiked, date_started, date_completed, miles_completed, total_time):
+def create_check_in(hike, pet, date_hiked, date_started, date_completed, miles_completed, total_time):
     """Create and return a new hike completed by a pet."""
 
-    hike_pet = HikePet(hike=hike,
+    check_in = CheckIn(hike=hike,
                         pet=pet,
                         date_hiked=date_hiked,
                         date_started=date_started,
@@ -68,7 +70,7 @@ def create_hike_pet(hike, pet, date_hiked, date_started, date_completed, miles_c
                         miles_completed=miles_completed,
                         total_time=total_time)
 
-    return hike_pet
+    return check_in
 
 
 def create_bookmarks_list(bookmarks_list_name, user_id, hikes):
@@ -172,6 +174,12 @@ def get_pets_by_user_id(user_id):
     """Return all pets by user_id."""
 
     return db.session.query(Pet).filter_by(user_id=user_id).all()
+
+
+def get_pet_by_id(pet_id):
+    """Return a pet by id"""
+
+    return db.session.query(Pet).get(pet_id)
 
 
 if __name__ == '__main__':

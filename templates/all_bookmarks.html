@@ -39,12 +39,10 @@
           <a class="btn btn-link" data-bs-toggle="collapse" href="#collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}" role="button" aria-expanded="false" aria-controls="collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}">
             {{ bookmarks_list.bookmarks_list_name }}
           </a>
-          <div class="collapse" id="collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}">
-            <div class="card card-body">
-              {% for hike in bookmarks_list.hikes %}
-              <br><a href="/hikes/{{ hike.hike_id }}">{{ hike.hike_name }}</a>
-              {% endfor %}
-            </div>
+          <div class="collapse card card-body" id="collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}">
+            {% for hike in bookmarks_list.hikes %}
+            <a href="/hikes/{{ hike.hike_id }}" target="_blank">{{ hike.hike_name }}</a>
+            {% endfor %}
           </div>
         </li>
       {% endfor %}

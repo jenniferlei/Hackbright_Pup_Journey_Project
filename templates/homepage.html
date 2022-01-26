@@ -54,7 +54,7 @@
 
           <p>
             <ul>
-                <li>Need to figure out how to upload and save image to server/database</li> 
+              <li>Need to figure out how to upload and save image to server/database</li> 
             </ul>
             
           </p>
@@ -62,41 +62,40 @@
 
           <form action="/add-pet" id="form-add-pet" method="POST">
 
-            <h2 id="form-add-pet-heading">Please Add Your Pet Info</h2>
+            <h3 id="form-add-pet-heading">Please Add Your Pet Info</h3>
         
             <div>
-                <label for="pet_name" class="sr-only">Name</label>
-                <input type="text"
-                        name="pet_name"
-                        class="form-control input-lg"
-                        placeholder="Name"
-                        required
-                        autofocus>
+              <label for="pet_name" class="sr-only">Name</label>
+              <input type="text"
+                      name="pet_name"
+                      class="form-control input-lg"
+                      placeholder="Name"
+                      required
+                      autofocus>
             </div>
         
             <div>
-                <label for="gender" class="sr-only">Gender</label>
-                <select name="gender">
-                    <option value=""></option>
-                    <option value="female">female</option>
-                    <option value="male">male</option>
-                </select>
+              <label for="gender" class="sr-only">Gender</label>
+              <select name="gender" class="form-control input-lg">
+                  <option value=""></option>
+                  <option value="female">female</option>
+                  <option value="male">male</option>
+              </select>
             </div>
 
             <div>
-                <label for="birthday" class="sr-only">Birthday</label>
-                <input type="date"
-                        name="birthday"
-                        class="form-control input-lg"
-                        placeholder="Birthday">
+              <label for="birthday" class="sr-only">Birthday</label>
+              <input type="date"
+                      name="birthday"
+                      class="form-control input-lg">
             </div>
 
             <div>
-                <label for="breed" class="sr-only">Breed</label>
-                <input type="text"
-                        name="breed"
-                        class="form-control input-lg"
-                        placeholder="Breed">
+              <label for="breed" class="sr-only">Breed</label>
+              <input type="text"
+                      name="breed"
+                      class="form-control input-lg"
+                      placeholder="Breed">
             </div>
 
             <div>
@@ -105,8 +104,8 @@
                         name="pet_imgURL"
                         class="form-control input-lg">
             </div>
-            <button class="btn btn-sm btn-primary btn-block mt-4" type="submit">Save
-            </button>
+
+            <button class="btn btn-sm btn-primary btn-block mt-4" type="submit">Save</button>
         
           </form>
         </div>
@@ -116,7 +115,8 @@
 
   {% else %}                   
   <img src="/static/img/homepage.jpg" id="welcome-img">
-  <p><span class="app-description">Find dog friendly hikes, bookmark your favorites, and check in for hikes your dog has done!</span></p>
+  <p><span class="app-description">Find pup friendly hikes, bookmark your favorites, and check in to hikes your pup has done!</span></p>
+  
   <h2>Create an Account</h2>
   <form action="/users" method="POST">
     <p>
