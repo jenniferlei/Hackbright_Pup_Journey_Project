@@ -17,7 +17,6 @@
 
   <div class="card card-body" id="pet-profile-container">
     <h2>Pets</h2>
-    Pet profiles go here. Figure out how to use React to add.
     <div id="pet-profiles">
         {% for pet in pets %}
         <ul>
@@ -41,9 +40,11 @@
           {% endif %}
 
           <br>
-          <form action="/edit-delete-pet" id="form-edit-delete-pet" method="POST">
-            <button class="btn btn-link" type="submit" name="edit" value="{{ pet }}">Edit</button>/
-            <button class="btn btn-link" type="submit" name="delete" value="{{ pet }}">Delete</button>
+          <form action="/edit-pet" id="form-edit-pet" method="POST">
+            <button class="btn btn-link" type="submit" name="edit" value="{{ pet.pet_id }}">Edit</button>
+          </form>
+          <form action="/delete-pet" id="form-delete-pet" method="POST">
+            <button class="btn btn-link" type="submit" name="delete" value="{{ pet.pet_id }}">Delete</button>
           </form>
           
           <a class="btn btn-link" 

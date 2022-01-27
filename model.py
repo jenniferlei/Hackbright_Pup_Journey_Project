@@ -57,8 +57,8 @@ class Pet(db.Model):
     # user = User object
         # (db.relationship("Pets", backref="user") on User model)
 
-    # check_ins = A list of CheckIn objects
-        # (db.relationship("Pet", backref="check_ins") on CheckIn model)
+    check_ins = db.relationship("CheckIn", backref="pet", cascade="all, delete-orphan")
+
 
     def __repr__(self):
         return f"<Pet pet_id={self.pet_id} pet_name={self.pet_name}>"
@@ -152,7 +152,9 @@ class CheckIn(db.Model):
                             nullable=True)
 
     hike = db.relationship("Hike", backref="check_ins")
-    pet = db.relationship("Pet", backref="check_ins")
+
+    # pet = a Pet object
+        # (db.relationship("CheckIn", backref="pet") on pet Model)
 
     def __repr__(self):
         return f"<Hike completed by pet check_in_id={self.check_in_id} hike_id={self.hike_id} pet_id={self.pet_id} date_hiked={self.date_hiked}>"
@@ -174,7 +176,7 @@ class BookmarksList(db.Model):
                         db.ForeignKey("users.user_id"),
                         nullable=False)
 
-    hikes = db.relationship("Hike", secondary="hikes_bookmarks_lists", backref="bookmarks_lists")
+    hikes = db.relationship("Hike", secondary="hikes_bookmarks_lists", backref="bookmarks_lists", cascade="all, delete")
 
     def __repr__(self):
         return f"<Bookmarks List bookmarks_list_id={self.bookmarks_list_id} bookmarks_list_name={self.bookmarks_list_name}>"

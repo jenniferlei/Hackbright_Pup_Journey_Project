@@ -27,8 +27,9 @@ def create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, check_ins):
     return pet
 
 
-def delete_pet():
+def delete_pet(pet):
     """Delete a pet."""
+    
     pass
 
 
@@ -63,6 +64,16 @@ def create_comment(user, hike, body):
     return comment
 
 
+def delete_comment():
+    """Delete a comment."""
+    pass
+
+
+def edit_comment():
+    """Edit a comment."""
+    pass
+
+
 def get_comment_by_hike_id(hike_id):
     """Return all comments by hike_id."""
 
@@ -83,6 +94,11 @@ def create_check_in(hike, pet, date_hiked, date_started, date_completed, miles_c
     return check_in
 
 
+def edit_check_in():
+    """Edit a check in."""
+    pass
+
+
 def create_bookmarks_list(bookmarks_list_name, user_id, hikes):
     """Create and return a new bookmarks list."""
 
@@ -93,6 +109,16 @@ def create_bookmarks_list(bookmarks_list_name, user_id, hikes):
     return bookmarks_list
 
 
+def delete_bookmarks_list():
+    """Delete a bookmarks list."""
+    pass
+
+
+def edit_bookmarks_list():
+    """Edit a bookmarks list."""
+    pass
+
+
 def create_hike_bookmarks_list(hike_id, bookmarks_list_id):
     """Create and return a new hike bookmarks list object."""
 
@@ -100,6 +126,11 @@ def create_hike_bookmarks_list(hike_id, bookmarks_list_id):
                                             bookmarks_list_id=bookmarks_list_id))
 
     return hike_bookmarks_list
+
+
+def delete_hike_bookmarks_list():
+    """Delete a hike from a bookmarks list."""
+    pass
 
 
 def get_bookmarks_lists_by_user_id(user_id):
@@ -183,35 +214,34 @@ def get_check_ins_by_pet_id(pet_id):
     return check_ins
 
 
-
 def get_hikes():
     """Return all hikes."""
 
-    return Hike.query.all()
+    return db.session.query(Hike).all()
 
 
 def get_hike_by_id(hike_id):
     """Return movie by id.""" 
 
-    return Hike.query.get(hike_id)
+    return db.session.query(Hike).get(hike_id)
 
 
 def get_users():
     """Return all users."""
 
-    return User.query.all()
+    return db.session.query(User).all()
 
 
 def get_user_by_id(user_id):
     """Return user by id.""" 
 
-    return User.query.get(user_id)
+    return db.session.query(User).get(user_id)
 
 
 def get_user_by_email(email):
     """Return a user by email."""
 
-    return User.query.filter(User.email == email).first()
+    return db.session.query(User).filter(User.email == email).first()
 
 
 def get_pets_by_user_id(user_id):
