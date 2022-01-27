@@ -24,7 +24,11 @@
           <li>
             Name: {{ pet.pet_name }}
 
-          {% if pet.gender != "" %}
+          {% if pet.pet_imgURL != None %}
+            <br><img src="{{ pet.pet_imgURL }}">
+          {% endif %}
+
+          {% if pet.gender != None %}
             <br>Gender: {{ pet.gender }}
           {% endif %}
 
@@ -32,13 +36,15 @@
             <br>Birthday: {{ pet.birthday.month }}/{{ pet.birthday.day }}/{{ pet.birthday.year }}
           {% endif %}
 
-          {% if pet.breed != "" %}
+          {% if pet.breed != None %}
             <br>Breed: {{ pet.breed }}
           {% endif %}
 
-          <br>Create new buttons to Edit/Delete
-          <br>If delete, must delete all connections (check_ins)
           <br>
+          <form action="/edit-delete-pet" id="form-edit-delete-pet" method="POST">
+            <button class="btn btn-link" type="submit" name="edit" value="{{ pet }}">Edit</button>/
+            <button class="btn btn-link" type="submit" name="delete" value="{{ pet }}">Delete</button>
+          </form>
           
           <a class="btn btn-link" 
               data-bs-toggle="collapse" 
@@ -51,7 +57,7 @@
 
           <div class="collapse card card-body" id="collapse-view-check-ins-{{ pet.pet_id }}">
             <ul>
-              {% for check_in in pet.check_ins|sort(attribute='date_hiked') %}
+              {% for check_in in pet.check_ins|sort(attribute='date_hiked', reverse=True) %}
               <li>
                 {{ pet.pet_name }} hiked {{ check_in.hike.hike_name }} on {{ check_in.date_hiked.month }}/{{ check_in.date_hiked.day }}/{{ check_in.date_hiked.year }}!
                 
@@ -90,15 +96,7 @@
       <div class="collapse" id="collapse-add-pet">
         <div class="card card-body">
 
-          <p>
-            <ul>
-              <li>Need to figure out how to upload and save image to server/database</li> 
-            </ul>
-            
-          </p>
-
-
-          <form action="/add-pet" id="form-add-pet" method="POST">
+          <form action="/add-pet" id="form-add-pet" method="POST" enctype="multipart/form-data">
 
             <h3 id="form-add-pet-heading">Please Add Your Pet Info</h3>
         
@@ -137,10 +135,11 @@
             </div>
 
             <div>
-                <label for="pet_imgURL" class="sr-only">Image</label>
+                <label for="my_file" class="sr-only">Image</label>
                 <input type="file" 
-                        name="pet_imgURL"
-                        class="form-control input-lg">
+                        name="my_file"
+                        class="form-control input-lg"
+                        accept="image/png, image/jpeg">
             </div>
 
             <button class="btn btn-sm btn-primary btn-block mt-4" type="submit">Save</button>

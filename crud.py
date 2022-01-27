@@ -27,6 +27,16 @@ def create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, check_ins):
     return pet
 
 
+def delete_pet():
+    """Delete a pet."""
+    pass
+
+
+def edit_pet():
+    """Edit a pet."""
+    pass
+
+
 def create_hike(hike_name, difficulty, leash_rule, description, features, address, area, length, parking, resources, hike_imgURL):
     """Create and return a new hike."""
 

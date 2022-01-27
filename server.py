@@ -2,10 +2,17 @@
 
 from flask import (Flask, render_template, request, flash, session,
                    redirect)
+import cloudinary.uploader
+import os
+
 from model import connect_to_db, db
 import crud
 
 from jinja2 import StrictUndefined
+
+CLOUDINARY_KEY = os.environ["CLOUDINARY_KEY"]
+CLOUDINARY_SECRET = os.environ["CLOUDINARY_SECRET"]
+CLOUD_NAME = "hbpupjourney"
 
 app = Flask(__name__)
 app.secret_key = "dev"
@@ -115,20 +122,58 @@ def add_pet():
 
         pet_name = request.form.get("pet_name")
         gender = request.form.get("gender")
+
+        if gender == "":
+            gender = None
+
         birthday = request.form.get("birthday")
-        breed = request.form.get("breed")
-        pet_imgURL = request.form.get("pet_imgURL")
-        check_ins = []
 
         if birthday == "":
             birthday = None
 
+        breed = request.form.get("breed")
+
+        if breed == "":
+            breed = None
+
+        my_file = request.files["my_file"]
+
+        # save the uploaded file to Cloudinary by making an API request
+        result = cloudinary.uploader.upload(my_file,
+                                            api_key=CLOUDINARY_KEY,
+                                            api_secret=CLOUDINARY_SECRET,
+                                            cloud_name=CLOUD_NAME)
+
+        pet_imgURL = result["secure_url"]
+        
+        check_ins = []
+
         pet = crud.create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, check_ins)
         db.session.add(pet)
         db.session.commit()
-        flash(f"Success! {pet_name} has been added.")
+        flash(f"Success! {pet_name} profile has been added.")
 
     return redirect("/")
+
+
+# @app.route("/dedit-delete-pet", methods=["POST"])
+# def edit_delete_pet():
+#     """Edit or delete a pet profile"""
+
+#     logged_in_email = session.get("user_email")
+
+#     if logged_in_email is None:
+#         flash("You must log in to edit/delete a pet profile.")
+#     else:
+#         user = crud.get_user_by_email(logged_in_email)
+
+#         pet = request.form.get("pet")
+
+#         db.session.execute(pet.delete())
+#         db.session.commit()
+#         flash(f"Success! {pet_name} profile has been deleted.")
+
+#     return redirect("/")
 
 
 @app.route("/hikes/<hike_id>/check-in", methods=["POST"])
