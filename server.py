@@ -69,6 +69,7 @@ def show_hike(hike_id):
         
         return (render_template("hike_details.html", hike=hike,
                                                     hike_resources=hike_resources,
+                                                    user=user,
                                                     comments=comments,
                                                     pets=pets,
                                                     check_ins=sorted_check_ins,
@@ -140,6 +141,7 @@ def add_pet():
 
         if my_file.filename == "":
             pet_imgURL = None
+            # img_public_id = None
         else:
             # save the uploaded file to Cloudinary by making an API request
             result = cloudinary.uploader.upload(my_file,
@@ -148,10 +150,11 @@ def add_pet():
                                                 cloud_name=CLOUD_NAME)
 
             pet_imgURL = result["secure_url"]
+            # img_public_id = result["public_id"]
 
         check_ins = []
 
-        pet = crud.create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, check_ins)
+        pet = crud.create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, check_ins) # add img_public_id
         db.session.add(pet)
         db.session.commit()
         flash(f"Success! {pet_name} profile has been added.")
@@ -172,10 +175,15 @@ def delete_pet():
 
         pet_id = request.form.get("delete")
         pet = crud.get_pet_by_id(pet_id)
+        # img_public_id = pet.img_public_id
+        # cloudinary.uploader.destroy(img_public_id,
+                                    # api_key=CLOUDINARY_KEY,
+                                    # api_secret=CLOUDINARY_SECRET,
+                                    # cloud_name=CLOUD_NAME)
+        flash(f"Success! {pet.pet_name} profile has been deleted.")
 
         db.session.delete(pet)
         db.session.commit()
-        flash(f"Success! {pet.pet_name} profile has been deleted.")
 
     return redirect("/")
 
@@ -184,66 +192,67 @@ def delete_pet():
 def delete_check_in():
     """Delete a check-in"""
 
-    # logged_in_email = session.get("user_email")
+    logged_in_email = session.get("user_email")
 
-    # if logged_in_email is None:
-    #     flash("You must log in to delete a check in.")
-    # else:
-    #     user = crud.get_user_by_email(logged_in_email)
+    if logged_in_email is None:
+        flash("You must log in to delete a check in.")
+    else:
+        user = crud.get_user_by_email(logged_in_email)
 
-    #     pet_id = request.form.get("delete")
-    #     pet = crud.get_pet_by_id(pet_id)
+        check_in_id = request.form.get("delete")
+        check_in = crud.get_check_ins_by_check_in_id(check_in_id)
 
-    #     db.session.delete(pet)
-    #     db.session.commit()
-    #     flash(f"Success! {pet.pet_name} profile has been deleted.")
+        flash(f"Success! Check in at {check_in.hike.hike_name} by {check_in.pet.pet_name} has been deleted.")
+        
+        db.session.delete(check_in)
+        db.session.commit()
 
-    # return redirect("/")
-    pass
+    return redirect(request.referrer)
 
 
 @app.route("/delete-comment", methods=["POST"])
 def delete_comment():
     """Delete a comment"""
 
-    # logged_in_email = session.get("user_email")
+    logged_in_email = session.get("user_email")
 
-    # if logged_in_email is None:
-    #     flash("You must log in to delete a check in.")
-    # else:
-    #     user = crud.get_user_by_email(logged_in_email)
+    if logged_in_email is None:
+        flash("You must log in to delete a comment.")
+    else:
+        user = crud.get_user_by_email(logged_in_email)
 
-    #     pet_id = request.form.get("delete")
-    #     pet = crud.get_pet_by_id(pet_id)
+        comment_id = request.form.get("delete")
+        comment = crud.get_comment_by_comment_id(comment_id)
 
-    #     db.session.delete(pet)
-    #     db.session.commit()
-    #     flash(f"Success! {pet.pet_name} profile has been deleted.")
+        flash(f"Success! Your comment has been deleted.")
 
-    # return redirect("/")
-    pass
+        db.session.delete(comment)
+        db.session.commit()
+
+    return redirect(request.referrer)
 
 
 @app.route("/delete-bookmarks-list", methods=["POST"])
 def delete_bookmarks_list():
     """Delete a bookmarks list"""
 
-    # logged_in_email = session.get("user_email")
+    logged_in_email = session.get("user_email")
 
-    # if logged_in_email is None:
-    #     flash("You must log in to delete a check in.")
-    # else:
-    #     user = crud.get_user_by_email(logged_in_email)
+    if logged_in_email is None:
+        flash("You must log in to delete a bookmarks list.")
+    else:
+        user = crud.get_user_by_email(logged_in_email)
 
-    #     pet_id = request.form.get("delete")
-    #     pet = crud.get_pet_by_id(pet_id)
+        bookmarks_list_id = request.form.get("delete")
+        bookmarks_list = crud.get_bookmarks_list_by_bookmarks_list_id(bookmarks_list_id)
+        bookmarks_list.hikes.clear()
 
-    #     db.session.delete(pet)
-    #     db.session.commit()
-    #     flash(f"Success! {pet.pet_name} profile has been deleted.")
+        flash(f"Success! Your {bookmarks_list.bookmarks_list_name} has been deleted.")
 
-    # return redirect("/")
-    pass
+        db.session.delete(bookmarks_list)
+        db.session.commit()
+    
+    return redirect(request.referrer)
 
 
 @app.route("/remove-hike", methods=["POST"])

@@ -52,7 +52,9 @@ class Pet(db.Model):
     breed = db.Column(db.String,
                         nullable=True)
     pet_imgURL = db.Column(db.String,
-                        nullable=True)
+                            nullable=True)
+    # img_public_id = db.Column(db.String,
+    #                         nullable=True)
 
     # user = User object
         # (db.relationship("Pets", backref="user") on User model)
@@ -176,7 +178,7 @@ class BookmarksList(db.Model):
                         db.ForeignKey("users.user_id"),
                         nullable=False)
 
-    hikes = db.relationship("Hike", secondary="hikes_bookmarks_lists", backref="bookmarks_lists", cascade="all, delete")
+    hikes = db.relationship("Hike", secondary="hikes_bookmarks_lists", backref="bookmarks_lists")
 
     def __repr__(self):
         return f"<Bookmarks List bookmarks_list_id={self.bookmarks_list_id} bookmarks_list_name={self.bookmarks_list_name}>"

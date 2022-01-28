@@ -2,6 +2,10 @@
   height: 30em;
 }
 
+.pet-profile-img {
+  height: 6em;
+}
+
 #all-hikes-container {
   display: inline-block;
   vertical-align: top;
@@ -35,4 +39,14 @@
 #bookmarks-maps-container {
   display: inline-block;
   vertical-align: top;
+}
+
+.bookmarks-link, .edit-form, .delete-form {
+  display: inline-block;
+}
+
+ul.no-bullets {
+  list-style-type: none; /* Remove bullets */
+  padding: 0; /* Remove padding */
+  margin: 0; /* Remove margins */
 }

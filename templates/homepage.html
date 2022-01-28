@@ -21,10 +21,10 @@
         {% for pet in pets %}
         <ul>
           <li>
-            Name: {{ pet.pet_name }}
+            {{ pet.pet_name }}
 
           {% if pet.pet_imgURL != None %}
-            <br><img src="{{ pet.pet_imgURL }}">
+            <br><img src="{{ pet.pet_imgURL }}" class="pet-profile-img">
           {% endif %}
 
           {% if pet.gender != None %}
@@ -40,14 +40,7 @@
           {% endif %}
 
           <br>
-          <form action="/edit-pet" id="form-edit-pet" method="POST">
-            <button class="btn btn-link" type="submit" name="edit" value="{{ pet.pet_id }}">Edit</button>
-          </form>
-          <form action="/delete-pet" id="form-delete-pet" method="POST">
-            <button class="btn btn-link" type="submit" name="delete" value="{{ pet.pet_id }}">Delete</button>
-          </form>
-          
-          <a class="btn btn-link" 
+          <a class="btn btn-link btn-sm" 
               data-bs-toggle="collapse" 
               href="#collapse-view-check-ins-{{ pet.pet_id }}" 
               role="button" 
@@ -55,12 +48,20 @@
               aria-controls="collapse-view-check-ins-{{ pet.pet_id }}">
             View Check Ins
           </a>
+          <form action="/edit-pet" class="edit-form" id="form-edit-pet" method="POST">
+            <button class="btn btn-link btn-sm" type="submit" name="edit" value="{{ pet.pet_id }}">Edit</button>
+          </form>
+          <form action="/delete-pet" class="delete-form" id="form-delete-pet" method="POST">
+            <button class="btn btn-link btn-sm" type="submit" name="delete" value="{{ pet.pet_id }}">Delete</button>
+          </form>
+          
+          
 
           <div class="collapse card card-body" id="collapse-view-check-ins-{{ pet.pet_id }}">
             <ul>
               {% for check_in in pet.check_ins|sort(attribute='date_hiked', reverse=True) %}
               <li>
-                {{ pet.pet_name }} hiked {{ check_in.hike.hike_name }} on {{ check_in.date_hiked.month }}/{{ check_in.date_hiked.day }}/{{ check_in.date_hiked.year }}!
+                {{ pet.pet_name }} hiked <a href="/hikes/{{ check_in.hike_id }}">{{ check_in.hike.hike_name }}</a> on {{ check_in.date_hiked.month }}/{{ check_in.date_hiked.day }}/{{ check_in.date_hiked.year }}!
                 
                 {% if check_in.date_started != None %}
                 <br>Date started: {{ check_in.date_started.month }}/{{ check_in.date_started.day }}/{{ check_in.date_started.year }}
@@ -78,7 +79,13 @@
                 <br>Total time: {{ check_in.total_time }} hours
                 {% endif %}
 
-                <br>Edit/Delete
+                <br>
+                <form action="/edit-check-in" class="edit-form" id="form-edit-check-in" method="POST">
+                  <button class="btn btn-link btn-sm" type="submit" name="edit" value="{{ check_in.check_in_id }}">Edit</button>
+                </form>
+                <form action="/delete-check-in" class="delete-form" id="form-delete-check-in" method="POST">
+                  <button class="btn btn-link btn-sm" type="submit" name="delete" value="{{ check_in.check_in_id }}">Delete</button>
+                </form>
           
               </li>
             {% endfor %}

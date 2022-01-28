@@ -64,11 +64,6 @@ def create_comment(user, hike, body):
     return comment
 
 
-def delete_comment():
-    """Delete a comment."""
-    pass
-
-
 def edit_comment():
     """Edit a comment."""
     pass
@@ -78,6 +73,12 @@ def get_comment_by_hike_id(hike_id):
     """Return all comments by hike_id."""
 
     return db.session.query(Comment).filter_by(hike_id=hike_id)
+
+
+def get_comment_by_comment_id(comment_id):
+    """Return all comments by hike_id."""
+
+    return db.session.query(Comment).filter_by(comment_id=comment_id).one()
 
 
 def create_check_in(hike, pet, date_hiked, date_started, date_completed, miles_completed, total_time):
@@ -109,9 +110,10 @@ def create_bookmarks_list(bookmarks_list_name, user_id, hikes):
     return bookmarks_list
 
 
-def delete_bookmarks_list():
-    """Delete a bookmarks list."""
-    pass
+def get_bookmarks_list_by_bookmarks_list_id(bookmarks_list_id):
+    """Get a bookmarks list by bookmarks_list_id."""
+    
+    return db.session.query(BookmarksList).filter_by(bookmarks_list_id=bookmarks_list_id).one()
 
 
 def edit_bookmarks_list():
@@ -207,11 +209,19 @@ def get_check_ins_by_user_id_and_hike_id(user_id, hike_id):
 
 
 def get_check_ins_by_pet_id(pet_id):
-    """Return all check ins for a give pet"""
+    """Return all check ins for a given pet id"""
 
     check_ins = db.session.query(CheckIn).filter_by(pet_id=pet_id).all()
 
     return check_ins
+
+
+def get_check_ins_by_check_in_id(check_in_id):
+    """Return a check in for a given check in id"""
+
+    check_in = db.session.query(CheckIn).filter_by(check_in_id=check_in_id).one()
+
+    return check_in
 
 
 def get_hikes():
