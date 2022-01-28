@@ -53,8 +53,8 @@ class Pet(db.Model):
                         nullable=True)
     pet_imgURL = db.Column(db.String,
                             nullable=True)
-    # img_public_id = db.Column(db.String,
-    #                         nullable=True)
+    img_public_id = db.Column(db.String,
+                            nullable=True)
 
     # user = User object
         # (db.relationship("Pets", backref="user") on User model)
@@ -110,14 +110,22 @@ class Comment(db.Model):
     comment_id = db.Column(db.Integer,
                         autoincrement=True,
                         primary_key=True)
-    hike_id = db.Column(db.Integer, 
-                        db.ForeignKey("hikes.hike_id"), 
+    hike_id = db.Column(db.Integer,
+                        db.ForeignKey("hikes.hike_id"),
                         nullable=False)
-    user_id = db.Column(db.Integer, 
-                        db.ForeignKey("users.user_id"), 
+    user_id = db.Column(db.Integer,
+                        db.ForeignKey("users.user_id"),
                         nullable=False)
-    body = db.Column(db.Text, 
+    body = db.Column(db.Text,
                     nullable=False)
+    date_created = db.Column(db.DateTime,
+                            nullable=False)
+    edit = db.Column(db.Boolean,
+                    default=False,
+                    nullable=False)
+    date_edited = db.Column(db.DateTime,
+                            default=None,
+                            nullable=True)
 
     hike = db.relationship("Hike", backref="comments")
     user = db.relationship("User", backref="comments")

@@ -4,9 +4,16 @@ from flask import (Flask, render_template, request, flash, session,
                    redirect)
 import cloudinary.uploader
 import os
+from datetime import datetime
 
 from model import connect_to_db, db
-import crud
+import crud_bookmarks_lists
+import crud_check_ins
+import crud_comments
+import crud_hikes_bookmarks_lists
+import crud_hikes
+import crud_pets
+import crud_users
 
 from jinja2 import StrictUndefined
 
@@ -28,8 +35,8 @@ def homepage():
     if logged_in_email is None:
         return render_template("homepage.html")
     else:
-        user = crud.get_user_by_email(logged_in_email)
-        pets = crud.get_pets_by_user_id(user.user_id)
+        user = crud_users.get_user_by_email(logged_in_email)
+        pets = crud_pets.get_pets_by_user_id(user.user_id)
         return render_template("homepage.html", pets=pets)
 
 
@@ -37,7 +44,7 @@ def homepage():
 def all_hikes():
     """View all hikes."""
 
-    hikes = crud.get_hikes()
+    hikes = crud_hikes.get_hikes()
 
     return render_template("all_hikes.html", hikes=hikes)
 
@@ -46,9 +53,9 @@ def all_hikes():
 def show_hike(hike_id):
     """Show details on a particular hike."""
 
-    hike = crud.get_hike_by_id(hike_id)
+    hike = crud_hikes.get_hike_by_id(hike_id)
     hike_resources = hike.resources.split(",")
-    comments = crud.get_comment_by_hike_id(hike_id)
+    comments = crud_comments.get_comment_by_hike_id(hike_id)
 
     logged_in_email = session.get("user_email")
 
@@ -58,14 +65,14 @@ def show_hike(hike_id):
                                                     hike_resources=hike_resources,
                                                     comments=comments))
     else:
-        user = crud.get_user_by_email(logged_in_email)
-        pets = crud.get_pets_by_user_id(user.user_id)
-        check_ins = crud.get_check_ins_by_user_id_and_hike_id(user.user_id, hike.hike_id)
+        user = crud_users.get_user_by_email(logged_in_email)
+        pets = crud_pets.get_pets_by_user_id(user.user_id)
+        check_ins = crud_check_ins.get_check_ins_by_user_id_and_hike_id(user.user_id, hike.hike_id)
 
         sorted_check_ins = sorted(check_ins, key=lambda x: x.date_hiked, reverse=True)
 
-        bookmarks_list_by_user = crud.get_bookmarks_lists_by_user_id(user.user_id)
-        bookmarks_lists_by_user_hike = crud.get_bookmarks_lists_by_user_id_and_hike_id(user.user_id, hike.hike_id)
+        bookmarks_list_by_user = crud_bookmarks_lists.get_bookmarks_lists_by_user_id(user.user_id)
+        bookmarks_lists_by_user_hike = crud_bookmarks_lists.get_bookmarks_lists_by_user_id_and_hike_id(user.user_id, hike.hike_id)
         
         return (render_template("hike_details.html", hike=hike,
                                                     hike_resources=hike_resources,
@@ -82,8 +89,8 @@ def all_bookmarks():
     """View all bookmarks."""
 
     if "user_email" in session:
-        user = crud.get_user_by_email(session["user_email"])
-        bookmarks_lists = crud.get_bookmarks_lists_by_user_id(user.user_id)
+        user = crud_users.get_user_by_email(session["user_email"])
+        bookmarks_lists = crud_bookmarks_lists.get_bookmarks_lists_by_user_id(user.user_id)
 
         return render_template("all_bookmarks.html", bookmarks_lists=bookmarks_lists)
     else:
@@ -96,11 +103,11 @@ def add_bookmarks_list():
     """Create a bookmark list"""
 
     if "user_email" in session:
-        user = crud.get_user_by_email(session["user_email"])
+        user = crud_users.get_user_by_email(session["user_email"])
         user_id = user.user_id
         bookmarks_list_name = request.form.get("bookmarks_list_name")
         hikes = []
-        bookmarks_list = crud.create_bookmarks_list(bookmarks_list_name, user_id, hikes)
+        bookmarks_list = crud_bookmarks_lists.create_bookmarks_list(bookmarks_list_name, user_id, hikes)
         db.session.add(bookmarks_list)
         db.session.commit()
         flash(f"Success! {bookmarks_list_name} has been added to your bookmarks.")
@@ -119,7 +126,7 @@ def add_pet():
     if logged_in_email is None:
         flash("You must log in to add a pet profile.")
     else:
-        user = crud.get_user_by_email(logged_in_email)
+        user = crud_users.get_user_by_email(logged_in_email)
 
         pet_name = request.form.get("pet_name")
         gender = request.form.get("gender")
@@ -141,7 +148,7 @@ def add_pet():
 
         if my_file.filename == "":
             pet_imgURL = None
-            # img_public_id = None
+            img_public_id = None
         else:
             # save the uploaded file to Cloudinary by making an API request
             result = cloudinary.uploader.upload(my_file,
@@ -150,11 +157,11 @@ def add_pet():
                                                 cloud_name=CLOUD_NAME)
 
             pet_imgURL = result["secure_url"]
-            # img_public_id = result["public_id"]
+            img_public_id = result["public_id"]
 
         check_ins = []
 
-        pet = crud.create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, check_ins) # add img_public_id
+        pet = crud_pets.create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, img_public_id, check_ins) # add img_public_id
         db.session.add(pet)
         db.session.commit()
         flash(f"Success! {pet_name} profile has been added.")
@@ -171,15 +178,16 @@ def delete_pet():
     if logged_in_email is None:
         flash("You must log in to delete a pet profile.")
     else:
-        user = crud.get_user_by_email(logged_in_email)
+        user = crud_users.get_user_by_email(logged_in_email)
 
         pet_id = request.form.get("delete")
-        pet = crud.get_pet_by_id(pet_id)
-        # img_public_id = pet.img_public_id
-        # cloudinary.uploader.destroy(img_public_id,
-                                    # api_key=CLOUDINARY_KEY,
-                                    # api_secret=CLOUDINARY_SECRET,
-                                    # cloud_name=CLOUD_NAME)
+        pet = crud_pets.get_pet_by_id(pet_id)
+        img_public_id = pet.img_public_id
+        if img_public_id != None:
+            cloudinary.uploader.destroy(img_public_id,
+                                        api_key=CLOUDINARY_KEY,
+                                        api_secret=CLOUDINARY_SECRET,
+                                        cloud_name=CLOUD_NAME)
         flash(f"Success! {pet.pet_name} profile has been deleted.")
 
         db.session.delete(pet)
@@ -197,10 +205,10 @@ def delete_check_in():
     if logged_in_email is None:
         flash("You must log in to delete a check in.")
     else:
-        user = crud.get_user_by_email(logged_in_email)
+        user = crud_users.get_user_by_email(logged_in_email)
 
         check_in_id = request.form.get("delete")
-        check_in = crud.get_check_ins_by_check_in_id(check_in_id)
+        check_in = crud_check_ins.get_check_ins_by_check_in_id(check_in_id)
 
         flash(f"Success! Check in at {check_in.hike.hike_name} by {check_in.pet.pet_name} has been deleted.")
         
@@ -219,10 +227,10 @@ def delete_comment():
     if logged_in_email is None:
         flash("You must log in to delete a comment.")
     else:
-        user = crud.get_user_by_email(logged_in_email)
+        user = crud_users.get_user_by_email(logged_in_email)
 
         comment_id = request.form.get("delete")
-        comment = crud.get_comment_by_comment_id(comment_id)
+        comment = crud_comments.get_comment_by_comment_id(comment_id)
 
         flash(f"Success! Your comment has been deleted.")
 
@@ -241,10 +249,10 @@ def delete_bookmarks_list():
     if logged_in_email is None:
         flash("You must log in to delete a bookmarks list.")
     else:
-        user = crud.get_user_by_email(logged_in_email)
+        user = crud_users.get_user_by_email(logged_in_email)
 
         bookmarks_list_id = request.form.get("delete")
-        bookmarks_list = crud.get_bookmarks_list_by_bookmarks_list_id(bookmarks_list_id)
+        bookmarks_list = crud_bookmarks_lists.get_bookmarks_list_by_bookmarks_list_id(bookmarks_list_id)
         bookmarks_list.hikes.clear()
 
         flash(f"Success! Your {bookmarks_list.bookmarks_list_name} has been deleted.")
@@ -259,22 +267,25 @@ def delete_bookmarks_list():
 def remove_hike():
     """Delete a hike from a bookmarks list"""
 
-    # logged_in_email = session.get("user_email")
+    logged_in_email = session.get("user_email")
 
-    # if logged_in_email is None:
-    #     flash("You must log in to delete a check in.")
-    # else:
-    #     user = crud.get_user_by_email(logged_in_email)
+    if logged_in_email is None:
+        flash("You must log in to remove a hike from your bookmarks.")
+    else:
+        user = crud_users.get_user_by_email(logged_in_email)
 
-    #     pet_id = request.form.get("delete")
-    #     pet = crud.get_pet_by_id(pet_id)
+        hike_id, bookmarks_list_id = request.form.get("delete").split(",")
+        hike = crud_hikes.get_hike_by_id(hike_id)
+        bookmarks_list = crud_bookmarks_lists.get_bookmarks_list_by_bookmarks_list_id(bookmarks_list_id)
+        hikes_bookmarks_list = crud_hikes_bookmarks_lists.get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(hike_id, bookmarks_list_id)
 
-    #     db.session.delete(pet)
-    #     db.session.commit()
-    #     flash(f"Success! {pet.pet_name} profile has been deleted.")
+        flash(f"Success! {hike.hike_name} has been removed from {bookmarks_list.bookmarks_list_name}.")
 
-    # return redirect("/")
-    pass
+        db.session.delete(hikes_bookmarks_list)
+        db.session.commit()
+        
+
+    return redirect(request.referrer)
 
 
 @app.route("/hikes/<hike_id>/check-in", methods=["POST"])
@@ -286,10 +297,10 @@ def add_check_in(hike_id):
     if logged_in_email is None:
         flash("You must log in to check in.")
     else:
-        user = crud.get_user_by_email(logged_in_email)
-        hike = crud.get_hike_by_id(hike_id)
+        user = crud_users.get_user_by_email(logged_in_email)
+        hike = crud_hikes.get_hike_by_id(hike_id)
         pet_id = request.form.get("pet_id")
-        pet = crud.get_pet_by_id(pet_id)
+        pet = crud_pets.get_pet_by_id(pet_id)
         date_hiked = request.form.get("date_hiked")
         date_started = request.form.get("date_started")
 
@@ -311,7 +322,7 @@ def add_check_in(hike_id):
         if total_time == "":
             total_time = None
 
-        check_in = crud.create_check_in(hike, pet, date_hiked, date_started, date_completed, miles_completed, total_time)
+        check_in = crud_check_ins.create_check_in(hike, pet, date_hiked, date_started, date_completed, miles_completed, total_time)
         db.session.add(check_in)
         db.session.commit()
         flash(f"Success! {pet.pet_name} has been checked into {hike.hike_name}.")
@@ -327,21 +338,21 @@ def add_hike_to_bookmark(hike_id):
     if logged_in_email is None:
         flash("You must log in to bookmark a hike.")
     else:
-        user = crud.get_user_by_email(logged_in_email)
-        hike = crud.get_hike_by_id(hike_id)
+        user = crud_users.get_user_by_email(logged_in_email)
+        hike = crud_hikes.get_hike_by_id(hike_id)
         bookmarks_list_name = request.form.get("bookmarks_list_name")
 
         # check list of all of user's bookmarks lists
         # if bookmarks list object exists, add hike to bookmarks list
         # if not, create bookmarks list then add hike
-        bookmarks_lists_names_by_user = crud.get_names_of_bookmarks_lists_by_user_id(user.user_id)
+        bookmarks_lists_names_by_user = crud_bookmarks_lists.get_names_of_bookmarks_lists_by_user_id(user.user_id)
 
         if bookmarks_list_name in bookmarks_lists_names_by_user:
-            existing_bookmarks_list_id = crud.get_bookmarks_list_by_user_id_and_bookmarks_list_name(user.user_id, bookmarks_list_name).bookmarks_list_id
-            hike_bookmark = crud.create_hike_bookmarks_list(hike_id, existing_bookmarks_list_id)
+            existing_bookmarks_list_id = crud_bookmarks_lists.get_bookmarks_list_by_user_id_and_bookmarks_list_name(user.user_id, bookmarks_list_name).bookmarks_list_id
+            hike_bookmark = crud_hikes_bookmarks_lists.create_hike_bookmarks_list(hike_id, existing_bookmarks_list_id)
         else:
             hikes = [hike]
-            hike_bookmark = crud.create_bookmarks_list(bookmarks_list_name, user.user_id, hikes)
+            hike_bookmark = crud_bookmarks_lists.create_bookmarks_list(bookmarks_list_name, user.user_id, hikes)
         
         db.session.add(hike_bookmark)
         db.session.commit()
@@ -360,11 +371,14 @@ def add_comment(hike_id):
     if logged_in_email is None:
         flash("You must log in to add a comment.")
     else:
-        user = crud.get_user_by_email(logged_in_email)
-        hike = crud.get_hike_by_id(hike_id)
+        user = crud_users.get_user_by_email(logged_in_email)
+        hike = crud_hikes.get_hike_by_id(hike_id)
         body = request.form.get("body")
+        date_created = datetime.now()
+        edit = False
+        date_edited = None
 
-        comment = crud.create_comment(user, hike, body)
+        comment = crud_comments.create_comment(user, hike, body, date_created, edit, date_edited)
         db.session.add(comment)
         db.session.commit()
 
@@ -393,11 +407,11 @@ def register_user():
     email = request.form.get("email")
     password = request.form.get("password")
 
-    user = crud.get_user_by_email(email)
+    user = crud_users.get_user_by_email(email)
     if user:
         flash("There is already an account associated with that email. Please try again.")
     else:
-        user = crud.create_user(full_name, email, password)
+        user = crud_users.create_user(full_name, email, password)
         db.session.add(user)
         db.session.commit()
         flash("Success! Account created. Please log in.")
@@ -411,7 +425,7 @@ def process_login():
     email = request.form.get("email")
     password = request.form.get("password")
 
-    user = crud.get_user_by_email(email)
+    user = crud_users.get_user_by_email(email)
     if not user or user.password != password:
         flash("The email or password is incorrect.")
     else:

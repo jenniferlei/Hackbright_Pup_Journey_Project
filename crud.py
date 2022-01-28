@@ -13,7 +13,7 @@ def create_user(full_name, email, password):
     return user
 
 
-def create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, check_ins):
+def create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, img_public_id, check_ins):
     """Create and return a new pet."""
 
     pet = Pet(user=user,
@@ -22,15 +22,10 @@ def create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, check_ins):
             birthday=birthday,
             breed=breed,
             pet_imgURL=pet_imgURL,
+            img_public_id=img_public_id,
             check_ins=check_ins)
 
     return pet
-
-
-def delete_pet(pet):
-    """Delete a pet."""
-    
-    pass
 
 
 def edit_pet():
