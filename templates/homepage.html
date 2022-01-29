@@ -32,7 +32,7 @@
           {% endif %}
 
           {% if pet.birthday != None %}
-            <br>Birthday: {{ pet.birthday.month }}/{{ pet.birthday.day }}/{{ pet.birthday.year }}
+            <br>Birthday: {{ pet.birthday.strftime('%b %d, %Y') }}
           {% endif %}
 
           {% if pet.breed != None %}
@@ -64,11 +64,11 @@
                 {{ pet.pet_name }} hiked <a href="/hikes/{{ check_in.hike_id }}">{{ check_in.hike.hike_name }}</a> on {{ check_in.date_hiked.month }}/{{ check_in.date_hiked.day }}/{{ check_in.date_hiked.year }}!
                 
                 {% if check_in.date_started != None %}
-                <br>Date started: {{ check_in.date_started.month }}/{{ check_in.date_started.day }}/{{ check_in.date_started.year }}
+                <br>Date started: {{ check_in.date_started.strftime('%b %d, %Y') }}
                 {% endif %}
                 
                 {% if check_in.date_completed != None %}
-                <br>Date completed: {{ check_in.date_completed.month }}/{{ check_in.date_completed.day }}/{{ check_in.date_completed.year }}
+                <br>Date completed: {{ check_in.date_completed.strftime('%b %d, %Y') }}
                 {% endif %}
                 
                 {% if check_in.miles_completed != None %}

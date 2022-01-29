@@ -19,25 +19,6 @@ def get_bookmarks_list_by_bookmarks_list_id(bookmarks_list_id):
     return db.session.query(BookmarksList).filter_by(bookmarks_list_id=bookmarks_list_id).one()
 
 
-def edit_bookmarks_list():
-    """Edit a bookmarks list."""
-    pass
-
-
-def create_hike_bookmarks_list(hike_id, bookmarks_list_id):
-    """Create and return a new hike bookmarks list object."""
-
-    hike_bookmarks_list = (HikeBookmarksList(hike_id=hike_id,
-                                            bookmarks_list_id=bookmarks_list_id))
-
-    return hike_bookmarks_list
-
-
-def delete_hike_bookmarks_list():
-    """Delete a hike from a bookmarks list."""
-    pass
-
-
 def get_bookmarks_lists_by_user_id(user_id):
     """Return all bookmarks lists by user_id."""
 

@@ -104,17 +104,41 @@ def add_bookmarks_list():
 
     if "user_email" in session:
         user = crud_users.get_user_by_email(session["user_email"])
-        user_id = user.user_id
         bookmarks_list_name = request.form.get("bookmarks_list_name")
         hikes = []
-        bookmarks_list = crud_bookmarks_lists.create_bookmarks_list(bookmarks_list_name, user_id, hikes)
+
+        bookmarks_list = crud_bookmarks_lists.create_bookmarks_list(bookmarks_list_name, user.user_id, hikes)
+        
         db.session.add(bookmarks_list)
         db.session.commit()
+        
         flash(f"Success! {bookmarks_list_name} has been added to your bookmarks.")
+        
         return redirect("/bookmarks")
     else:
         flash("You must log in to add a bookmark list.")
+        
         return redirect("/")
+
+
+@app.route("/edit-bookmarks-list", methods=["POST"])
+def edit_bookmarks_list():
+    """Edit a bookmark list"""
+
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email is None:
+        flash("You must log in to edit a bookmarks list.")
+    else:
+        bookmarks_list_id = request.form.get("edit")
+        bookmarks_list = crud_bookmarks_lists.get_bookmarks_list_by_bookmarks_list_id(bookmarks_list_id)
+        bookmarks_list.bookmarks_list_name = request.form.get("bookmarks_list_name")
+
+        flash(f"Success! Your list has been renamed to {bookmarks_list_name}.")
+
+        db.session.commit()
+
+    return redirect(request.referrer)
 
 
 @app.route("/add-pet", methods=["POST"])
@@ -169,6 +193,75 @@ def add_pet():
     return redirect("/")
 
 
+@app.route("/edit-pet", methods=["POST"])
+def edit_pet():
+    """Edit a pet"""
+
+    # would be nice for this to be a react inline form editor
+
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email is None:
+        flash("You must log in to edit a pet profile.")
+    else:
+        # this would be better if user can edit one line at a time,
+        # in case they want to keep some info and change/remove other info
+        pet_id = request.form.get("edit")
+        pet = crud_pets.get_pet_by_id(pet_id)
+
+        pet_name = request.form.get("pet_name")
+        gender = request.form.get("gender")
+
+        if gender == "":
+            gender = None
+
+        birthday = request.form.get("birthday")
+
+        if birthday == "":
+            birthday = None
+
+        breed = request.form.get("breed")
+
+        if breed == "":
+            breed = None
+        
+        img_public_id = pet.img_public_id
+        if img_public_id != None:
+            cloudinary.uploader.destroy(img_public_id,
+                                        api_key=CLOUDINARY_KEY,
+                                        api_secret=CLOUDINARY_SECRET,
+                                        cloud_name=CLOUD_NAME)
+
+        my_file = request.files["my_file"]
+
+        if my_file.filename == "":
+            pet_imgURL = None
+            img_public_id = None
+        else:
+            # save the uploaded file to Cloudinary by making an API request
+            result = cloudinary.uploader.upload(my_file,
+                                                api_key=CLOUDINARY_KEY,
+                                                api_secret=CLOUDINARY_SECRET,
+                                                cloud_name=CLOUD_NAME)
+
+            pet_imgURL = result["secure_url"]
+            img_public_id = result["public_id"]
+        
+
+        pet.pet_name = pet_name
+        pet.gender = gender
+        pet.birthday = birthday
+        pet.breed = breed
+        pet.pet_imgURL = pet_imgURL
+        pet.img_public_id = img_public_id
+
+        flash(f"Success! Your {pet.pet_name}'s profile has been updated.")
+
+        db.session.commit()
+
+    return redirect(request.referrer)
+
+
 @app.route("/delete-pet", methods=["POST"])
 def delete_pet():
     """Delete a pet profile"""
@@ -178,8 +271,6 @@ def delete_pet():
     if logged_in_email is None:
         flash("You must log in to delete a pet profile.")
     else:
-        user = crud_users.get_user_by_email(logged_in_email)
-
         pet_id = request.form.get("delete")
         pet = crud_pets.get_pet_by_id(pet_id)
         img_public_id = pet.img_public_id
@@ -196,6 +287,56 @@ def delete_pet():
     return redirect("/")
 
 
+@app.route("/edit-check-in", methods=["POST"])
+def edit_check_in():
+    """Edit a check in"""
+
+    # would be nice for this to be a react inline form editor
+
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email is None:
+        flash("You must log in to edit a check in.")
+    else:
+        # this would be better if user can edit one line at a time,
+        # in case they want to keep some info and change/remove other info
+        check_in_id = request.form.get("edit")
+        check_in = crud_check_ins.get_check_ins_by_check_in_id(check_in_id)
+ 
+        date_hiked = request.form.get("date_hiked")
+        date_started = request.form.get("date_started")
+
+        if date_started == "":
+            date_started = None
+
+        date_completed = request.form.get("date_completed")
+
+        if date_completed == "":
+            date_completed = None
+
+        miles_completed = request.form.get("miles_completed")
+
+        if miles_completed == "":
+            miles_completed = None
+
+        total_time = request.form.get("total_time")
+
+        if total_time == "":
+            total_time = None
+
+        check_in.date_hiked = date_hiked
+        check_in.date_started = date_started
+        check_in.date_completed = date_completed
+        check_in.miles_completed = miles_completed
+        check_in.total_time = total_time
+
+        flash(f"Success! Your check in has been updated.")
+
+        db.session.commit()
+
+    return redirect(request.referrer)
+
+
 @app.route("/delete-check-in", methods=["POST"])
 def delete_check_in():
     """Delete a check-in"""
@@ -205,14 +346,34 @@ def delete_check_in():
     if logged_in_email is None:
         flash("You must log in to delete a check in.")
     else:
-        user = crud_users.get_user_by_email(logged_in_email)
-
         check_in_id = request.form.get("delete")
         check_in = crud_check_ins.get_check_ins_by_check_in_id(check_in_id)
 
         flash(f"Success! Check in at {check_in.hike.hike_name} by {check_in.pet.pet_name} has been deleted.")
         
         db.session.delete(check_in)
+        db.session.commit()
+
+    return redirect(request.referrer)
+
+
+@app.route("/edit-comment", methods=["POST"])
+def edit_comment():
+    """Edit a comment"""
+
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email is None:
+        flash("You must log in to edit a bookmarks list.")
+    else:
+        comment_id = request.form.get("edit")
+        comment = crud_comments.get_comment_by_comment_id(comment_id)
+        comment.body = request.form.get("body")
+        comment.edit = True
+        comment.date_edited = datetime.now()
+
+        flash(f"Success! Your comment has been updated.")
+
         db.session.commit()
 
     return redirect(request.referrer)
@@ -227,8 +388,6 @@ def delete_comment():
     if logged_in_email is None:
         flash("You must log in to delete a comment.")
     else:
-        user = crud_users.get_user_by_email(logged_in_email)
-
         comment_id = request.form.get("delete")
         comment = crud_comments.get_comment_by_comment_id(comment_id)
 
@@ -249,8 +408,6 @@ def delete_bookmarks_list():
     if logged_in_email is None:
         flash("You must log in to delete a bookmarks list.")
     else:
-        user = crud_users.get_user_by_email(logged_in_email)
-
         bookmarks_list_id = request.form.get("delete")
         bookmarks_list = crud_bookmarks_lists.get_bookmarks_list_by_bookmarks_list_id(bookmarks_list_id)
         bookmarks_list.hikes.clear()
@@ -272,8 +429,6 @@ def remove_hike():
     if logged_in_email is None:
         flash("You must log in to remove a hike from your bookmarks.")
     else:
-        user = crud_users.get_user_by_email(logged_in_email)
-
         hike_id, bookmarks_list_id = request.form.get("delete").split(",")
         hike = crud_hikes.get_hike_by_id(hike_id)
         bookmarks_list = crud_bookmarks_lists.get_bookmarks_list_by_bookmarks_list_id(bookmarks_list_id)
@@ -297,7 +452,6 @@ def add_check_in(hike_id):
     if logged_in_email is None:
         flash("You must log in to check in.")
     else:
-        user = crud_users.get_user_by_email(logged_in_email)
         hike = crud_hikes.get_hike_by_id(hike_id)
         pet_id = request.form.get("pet_id")
         pet = crud_pets.get_pet_by_id(pet_id)

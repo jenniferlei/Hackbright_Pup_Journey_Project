@@ -233,12 +233,51 @@
                   aria-controls="collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}">
                 {{ bookmarks_list.bookmarks_list_name }}
               </a>
-              <form action="/edit-bookmarks-list" class="edit-form" id="form-edit-bookmarks-list" method="POST">
-                <button class="btn btn-link btn-sm" type="submit" name="edit" value="{{ bookmarks_list.bookmarks_list_id }}">Rename</button>
+
+              <a class="btn btn-link btn-sm"
+                  data-bs-toggle="collapse"
+                  href="#collapse-rename-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
+                  role="button"
+                  aria-expanded="false"
+                  aria-controls="collapse-rename-bookmarks-{{ bookmarks_list.bookmarks_list_id }}">
+                Rename
+              </a>
+
+              <form action="/delete-bookmarks-list"
+                    class="delete-form" 
+                    id="form-delete-bookmarks-list" 
+                    method="POST">
+                <button class="btn btn-link btn-sm" 
+                        type="submit" 
+                        name="delete" 
+                        value="{{ bookmarks_list.bookmarks_list_id }}">
+                    Delete
+                </button>
               </form>
-              <form action="/delete-bookmarks-list" class="delete-form" id="form-delete-bookmarks-list" method="POST">
-                <button class="btn btn-link btn-sm" type="submit" name="delete" value="{{ bookmarks_list.bookmarks_list_id }}">Delete</button>
-              </form>
+
+              <div class="collapse card card-body" 
+                    id="collapse-rename-bookmarks-{{ bookmarks_list.bookmarks_list_id }}">
+                <form action="/edit-bookmarks-list" 
+                      class="edit-form" 
+                      id="form-edit-bookmarks-list" 
+                      method="POST">
+                  <div>
+                    <input type="text"
+                            name="bookmarks_list_name"
+                            class="form-control input-lg"
+                            placeholder="{{ bookmarks_list.bookmarks_list_name }}"
+                            required>
+                  </div>
+                  <div>
+                    <button class="btn btn-link btn-sm" 
+                            type="submit" 
+                            name="edit" 
+                            value="{{ bookmarks_list.bookmarks_list_id }}">
+                      Save
+                    </button>
+                  </div>
+                </form>
+              </div>
 
               <div class="collapse card card-body" 
                     id="collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}">
@@ -332,19 +371,57 @@
 
       {% for comment in comments|sort(attribute='date_created', reverse=True) %}
       <div class="card card-body">
-        {{ comment.user.full_name }} posted on {{ comment.date_created.month }}/{{ comment.date_created.day }}/{{ comment.date_created.year }} 
-        {% if comment.edit == True %}(edited on {{ comment.date_edited.month }}/{{ comment.date_edited.day }}/{{ comment.date_edited.year }}){% endif %}:
+        {{ comment.user.full_name }} posted on {{ comment.date_created.strftime('%b %d, %Y %I:%M:%S %p') }}
+        {% if comment.edit == True %} (edited on {{ comment.date_edited.strftime('%b %d, %Y %I:%M:%S %p') }}){% endif %}:
         <br>{{ comment.body }}
 
       {% if "login" in session and comment.user_id == user.user_id %}
       <div>
-        <form action="/edit-comment" class="edit-form" id="form-edit-comment" method="POST">
-          <button class="btn btn-link btn-sm" type="submit" name="edit" value="{{ comment.comment_id }}">Edit</button>
-        </form>
-        <form action="/delete-comment" class="delete-form" id="form-delete-comment" method="POST">
-          <button class="btn btn-link btn-sm" type="submit" name="delete" value="{{ comment.comment_id }}">Delete</button>
+
+        <a class="btn btn-link btn-sm"
+            data-bs-toggle="collapse"
+            href="#collapse-edit-comment-{{ comment.comment_id }}"
+            role="button"
+            aria-expanded="false"
+            aria-controls="collapse-edit-comment-{{ comment.comment_id }}">
+          Edit
+      </a>
+
+        <form action="/delete-comment" 
+              class="delete-form" 
+              id="form-delete-comment" 
+              method="POST">
+          <button class="btn btn-link btn-sm" 
+                  type="submit" 
+                  name="delete" 
+                  value="{{ comment.comment_id }}">
+            Delete
+          </button>
         </form>
       </div>
+
+      <div class="collapse card card-body" 
+            id="collapse-edit-comment-{{ comment.comment_id }}">
+        <form action="/edit-comment" class="edit-form" id="form-edit-comment" method="POST">
+          <div>
+            <input type="text"
+                    class="form-control input-lg"
+                    name="body"
+                    placeholder="{{ comment.body }}"
+                    required>
+          </div>
+          
+          <div>
+            <button class="btn btn-link btn-sm" 
+                    type="submit" 
+                    name="edit" 
+                    value="{{ comment.comment_id }}">
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
+
       {% endif %}
       </div>
 
