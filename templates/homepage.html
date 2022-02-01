@@ -31,67 +31,77 @@
         </div>
 
         <div class="col-6">
-          <a class="btn btn-link" data-bs-toggle="collapse" href="#collapse-add-pet" role="button" aria-expanded="false" aria-controls="collapse-add-pet">
+          <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modal-add-pet">
             + Pet
-          </a>
+          </button>
         </div>
       </div>
       
-                
-      <div class="collapse" id="collapse-add-pet">
-        <div class="card card-body">
-
-          <form action="/add-pet" id="form-add-pet" method="POST" enctype="multipart/form-data">
-
-            <h3 id="form-add-pet-heading">Please Add Your Pet Info</h3>
-        
-            <div>
-              <label for="pet_name" class="sr-only">Name</label>
-              <input type="text"
-                      name="pet_name"
-                      class="form-control input-lg"
-                      placeholder="Name"
-                      required
-                      autofocus>
+      <div class="modal fade" id="modal-add-pet" tabindex="-1" aria-labelledby="modal-add-pet-label" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modal-add-pet-label">Add Pet Info</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-        
-            <div>
-              <label for="gender" class="sr-only">Gender</label>
-              <select name="gender" class="form-control input-lg">
-                  <option value=""></option>
-                  <option value="female">female</option>
-                  <option value="male">male</option>
-              </select>
-            </div>
+            <div class="modal-body">
+              <form action="/add-pet" id="form-add-pet" method="POST" enctype="multipart/form-data">
 
-            <div>
-              <label for="birthday" class="sr-only">Birthday</label>
-              <input type="date"
-                      name="birthday"
-                      class="form-control input-lg">
-            </div>
+                <h3 id="form-add-pet-heading">Please Add Your Pet Info</h3>
+            
+                <div>
+                  <label for="pet_name" class="sr-only">Name</label>
+                  <input type="text"
+                          name="pet_name"
+                          class="form-control input-lg"
+                          placeholder="Name"
+                          required
+                          autofocus>
+                </div>
+            
+                <div>
+                  <label for="gender" class="sr-only">Gender</label>
+                  <select name="gender" class="form-control input-lg">
+                      <option value=""></option>
+                      <option value="female">female</option>
+                      <option value="male">male</option>
+                  </select>
+                </div>
 
-            <div>
-              <label for="breed" class="sr-only">Breed</label>
-              <input type="text"
-                      name="breed"
-                      class="form-control input-lg"
-                      placeholder="Breed">
-            </div>
+                <div>
+                  <label for="birthday" class="sr-only">Birthday</label>
+                  <input type="date"
+                          name="birthday"
+                          class="form-control input-lg">
+                </div>
 
-            <div>
-                <label for="my_file" class="sr-only">Image</label>
-                <input type="file" 
-                        name="my_file"
-                        class="form-control input-lg"
-                        accept="image/png, image/jpeg">
-            </div>
+                <div>
+                  <label for="breed" class="sr-only">Breed</label>
+                  <input type="text"
+                          name="breed"
+                          class="form-control input-lg"
+                          placeholder="Breed">
+                </div>
 
-            <button class="btn btn-sm btn-primary btn-block mt-4" type="submit">Save</button>
-        
-          </form>
+                <div>
+                    <label for="my_file" class="sr-only">Image</label>
+                    <input type="file" 
+                            name="my_file"
+                            class="form-control input-lg"
+                            accept="image/png, image/jpeg">
+                </div>
+                <p></p>
+              <div class="modal-footer">
+                <button class="btn btn-sm btn-primary btn-block mt-4" type="submit">Save</button>
+                </form>
+                <button type="button" class="btn btn-sm btn-secondary btn-block mt-4" data-bs-dismiss="modal">Close</button>
+              </div>
+
+            </div>
+          </div>
         </div>
       </div>
+      
 
       <div id="pet-profiles">
           {% for pet in pets %}
@@ -176,51 +186,13 @@
   </div>
 
   {% else %}
-  <div class="row">
-    <div class="col-8">
+  <div class="row align-items-center">
+
+
+    <div class="card card-body align-items-center">
       <div>
         <img src="/static/img/homepage.jpg" id="welcome-img">
         <p><span class="app-description">Find pup friendly hikes, bookmark your favorites, and check in to hikes your pup has done!</span></p>
-      </div>
-    </div>
-
-    <div class="col-4">
-      <div class="row">
-        <h2>Create an Account</h2>
-        <form action="/users" method="POST">
-          <p>
-            Full Name <input type="text" name="full_name">
-          </p>
-
-          <p>
-            Email <input type="text" name="email">
-          </p>
-
-          <p>
-            Password <input type="password" name="password">
-          </p>
-
-          <p>
-            <input type="submit" value="Create Account">
-          </p>
-        </form>
-      </div>
-
-      <div class="row">
-        <h2>Log In</h2>
-        <form action="/login" method="POST">
-          <p>
-            Email <input type="text" name="email">
-          </p>
-
-          <p>
-            Password <input type="password" name="password">
-          </p>
-
-          <p>
-            <input type="submit" value="Sign In">
-          </p>
-        </form>
       </div>
     </div>
   </div>

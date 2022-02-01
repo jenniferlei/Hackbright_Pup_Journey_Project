@@ -29,14 +29,30 @@ app.jinja_env.undefined = StrictUndefined
 def homepage():
     """View homepage."""
 
+    search_hikes = hikes = crud_hikes.get_hikes()
+    states = crud_hikes.get_hike_states()
+    cities = crud_hikes.get_hike_cities()
+    areas = crud_hikes.get_hike_areas()
+    parking = crud_hikes.get_hike_parking()
     logged_in_email = session.get("user_email")
 
     if logged_in_email is None:
-        return render_template("homepage.html")
+        return render_template("homepage.html", search_hikes=search_hikes,
+                                                hikes=hikes,
+                                                states=states,
+                                                cities=cities,
+                                                areas=areas,
+                                                parking=parking)
     else:
         user = crud_users.get_user_by_email(logged_in_email)
         pets = crud_pets.get_pets_by_user_id(user.user_id)
-        return render_template("homepage.html", pets=pets)
+        return render_template("homepage.html", pets=pets,
+                                                search_hikes=search_hikes,
+                                                hikes=hikes,
+                                                states=states,
+                                                cities=cities,
+                                                areas=areas,
+                                                parking=parking)
 
 
 @app.route("/hikes")
