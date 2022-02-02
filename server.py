@@ -1,6 +1,6 @@
 """Server for movie ratings app."""
 
-from flask import Flask, render_template, jsonify, request, flash, session, redirect
+from flask import Flask, render_template, json, jsonify, request, flash, session, redirect
 import cloudinary.uploader
 import os
 from datetime import datetime
@@ -705,13 +705,6 @@ def process_login():
     return redirect("/")
 
 
-@app.route("/login", methods=["GET"])
-def show_login():
-    """Show login form."""
-
-    return render_template("login.html")
-
-
 @app.route("/logout")
 def process_logout():
     """Log user out of site.
@@ -723,6 +716,150 @@ def process_logout():
     del session["user_email"]
     flash("Successfully logged out!")
     return redirect("/")
+
+
+@app.route("/pets.json")
+def get_pets_json():
+    """Return a JSON response with all pets given user."""
+
+    logged_in_email = session.get("user_email")
+
+    user = crud_users.get_user_by_email(logged_in_email)
+    pets = crud_pets.get_pets_by_user_id(user.user_id)
+    pets_json = []
+
+    for pet in pets:
+        if pet.birthday != None:
+            birthday = pet.birthday.strftime("%b %d, %Y")
+        else:
+            birthday = pet.birthday
+
+        pets_json.append(
+            {
+                "pet_id": pet.pet_id,
+                "user_id": pet.user_id,
+                "pet_name": pet.pet_name,
+                "gender": pet.gender,
+                "birthday": birthday,
+                "breed": pet.breed,
+                "pet_imgURL": pet.pet_imgURL,
+                "img_public_id": pet.img_public_id,
+            }
+        )
+
+    return jsonify({"pets": pets_json})
+
+
+@app.route("/pet-check-ins.json")
+def get_pet_check_ins_json():
+    """Return a JSON response with all check ins for a pet."""
+
+    logged_in_email = session.get("user_email")
+
+    user = crud_users.get_user_by_email(logged_in_email)
+    pets = crud_pets.get_pets_by_user_id(user.user_id)
+
+    pet_check_ins_json = []
+
+    for pet in pets:
+        check_ins = crud_check_ins.get_check_ins_by_pet_id(pet.pet_id)
+
+        for check_in in check_ins:
+                
+            date_hiked = check_in.date_hiked.strftime("%b %d, %Y")
+
+            if check_in.date_started != None:
+                date_started = check_in.date_started.strftime("%b %d, %Y")
+            else:
+                date_started = check_in.date_started
+
+            if check_in.date_completed != None:
+                date_completed = check_in.date_completed.strftime("%b %d, %Y")
+            else:
+                date_completed = check_in.date_completed
+
+            pet_check_ins_json.append(
+                {
+                    "check_in_id": check_in.check_in_id,
+                    "hike_id": check_in.hike_id,
+                    "hike_name": check_in.hike.hike_name,
+                    "pet_id": check_in.pet_id,
+                    "pet_name": pet.pet_name,
+                    "date_hiked": date_hiked,
+                    "date_started": date_started,
+                    "date_completed": date_completed,
+                    "miles_completed": check_in.miles_completed,
+                    "total_time": check_in.total_time,
+                }
+            )
+
+    return jsonify({"checkIns": pet_check_ins_json})
+    pass
+
+
+
+# @app.route("/pet-check-ins.json")
+# def get_pet_check_ins_json():
+#     """Return a JSON response with all check ins for a pet."""
+
+#     logged_in_email = session.get("user_email")
+
+#     user = crud_users.get_user_by_email(logged_in_email)
+    # pets = crud_pets.get_pets_by_user_id(user.user_id)
+    # pets_json = []
+
+    # for pet in pets:
+    #     if pet.birthday != None:
+    #         birthday = pet.birthday.strftime("%b %d, %Y")
+    #     else:
+    #         birthday = pet.birthday
+    #     pets_json.append(
+    #         {
+    #             "pet_id": pet.pet_id,
+    #             "user_id": pet.user_id,
+    #             "pet_name": pet.pet_name,
+    #             "gender": pet.gender,
+    #             "birthday": birthday,
+    #             "breed": pet.breed,
+    #             "pet_imgURL": pet.pet_imgURL,
+    #             "img_public_id": pet.img_public_id,
+    #         }
+    #     )
+
+    # return jsonify({"pets": pets_json})
+    # pass
+
+
+@app.route("/hike-check-ins.json")
+def get_hike_check_ins_json():
+    """Return a JSON response with all check ins for a hike/user."""
+
+    # logged_in_email = session.get("user_email")
+
+    # user = crud_users.get_user_by_email(logged_in_email)
+    # pets = crud_pets.get_pets_by_user_id(user.user_id)
+    # pets_json = []
+
+    # for pet in pets:
+    #     if pet.birthday != None:
+    #         birthday = pet.birthday.strftime("%b %d, %Y")
+    #     else:
+    #         birthday = pet.birthday
+    #     pets_json.append(
+    #         {
+    #             "pet_id": pet.pet_id,
+    #             "user_id": pet.user_id,
+    #             "pet_name": pet.pet_name,
+    #             "gender": pet.gender,
+    #             "birthday": birthday,
+    #             "breed": pet.breed,
+    #             "pet_imgURL": pet.pet_imgURL,
+    #             "img_public_id": pet.img_public_id,
+    #         }
+    #     )
+
+    # return jsonify({"pets": pets_json})
+    pass
 
 
 if __name__ == "__main__":

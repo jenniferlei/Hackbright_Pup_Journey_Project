@@ -11,26 +11,31 @@
 <div class="container">
   {% if "user_email" in session %}
 
-  <div class="row">
-    <div class="card card-body col-8" id="home-visuals-container">
-      <h2>Graph</h2>
-      <p><canvas id="summary-chart"></canvas></p>
-      
+  <div class="row mt-3">
+    <div class="card card-body col-7">
+      <div class="row" id="home-visuals-container">
+          <div class="row card-title">
+            <div class="col"><h2><button id="get-graph-button" class="btn btn-link">Graph</button></h2></div>
+            <div class="col"><h2><button id="get-map-button" class="btn btn-link">Map</button></h2></div>
+            <div class="col"><h2><button id="get-checkins-button" class="btn btn-link">Check Ins</button></h2></div>
+          </div>
 
-
-      <h2>Map</h2>
-      <p><div class="home-map">Map goes here to show all hikes user's pets have completed</div></p>
+        <div class="row">
+          <div id="graph-map-checkins">
+            <canvas id="summary-chart"></canvas>
+          </div>
+        </div>
+      </div>
     </div>
 
 
-
-    <div class="card card-body col-3 offset-1" id="pet-profile-container">
+    <div class="card card-body col-3">
       <div class="row">
-        <div class="col-6">
+        <div class="col">
           <h2>Pets</h2>
         </div>
 
-        <div class="col-6">
+        <div class="col">
           <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modal-add-pet">
             + Pet
           </button>
@@ -46,8 +51,6 @@
             </div>
             <div class="modal-body">
               <form action="/add-pet" id="form-add-pet" method="POST" enctype="multipart/form-data">
-
-                <h3 id="form-add-pet-heading">Please Add Your Pet Info</h3>
             
                 <div>
                   <label for="pet_name" class="sr-only">Name</label>
@@ -101,86 +104,7 @@
           </div>
         </div>
       </div>
-      
-
-      <div id="pet-profiles">
-          {% for pet in pets %}
-          <ul class="no-bullets">
-            <li>
-              {{ pet.pet_name }}
-
-            {% if pet.pet_imgURL != None %}
-              <br><img src="{{ pet.pet_imgURL }}" class="pet-profile-img">
-            {% endif %}
-
-            {% if pet.gender != None %}
-              <br>Gender: {{ pet.gender }}
-            {% endif %}
-
-            {% if pet.birthday != None %}
-              <br>Birthday: {{ pet.birthday.strftime('%b %d, %Y') }}
-            {% endif %}
-
-            {% if pet.breed != None %}
-              <br>Breed: {{ pet.breed }}
-            {% endif %}
-
-            <br>
-            <a class="btn btn-link btn-sm" 
-                data-bs-toggle="collapse" 
-                href="#collapse-view-check-ins-{{ pet.pet_id }}" 
-                role="button" 
-                aria-expanded="false"
-                aria-controls="collapse-view-check-ins-{{ pet.pet_id }}">
-              View Check Ins
-            </a>
-            <form action="/edit-pet" class="edit-form" id="form-edit-pet" method="POST">
-              <button class="btn btn-link btn-sm" type="submit" name="edit" value="{{ pet.pet_id }}"><small>Edit</small></button>
-            </form>
-            <form action="/delete-pet" class="delete-form" id="form-delete-pet" method="POST">
-              <button class="btn btn-link btn-sm" type="submit" name="delete" value="{{ pet.pet_id }}"><small>Delete</small></button>
-            </form>
-            
-            
-
-            <div class="collapse card card-body" id="collapse-view-check-ins-{{ pet.pet_id }}">
-              <ul>
-                {% for check_in in pet.check_ins|sort(attribute='date_hiked', reverse=True) %}
-                <li>
-                  {{ pet.pet_name }} hiked <a href="/hikes/{{ check_in.hike_id }}">{{ check_in.hike.hike_name }}</a> on {{ check_in.date_hiked.month }}/{{ check_in.date_hiked.day }}/{{ check_in.date_hiked.year }}!
-                  
-                  {% if check_in.date_started != None %}
-                  <br>Date started: {{ check_in.date_started.strftime('%b %d, %Y') }}
-                  {% endif %}
-                  
-                  {% if check_in.date_completed != None %}
-                  <br>Date completed: {{ check_in.date_completed.strftime('%b %d, %Y') }}
-                  {% endif %}
-                  
-                  {% if check_in.miles_completed != None %}
-                  <br>Miles completed: {{ check_in.miles_completed }}
-                  {% endif %}
-                  
-                  {% if check_in.total_time != None %}
-                  <br>Total time: {{ check_in.total_time }} hours
-                  {% endif %}
-
-                  <br>
-                  <form action="/edit-check-in" class="edit-form" id="form-edit-check-in" method="POST">
-                    <button class="btn btn-link btn-sm" type="submit" name="edit" value="{{ check_in.check_in_id }}">Edit</button>
-                  </form>
-                  <form action="/delete-check-in" class="delete-form" id="form-delete-check-in" method="POST">
-                    <button class="btn btn-link btn-sm" type="submit" name="delete" value="{{ check_in.check_in_id }}">Delete</button>
-                  </form>
-            
-                </li>
-              {% endfor %}
-            </ul>
-            </div>
-            </li>
-          </ul>
-          {% endfor %}
-        </ul>
+      <div id="pet-profile-container">
       </div>
     </div>
   </div>
@@ -203,5 +127,6 @@
 {% endblock %}
 
 {% block js %}
-	<script src="/static/js/chart.js"></script>
+	<script src="/static/js/homepage.js"></script>
+  <script src="/static/js/petProfile.jsx" type="text/jsx"></script>
 {% endblock %}
