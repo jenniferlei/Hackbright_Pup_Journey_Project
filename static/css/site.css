@@ -1,14 +1,31 @@
-#welcome-img {
-  height: 30em;
+body > .everythingContainer {
+  background-color: rgb(134, 134, 134);
 }
 
 .pet-profile-img {
   height: 6em;
 }
 
-#all-hikes-container {
-  display: inline-block;
-  vertical-align: top;
+.imageContainer {
+  position: relative;
+}
+
+#homepage-image {
+  height: 100vh;
+}
+
+.app-greeting {
+  position: absolute;
+  top: 30px;
+  left: 50px;
+  background-color: rgba(109, 109, 109, 0.342);
+  color: rgb(209, 209, 209);
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.big {
+  font-size: 5em;
 }
 
 .hike-details-container {
@@ -41,7 +58,9 @@
   vertical-align: top;
 }
 
-.bookmarks-link, .edit-form, .delete-form {
+.bookmarks-link,
+.edit-form,
+.delete-form {
   display: inline-block;
 }
 

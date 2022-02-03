@@ -1,69 +1,86 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block title %}{{ hike.hike_name }} - Details{%
+endblock %} {% block body %}
+<div class="everythingContainer">
+  <div class="container">
+    <div class="row">
+      <div class="col-3 card card-body" id="search-side-bar">
+        <h2>Search</h2>
+      </div>
 
-{% block title %}{{ hike.hike_name }} - Details{% endblock %}
+      <div class="col-8 offset-1 card card-body" id="hike-details">
+        <h2>{{ hike.hike_name }}</h2>
+        <img src="{{ hike.hike_imgURL }}" class="hike_details" />
+        <p>{{ hike.description }}</p>
+        <ul>
+          <li>
+            <strong><span id="area">Area:</span></strong> {{ hike.area }}, {{
+            hike.city }}, {{ hike.state }}
+          </li>
+          <li>
+            <strong><span id="difficulty">Difficulty:</span></strong> {{
+            hike.difficulty }}
+          </li>
+          <li>
+            <strong><span id="leash_rule">Leash Rule:</span></strong> {{
+            hike.leash_rule }}
+          </li>
+          <li>
+            <strong><span id="address">Address:</span></strong> {{ hike.address
+            }}
+          </li>
+          <li>
+            <strong><span id="length">Length:</span></strong> {{ hike.miles }}
+            {{ hike.path }}
+          </li>
+          <li>
+            <strong><span id="parking">Parking:</span></strong> {{ hike.parking
+            }}
+          </li>
+          <li>
+            <strong><span id="resources">Resources:</span></strong>
+            {% for hike_resource in hike_resources %}
+            <br /><a href="{{ hike_resource }}" target="_blank"
+              >{{ hike_resource }}</a
+            >
+            {% endfor %}
+          </li>
+        </ul>
 
-{% block body %}
+        {% if "login" in session %}
 
-<div class="container">
+        <p>
+          <a
+            class="btn btn-link"
+            data-bs-toggle="collapse"
+            href="#collapse-hike-check-ins"
+            role="button"
+            aria-expanded="false"
+            aria-controls="collapse-hike-check-ins"
+          >
+            View Check Ins
+          </a>
+        </p>
 
-  <div class="row">
-
-    <div class="col-3 card card-body" id="search-side-bar">
-      <h2>Search</h2>
-    </div>
-
-    <div class="col-8 offset-1 card card-body" id="hike-details">
-      <h2>{{ hike.hike_name }}</h2>
-      <img src="{{ hike.hike_imgURL }}" class="hike_details">
-      <p>{{ hike.description }}</p>
-      <ul>
-        <li><strong><span id="area">Area:</span></strong> {{ hike.area }}, {{ hike.city }}, {{ hike.state }}</li>
-        <li><strong><span id="difficulty">Difficulty:</span></strong> {{ hike.difficulty }}</li>
-        <li><strong><span id="leash_rule">Leash Rule:</span></strong> {{ hike.leash_rule }}</li>
-        <li><strong><span id="address">Address:</span></strong> {{ hike.address }}</li>
-        <li><strong><span id="length">Length:</span></strong> {{ hike.miles }} {{ hike.path }}</li>
-        <li><strong><span id="parking">Parking:</span></strong> {{ hike.parking }}</li>
-        <li><strong><span id="resources">Resources:</span></strong>
-        {% for hike_resource in hike_resources %}
-          <br><a href="{{ hike_resource }}" target="_blank">{{ hike_resource }}</a>
-        {% endfor %}
-        </li>
-      </ul>
-      
-      {% if "login" in session %}
-
-
-
-      <p>
-        <a class="btn btn-link" 
-            data-bs-toggle="collapse" 
-            href="#collapse-hike-check-ins" 
-            role="button" 
-            aria-expanded="false" 
-            aria-controls="collapse-hike-check-ins">
-          View Check Ins
-        </a>
-      </p>
-
-      <div class="collapse card card-body" id="collapse-hike-check-ins">
-
-      
-          <a class="btn btn-link card card-title text-start" 
-              data-bs-toggle="collapse" 
-              href="#collapse-check-in-to-hike" 
-              role="button" 
-              aria-expanded="false" 
-              aria-controls="collapse-check-in-to-hike">
+        <div class="collapse card card-body" id="collapse-hike-check-ins">
+          <a
+            class="btn btn-link card card-title text-start"
+            data-bs-toggle="collapse"
+            href="#collapse-check-in-to-hike"
+            role="button"
+            aria-expanded="false"
+            aria-controls="collapse-check-in-to-hike"
+          >
             + Check In
           </a>
-
 
           <div class="collapse card card-body" id="collapse-check-in-to-hike">
             <h4 id="form-check-in-hike-heading">Add Check In</h4>
 
-            <form action="/hikes/{{ hike.hike_id }}/check-in" 
-                  id="form-check-in" 
-                  method="POST">
+            <form
+              action="/hikes/{{ hike.hike_id }}/check-in"
+              id="form-check-in"
+              method="POST"
+            >
               <div>
                 <label for="pet_id" class="sr-only">Pet</label>
                 <select name="pet_id" class="form-control input-lg">
@@ -72,370 +89,478 @@
                   {% endfor %}
                 </select>
               </div>
-              
+
               <div>
                 <label for="date_hiked" class="sr-only">Date Hiked</label>
-                <input type="date"
-                        name="date_hiked"
-                        class="form-control input-lg"
-                        required>
+                <input
+                  type="date"
+                  name="date_hiked"
+                  class="form-control input-lg"
+                  required
+                />
               </div>
 
               <div>
                 <label for="date_started" class="sr-only">Date Started</label>
-                <input type="date"
-                        name="date_started"
-                        class="form-control input-lg">
+                <input
+                  type="date"
+                  name="date_started"
+                  class="form-control input-lg"
+                />
               </div>
 
               <div>
-                <label for="date_completed" class="sr-only">Date Completed</label>
-                <input type="date"
-                        name="date_completed"
-                        class="form-control input-lg">
+                <label for="date_completed" class="sr-only"
+                  >Date Completed</label
+                >
+                <input
+                  type="date"
+                  name="date_completed"
+                  class="form-control input-lg"
+                />
               </div>
 
               <div>
-                <label for="miles_completed" class="sr-only">Miles Completed</label>
-                <input type="number"
-                        step=.1
-                        min=0
-                        name="miles_completed"
-                        class="form-control input-lg">
+                <label for="miles_completed" class="sr-only"
+                  >Miles Completed</label
+                >
+                <input
+                  type="number"
+                  step=".1"
+                  min="0"
+                  name="miles_completed"
+                  class="form-control input-lg"
+                />
               </div>
 
               <div>
-                <label for="total_time" class="sr-only">Total Time (Hours)</label>
-                <input type="number"
-                        step=.1
-                        min=0
-                        name="total_time"
-                        class="form-control input-lg">
+                <label for="total_time" class="sr-only"
+                  >Total Time (Hours)</label
+                >
+                <input
+                  type="number"
+                  step=".1"
+                  min="0"
+                  name="total_time"
+                  class="form-control input-lg"
+                />
               </div>
 
-              <button class="btn btn-sm btn-primary btn-block mt-4" type="submit">Save</button>
-
+              <button
+                class="btn btn-sm btn-primary btn-block mt-4"
+                type="submit"
+              >
+                Save
+              </button>
             </form>
           </div>
 
           <div class="card card-body">
             Use AJAX/React to add check ins here when a check in is submitted.
             <ul>
-            {% for check_in in check_ins|sort(attribute='date_hiked', reverse=True) %}
+              {% for check_in in check_ins|sort(attribute='date_hiked',
+              reverse=True) %}
               <li>
-                {{ check_in.pet.pet_name }} did this hike on {{ check_in.date_hiked.strftime('%b %d, %Y') }}!
-                
-                {% if check_in.date_started != None %}
-                <br>Date started: {{ check_in.date_started.strftime('%b %d, %Y') }}
-                {% endif %}
-                
-                {% if check_in.date_completed != None %}
-                <br>Date completed: {{ check_in.date_completed.strftime('%b %d, %Y') }}
-                {% endif %}
-                
-                {% if check_in.miles_completed != None %}
-                <br>Miles completed: {{ check_in.miles_completed }}
-                {% endif %}
-                
-                {% if check_in.total_time != None %}
-                <br>Total time: {{ check_in.total_time }} hours
-                {% endif %}
+                {{ check_in.pet.pet_name }} did this hike on {{
+                check_in.date_hiked.strftime('%b %d, %Y') }}! {% if
+                check_in.date_started != None %}
+                <br />Date started: {{ check_in.date_started.strftime('%b %d,
+                %Y') }} {% endif %} {% if check_in.date_completed != None %}
+                <br />Date completed: {{ check_in.date_completed.strftime('%b
+                %d, %Y') }} {% endif %} {% if check_in.miles_completed != None
+                %} <br />Miles completed: {{ check_in.miles_completed }} {%
+                endif %} {% if check_in.total_time != None %} <br />Total time:
+                {{ check_in.total_time }} hours {% endif %}
 
-                <br>
-                <form action="/edit-check-in" class="edit-form" id="form-edit-check-in" method="POST">
-                  <button class="btn btn-link" type="submit" name="edit" value="{{ check_in.check_in_id }}">Edit</button>
+                <br />
+                <form
+                  action="/edit-check-in"
+                  class="edit-form"
+                  id="form-edit-check-in"
+                  method="POST"
+                >
+                  <button
+                    class="btn btn-link"
+                    type="submit"
+                    name="edit"
+                    value="{{ check_in.check_in_id }}"
+                  >
+                    Edit
+                  </button>
                 </form>
-                <form action="/delete-check-in" class="delete-form" id="form-delete-check-in" method="POST">
-                  <button class="btn btn-link" type="submit" name="delete" value="{{ check_in.check_in_id }}">Delete</button>
+                <form
+                  action="/delete-check-in"
+                  class="delete-form"
+                  id="form-delete-check-in"
+                  method="POST"
+                >
+                  <button
+                    class="btn btn-link"
+                    type="submit"
+                    name="delete"
+                    value="{{ check_in.check_in_id }}"
+                  >
+                    Delete
+                  </button>
                 </form>
-              
               </li>
-            {% endfor %}
-            </ul>
-          
-          </div>
-        </div>
-
-
-
-      <p>
-        <a class="btn btn-link" 
-            data-bs-toggle="collapse" 
-            href="#collapse-hike-bookmarks" 
-            role="button" 
-            aria-expanded="false" 
-            aria-controls="collapse-hike-bookmarks">
-          View Bookmarks
-        </a>
-      </p>
-
-      <div class="collapse card card-body" id="collapse-hike-bookmarks">
-
-
-        <a class="btn btn-link card card-title text-start" 
-            data-bs-toggle="collapse" 
-            href="#collapse-bookmark-hike" 
-            role="button" 
-            aria-expanded="false" 
-            aria-controls="collapse-bookmark-hike">
-          + Bookmark
-        </a>
-        
-        <div class="collapse card card-body" id="collapse-bookmark-hike">
-
-          <form action="/hikes/{{ hike.hike_id }}/bookmark" id="form-hike-new-bookmark-list" method="POST">
-            <h4 id="form-hike-new-bookmark-list-heading">Add to New Bookmark List</h4>
-
-            <div>
-              <input type="text"
-                      name="bookmarks_list_name"
-                      class="form-control input-lg"
-                      placeholder="Hikes I Want To Visit"
-                      required
-                      autofocus>
-            </div>
-
-            <div>
-              <button class="btn btn-sm btn-primary btn-block mt-4" type="submit">Save</button>
-            </div>
-          </form>
-
-          <br>
-
-          <form action="/hikes/{{ hike.hike_id }}/bookmark" id="form-hike-existing-bookmark-list" method="POST">
-
-            <h4 id="form-hike-existing-bookmark-list-heading">Add to Existing Bookmark List</h4>
-
-            <div>
-              <select name="bookmarks_list_name" class="form-control input-lg">
-                {% for bookmarks_list in bookmarks_list_by_user %}
-                <option value="{{ bookmarks_list.bookmarks_list_name }}">{{ bookmarks_list.bookmarks_list_name }}</option>
-                {% endfor %}
-              </select>
-            </div>
-
-            <div>
-              <button class="btn btn-sm btn-primary btn-block mt-4" type="submit">Save</button>
-            </div>
-
-          </form>
-        </div>
-
-          {% if bookmarks_lists_by_user_hike != [] %}
-          <div class="card card-body">
-            You have this hike on these lists (click on list name to view all hikes on the list):
-            <ul>
-              {% for bookmarks_list in bookmarks_lists_by_user_hike %}
-                <li>
-                  <a class="btn btn-link" 
-                      data-bs-toggle="collapse" 
-                      href="#collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}" 
-                      role="button" 
-                      aria-expanded="false" 
-                      aria-controls="collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}">
-                    {{ bookmarks_list.bookmarks_list_name }}
-                  </a>
-
-                  <a class="btn btn-link btn-sm"
-                      data-bs-toggle="collapse"
-                      href="#collapse-rename-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
-                      role="button"
-                      aria-expanded="false"
-                      aria-controls="collapse-rename-bookmarks-{{ bookmarks_list.bookmarks_list_id }}">
-                    Rename
-                  </a>
-
-                  <form action="/delete-bookmarks-list"
-                        class="delete-form" 
-                        id="form-delete-bookmarks-list" 
-                        method="POST">
-                    <button class="btn btn-link btn-sm" 
-                            type="submit" 
-                            name="delete" 
-                            value="{{ bookmarks_list.bookmarks_list_id }}">
-                        Delete
-                    </button>
-                  </form>
-
-                  <div class="collapse card card-body" 
-                        id="collapse-rename-bookmarks-{{ bookmarks_list.bookmarks_list_id }}">
-                    <form action="/edit-bookmarks-list" 
-                          class="edit-form" 
-                          id="form-edit-bookmarks-list" 
-                          method="POST">
-                      <div>
-                        <input type="text"
-                                name="bookmarks_list_name"
-                                class="form-control input-lg"
-                                placeholder="{{ bookmarks_list.bookmarks_list_name }}"
-                                required>
-                      </div>
-                      <div>
-                        <button class="btn btn-link btn-sm" 
-                                type="submit" 
-                                name="edit" 
-                                value="{{ bookmarks_list.bookmarks_list_id }}">
-                          Save
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-
-                  <div class="collapse card card-body" 
-                        id="collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}">
-                    <div>
-                      <ul class="no-bullets">
-                        {% for hike in bookmarks_list.hikes %}
-                        <li>
-                          <a href="/hikes/{{ hike.hike_id }}" target="_blank">{{ hike.hike_name }}</a>
-                          <form action="/remove-hike" class="delete-form" id="form-remove-hike" method="POST">
-                            <button class="btn btn-link btn-sm" type="submit" name="delete" value="{{ hike.hike_id }},{{ bookmarks_list.bookmarks_list_id }}">Remove</button>
-                          </form>
-                        </li>
-                        {% endfor %}
-                      </ul>
-                    </div>
-                  </div>
-
-                </li>
               {% endfor %}
             </ul>
-
-
-
-
           </div>
-          {% endif %}
-        </div>
-      
-        
-      
-      {% endif %}
-
-
-
-
-
-      <p>
-        <a class="btn btn-link" 
-            data-bs-toggle="collapse" 
-            href="#collapse-hike-comments" 
-            role="button" 
-            aria-expanded="false" 
-            aria-controls="collapse-hike-comments">
-          View Comments
-        </a>
-      </p>
-
-      <div class="collapse card card-body" id="collapse-hike-comments">
-          
-        {% if "login" in session %}
-
-        <a class="btn btn-link card card-title text-start" 
-            data-bs-toggle="collapse" 
-            href="#collapse-add-comment" 
-            role="button" 
-            aria-expanded="false" 
-            aria-controls="collapse-add-comment">
-        + Comment
-        </a>
-
-        <div class="collapse card card-body" id="collapse-add-comment">
-
-          <form action="/hikes/{{ hike.hike_id }}/comments" 
-                id="form-add-comment" 
-                method="POST">
-            <h4 class="form-add-comment-heading">Add Comment</h4>
-                
-              <div>
-                <input type="text"
-                        name="body"
-                        class="form-control input-lg"
-                        placeholder="Enter your comment here"
-                        required>
-              </div>
-
-              <div>
-                <button class="btn btn-sm btn-primary btn-block mt-4" type="submit">Submit</button>
-              </div>
-          </form>
-
-        {% else %}
-
-        Please <a href="/login" target="_blank">log in</a> to add a comment.
-
-        {% endif %}
-
         </div>
 
-        <div class="card card-body" id="comments">
-          <p>Use AJAX/React to add comments here when a comment is submitted</p>
+        <p>
+          <a
+            class="btn btn-link"
+            data-bs-toggle="collapse"
+            href="#collapse-hike-bookmarks"
+            role="button"
+            aria-expanded="false"
+            aria-controls="collapse-hike-bookmarks"
+          >
+            View Bookmarks
+          </a>
+        </p>
 
-          {% for comment in comments|sort(attribute='date_created', reverse=True) %}
-          <div class="card card-body">
-            {{ comment.user.full_name }} posted on {{ comment.date_created.strftime('%b %d, %Y %I:%M:%S %p') }}
-            {% if comment.edit == True %} (edited on {{ comment.date_edited.strftime('%b %d, %Y %I:%M:%S %p') }}){% endif %}:
-            <br>{{ comment.body }}
-
-          {% if "login" in session and comment.user_id == user.user_id %}
-          <div>
-
-            <a class="btn btn-link btn-sm"
-                data-bs-toggle="collapse"
-                href="#collapse-edit-comment-{{ comment.comment_id }}"
-                role="button"
-                aria-expanded="false"
-                aria-controls="collapse-edit-comment-{{ comment.comment_id }}">
-              Edit
+        <div class="collapse card card-body" id="collapse-hike-bookmarks">
+          <a
+            class="btn btn-link card card-title text-start"
+            data-bs-toggle="collapse"
+            href="#collapse-bookmark-hike"
+            role="button"
+            aria-expanded="false"
+            aria-controls="collapse-bookmark-hike"
+          >
+            + Bookmark
           </a>
 
-            <form action="/delete-comment" 
-                  class="delete-form" 
-                  id="form-delete-comment" 
-                  method="POST">
-              <button class="btn btn-link btn-sm" 
-                      type="submit" 
-                      name="delete" 
-                      value="{{ comment.comment_id }}">
-                Delete
-              </button>
-            </form>
-          </div>
+          <div class="collapse card card-body" id="collapse-bookmark-hike">
+            <form
+              action="/hikes/{{ hike.hike_id }}/bookmark"
+              id="form-hike-new-bookmark-list"
+              method="POST"
+            >
+              <h4 id="form-hike-new-bookmark-list-heading">
+                Add to New Bookmark List
+              </h4>
 
-          <div class="collapse card card-body" 
-                id="collapse-edit-comment-{{ comment.comment_id }}">
-            <form action="/edit-comment" class="edit-form" id="form-edit-comment" method="POST">
               <div>
-                <input type="text"
-                        class="form-control input-lg"
-                        name="body"
-                        placeholder="{{ comment.body }}"
-                        required>
+                <input
+                  type="text"
+                  name="bookmarks_list_name"
+                  class="form-control input-lg"
+                  placeholder="Hikes I Want To Visit"
+                  required
+                  autofocus
+                />
               </div>
-              
+
               <div>
-                <button class="btn btn-link btn-sm" 
-                        type="submit" 
-                        name="edit" 
-                        value="{{ comment.comment_id }}">
+                <button
+                  class="btn btn-sm btn-primary btn-block mt-4"
+                  type="submit"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+
+            <br />
+
+            <form
+              action="/hikes/{{ hike.hike_id }}/bookmark"
+              id="form-hike-existing-bookmark-list"
+              method="POST"
+            >
+              <h4 id="form-hike-existing-bookmark-list-heading">
+                Add to Existing Bookmark List
+              </h4>
+
+              <div>
+                <select
+                  name="bookmarks_list_name"
+                  class="form-control input-lg"
+                >
+                  {% for bookmarks_list in bookmarks_list_by_user %}
+                  <option value="{{ bookmarks_list.bookmarks_list_name }}">
+                    {{ bookmarks_list.bookmarks_list_name }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div>
+                <button
+                  class="btn btn-sm btn-primary btn-block mt-4"
+                  type="submit"
+                >
                   Save
                 </button>
               </div>
             </form>
           </div>
 
-          {% endif %}
-          </div>
+          {% if bookmarks_lists_by_user_hike != [] %}
+          <div class="card card-body">
+            You have this hike on these lists (click on list name to view all
+            hikes on the list):
+            <ul>
+              {% for bookmarks_list in bookmarks_lists_by_user_hike %}
+              <li>
+                <a
+                  class="btn btn-link"
+                  data-bs-toggle="collapse"
+                  href="#collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
+                  role="button"
+                  aria-expanded="false"
+                  aria-controls="collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
+                >
+                  {{ bookmarks_list.bookmarks_list_name }}
+                </a>
 
-          {% endfor %}
+                <a
+                  class="btn btn-link btn-sm"
+                  data-bs-toggle="collapse"
+                  href="#collapse-rename-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
+                  role="button"
+                  aria-expanded="false"
+                  aria-controls="collapse-rename-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
+                >
+                  Rename
+                </a>
+
+                <form
+                  action="/delete-bookmarks-list"
+                  class="delete-form"
+                  id="form-delete-bookmarks-list"
+                  method="POST"
+                >
+                  <button
+                    class="btn btn-link btn-sm"
+                    type="submit"
+                    name="delete"
+                    value="{{ bookmarks_list.bookmarks_list_id }}"
+                  >
+                    Delete
+                  </button>
+                </form>
+
+                <div
+                  class="collapse card card-body"
+                  id="collapse-rename-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
+                >
+                  <form
+                    action="/edit-bookmarks-list"
+                    class="edit-form"
+                    id="form-edit-bookmarks-list"
+                    method="POST"
+                  >
+                    <div>
+                      <input
+                        type="text"
+                        name="bookmarks_list_name"
+                        class="form-control input-lg"
+                        placeholder="{{ bookmarks_list.bookmarks_list_name }}"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <button
+                        class="btn btn-link btn-sm"
+                        type="submit"
+                        name="edit"
+                        value="{{ bookmarks_list.bookmarks_list_id }}"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                <div
+                  class="collapse card card-body"
+                  id="collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
+                >
+                  <div>
+                    <ul class="no-bullets">
+                      {% for hike in bookmarks_list.hikes %}
+                      <li>
+                        <a href="/hikes/{{ hike.hike_id }}" target="_blank"
+                          >{{ hike.hike_name }}</a
+                        >
+                        <form
+                          action="/remove-hike"
+                          class="delete-form"
+                          id="form-remove-hike"
+                          method="POST"
+                        >
+                          <button
+                            class="btn btn-link btn-sm"
+                            type="submit"
+                            name="delete"
+                            value="{{ hike.hike_id }},{{ bookmarks_list.bookmarks_list_id }}"
+                          >
+                            Remove
+                          </button>
+                        </form>
+                      </li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
         </div>
 
+        {% endif %}
+
+        <p>
+          <a
+            class="btn btn-link"
+            data-bs-toggle="collapse"
+            href="#collapse-hike-comments"
+            role="button"
+            aria-expanded="false"
+            aria-controls="collapse-hike-comments"
+          >
+            View Comments
+          </a>
+        </p>
+
+        <div class="collapse card card-body" id="collapse-hike-comments">
+          {% if "login" in session %}
+
+          <a
+            class="btn btn-link card card-title text-start"
+            data-bs-toggle="collapse"
+            href="#collapse-add-comment"
+            role="button"
+            aria-expanded="false"
+            aria-controls="collapse-add-comment"
+          >
+            + Comment
+          </a>
+
+          <div class="collapse card card-body" id="collapse-add-comment">
+            <form
+              action="/hikes/{{ hike.hike_id }}/comments"
+              id="form-add-comment"
+              method="POST"
+            >
+              <h4 class="form-add-comment-heading">Add Comment</h4>
+
+              <div>
+                <input
+                  type="text"
+                  name="body"
+                  class="form-control input-lg"
+                  placeholder="Enter your comment here"
+                  required
+                />
+              </div>
+
+              <div>
+                <button
+                  class="btn btn-sm btn-primary btn-block mt-4"
+                  type="submit"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
+
+            {% else %} Please <a href="/login" target="_blank">log in</a> to add
+            a comment. {% endif %}
+          </div>
+
+          <div class="card card-body" id="comments">
+            <p>
+              Use AJAX/React to add comments here when a comment is submitted
+            </p>
+
+            {% for comment in comments|sort(attribute='date_created',
+            reverse=True) %}
+            <div class="card card-body">
+              {{ comment.user.full_name }} posted on {{
+              comment.date_created.strftime('%b %d, %Y %I:%M:%S %p') }} {% if
+              comment.edit == True %} (edited on {{
+              comment.date_edited.strftime('%b %d, %Y %I:%M:%S %p') }}){% endif
+              %}:
+              <br />{{ comment.body }} {% if "login" in session and
+              comment.user_id == user.user_id %}
+              <div>
+                <a
+                  class="btn btn-link btn-sm"
+                  data-bs-toggle="collapse"
+                  href="#collapse-edit-comment-{{ comment.comment_id }}"
+                  role="button"
+                  aria-expanded="false"
+                  aria-controls="collapse-edit-comment-{{ comment.comment_id }}"
+                >
+                  Edit
+                </a>
+
+                <form
+                  action="/delete-comment"
+                  class="delete-form"
+                  id="form-delete-comment"
+                  method="POST"
+                >
+                  <button
+                    class="btn btn-link btn-sm"
+                    type="submit"
+                    name="delete"
+                    value="{{ comment.comment_id }}"
+                  >
+                    Delete
+                  </button>
+                </form>
+              </div>
+
+              <div
+                class="collapse card card-body"
+                id="collapse-edit-comment-{{ comment.comment_id }}"
+              >
+                <form
+                  action="/edit-comment"
+                  class="edit-form"
+                  id="form-edit-comment"
+                  method="POST"
+                >
+                  <div>
+                    <input
+                      type="text"
+                      class="form-control input-lg"
+                      name="body"
+                      placeholder="{{ comment.body }}"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <button
+                      class="btn btn-link btn-sm"
+                      type="submit"
+                      name="edit"
+                      value="{{ comment.comment_id }}"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              {% endif %}
+            </div>
+
+            {% endfor %}
+          </div>
+        </div>
       </div>
-
     </div>
-
   </div>
-
 </div>
-
-  {% endblock %}
+{% endblock %}

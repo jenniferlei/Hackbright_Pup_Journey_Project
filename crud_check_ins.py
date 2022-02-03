@@ -1,6 +1,7 @@
 """CRUD operations for CheckIn Model."""
 
 from model import db, User, Pet, Hike, Comment, CheckIn, BookmarksList, HikeBookmarksList, connect_to_db
+import crud_pets
 
 
 def create_check_in(hike, pet, date_hiked, date_started, date_completed, miles_completed, total_time):
@@ -17,9 +18,18 @@ def create_check_in(hike, pet, date_hiked, date_started, date_completed, miles_c
     return check_in
 
 
-def edit_check_in():
-    """Edit a check in."""
-    pass
+def get_check_ins_by_user_id(user_id):
+    """Return all check ins for a given user_id"""
+
+    # Find all pets for a user and return all check ins for each pet
+    pets = crud_pets.get_pets_by_user_id(user_id)
+
+    all_check_ins = []
+
+    for pet in pets:
+        all_check_ins.extend(db.session.query(CheckIn).filter_by(pet=pet).all())
+    
+    return all_check_ins
 
 
 def get_check_ins_by_user_id_and_hike_id(user_id, hike_id):

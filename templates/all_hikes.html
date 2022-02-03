@@ -3,6 +3,7 @@
 
 {% block body %}
 
+
 <div class="container">
 
   <div class="row align-items-start">
@@ -46,26 +47,26 @@
         </div>
 
         <div class="row">
-          <label class="form-label" for="search-area">Area</label>
-          <select id="search-area"
+          <label class="form-label" for="search-state">State</label>
+          <select id="search-state"
                   class="form-control"
-                  name="area">
+                  name="state">
             <option value=""></option>
-            {% for area in areas|sort() %}
-            <option value="{{ area }}">{{ area }}</option>
+            {% for state in states|sort() %}
+            <option value="{{ state }}">{{ state }}</option>
             {% endfor %}
           </select>
         </div>
 
         <div class="row">
           <div class="col">
-            <label class="form-label" for="search-state">State</label>
-            <select id="search-state"
+            <label class="form-label" for="search-area">Area</label>
+            <select id="search-area"
                     class="form-control"
-                    name="state">
+                    name="area">
               <option value=""></option>
-              {% for state in states|sort() %}
-              <option value="{{ state }}">{{ state }}</option>
+              {% for area in areas|sort() %}
+              <option value="{{ area }}">{{ area }}</option>
               {% endfor %}
             </select>
           </div>

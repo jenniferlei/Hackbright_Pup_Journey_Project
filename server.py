@@ -1,11 +1,11 @@
-"""Server for movie ratings app."""
+"""Server for pup journey app."""
 
 from flask import Flask, render_template, json, jsonify, request, flash, session, redirect
 import cloudinary.uploader
 import os
 from datetime import datetime
 
-from model import connect_to_db, db
+from model import connect_to_db, db, ma, app, PetSchema, CheckInSchema
 import crud_bookmarks_lists
 import crud_check_ins
 import crud_comments
@@ -16,43 +16,19 @@ import crud_users
 
 from jinja2 import StrictUndefined
 
+app.secret_key = "dev"
+app.jinja_env.undefined = StrictUndefined
+
 CLOUDINARY_KEY = os.environ["CLOUDINARY_KEY"]
 CLOUDINARY_SECRET = os.environ["CLOUDINARY_SECRET"]
 CLOUD_NAME = "hbpupjourney"
-
-app = Flask(__name__)
-app.secret_key = "dev"
-app.jinja_env.undefined = StrictUndefined
 
 
 @app.route("/")
 def homepage():
     """View homepage."""
 
-    search_hikes = hikes = crud_hikes.get_hikes()
-    states = crud_hikes.get_hike_states()
-    cities = crud_hikes.get_hike_cities()
-    areas = crud_hikes.get_hike_areas()
-    parking = crud_hikes.get_hike_parking()
-    logged_in_email = session.get("user_email")
-
-    if logged_in_email is None:
-        return render_template("homepage.html", search_hikes=search_hikes,
-                                                hikes=hikes,
-                                                states=states,
-                                                cities=cities,
-                                                areas=areas,
-                                                parking=parking)
-    else:
-        user = crud_users.get_user_by_email(logged_in_email)
-        pets = crud_pets.get_pets_by_user_id(user.user_id)
-        return render_template("homepage.html", pets=pets,
-                                                search_hikes=search_hikes,
-                                                hikes=hikes,
-                                                states=states,
-                                                cities=cities,
-                                                areas=areas,
-                                                parking=parking)
+    return render_template("homepage.html")
 
 
 @app.route("/hikes")
@@ -726,75 +702,26 @@ def get_pets_json():
 
     user = crud_users.get_user_by_email(logged_in_email)
     pets = crud_pets.get_pets_by_user_id(user.user_id)
-    pets_json = []
 
-    for pet in pets:
-        if pet.birthday != None:
-            birthday = pet.birthday.strftime("%b %d, %Y")
-        else:
-            birthday = pet.birthday
-
-        pets_json.append(
-            {
-                "pet_id": pet.pet_id,
-                "user_id": pet.user_id,
-                "pet_name": pet.pet_name,
-                "gender": pet.gender,
-                "birthday": birthday,
-                "breed": pet.breed,
-                "pet_imgURL": pet.pet_imgURL,
-                "img_public_id": pet.img_public_id,
-            }
-        )
+    pets_schema = PetSchema(many=True)
+    pets_json = pets_schema.dump(pets)
 
     return jsonify({"pets": pets_json})
 
 
-@app.route("/pet-check-ins.json")
-def get_pet_check_ins_json():
+@app.route("/check-ins-by-user.json")
+def get_check_ins_by_user_json():
     """Return a JSON response with all check ins for a pet."""
 
     logged_in_email = session.get("user_email")
 
     user = crud_users.get_user_by_email(logged_in_email)
-    pets = crud_pets.get_pets_by_user_id(user.user_id)
+    check_ins_by_user = crud_check_ins.get_check_ins_by_user_id(user.user_id)
 
-    pet_check_ins_json = []
+    check_in_schema = CheckInSchema(many=True)
+    check_ins_by_user_json = check_in_schema.dump(check_ins_by_user)
 
-    for pet in pets:
-        check_ins = crud_check_ins.get_check_ins_by_pet_id(pet.pet_id)
-
-        for check_in in check_ins:
-                
-            date_hiked = check_in.date_hiked.strftime("%b %d, %Y")
-
-            if check_in.date_started != None:
-                date_started = check_in.date_started.strftime("%b %d, %Y")
-            else:
-                date_started = check_in.date_started
-
-            if check_in.date_completed != None:
-                date_completed = check_in.date_completed.strftime("%b %d, %Y")
-            else:
-                date_completed = check_in.date_completed
-
-            pet_check_ins_json.append(
-                {
-                    "check_in_id": check_in.check_in_id,
-                    "hike_id": check_in.hike_id,
-                    "hike_name": check_in.hike.hike_name,
-                    "pet_id": check_in.pet_id,
-                    "pet_name": pet.pet_name,
-                    "date_hiked": date_hiked,
-                    "date_started": date_started,
-                    "date_completed": date_completed,
-                    "miles_completed": check_in.miles_completed,
-                    "total_time": check_in.total_time,
-                }
-            )
-
-    return jsonify({"checkIns": pet_check_ins_json})
-    pass
+    return jsonify({"checkIns": check_ins_by_user_json})
 
 
 

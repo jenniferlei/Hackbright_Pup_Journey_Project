@@ -1,8 +1,18 @@
 """Models for pup journey app."""
 
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
+from marshmallow import fields
 
-db = SQLAlchemy()
+app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///pupjourney"
+app.config["SQLALCHEMY_ECHO"] = True
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+
+db = SQLAlchemy(app)
+ma = Marshmallow(app)
 
 
 class User(db.Model):
@@ -36,7 +46,7 @@ class Pet(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
     pet_name = db.Column(db.Text, nullable=False)
     gender = db.Column(db.String, nullable=True)
-    birthday = db.Column(db.DateTime, nullable=True)
+    birthday = db.Column(db.Date, nullable=True)
     breed = db.Column(db.String, nullable=True)
     pet_imgURL = db.Column(db.String, nullable=True)
     img_public_id = db.Column(db.String, nullable=True)
@@ -115,9 +125,9 @@ class CheckIn(db.Model):
     )
     hike_id = db.Column(db.Integer, db.ForeignKey("hikes.hike_id"), nullable=False)
     pet_id = db.Column(db.Integer, db.ForeignKey("pets.pet_id"), nullable=False)
-    date_hiked = db.Column(db.DateTime, nullable=False)
-    date_started = db.Column(db.DateTime, nullable=True)
-    date_completed = db.Column(db.DateTime, nullable=True)
+    date_hiked = db.Column(db.Date, nullable=False)
+    date_started = db.Column(db.Date, nullable=True)
+    date_completed = db.Column(db.Date, nullable=True)
     miles_completed = db.Column(db.Float, nullable=True)
     total_time = db.Column(db.Float, nullable=True)
 
@@ -166,19 +176,81 @@ class HikeBookmarksList(db.Model):
         return f"<Hike on Bookmarks List hike_bookmarks_list_id={self.hike_bookmarks_list_id} hike_id={self.hike_id} bookmarks_list_id={self.bookmarks_list_id}>"
 
 
-def connect_to_db(flask_app, db_uri="postgresql:///pupjourney", echo=True):
-    flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
-    flask_app.config["SQLALCHEMY_ECHO"] = echo
-    flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+class UserSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = User
+        load_instance = True
 
+    # Make sure to use the 'only' or 'exclude'
+    # to avoid infinite recursion
+    pets = fields.List(fields.Nested("PetSchema", exclude=("user",)))
+    bookmarks_lists = fields.List(fields.Nested("BookmarksListSchema", exclude=("user",)))
+    comments = fields.List(fields.Nested("CommentSchema", exclude=("user",)))
+
+class PetSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Pet
+        include_fk = True
+        load_instance = True
+
+
+class HikeSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Hike
+        load_instance = True
+
+    comments = fields.List(fields.Nested("CommentSchema", exclude=("hike",)))
+    check_ins = fields.List(fields.Nested("CheckInSchema", exclude=("hike",)))
+    bookmarks_lists = fields.List(fields.Nested("BookmarksListSchema", exclude=("hike",)))
+
+
+class CommentSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Comment
+        include_fk = True
+        load_instance = True
+
+    hike = fields.Nested(HikeSchema)
+    user = fields.Nested(UserSchema)
+
+class CheckInSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = CheckIn
+        include_fk = True
+        load_instance = True
+
+    hike = fields.Nested(HikeSchema(only=("hike_name",)))
+    pet = fields.Nested(PetSchema(only=("pet_name",)))
+
+
+class BookmarksListSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = BookmarksList
+        include_fk = True
+        load_instance = True
+
+    hike = fields.Nested(HikeSchema(only=("hike_name", "hike_id")))
+
+
+class HikeBookmarksListSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = HikeBookmarksList
+        include_fk = True
+        load_instance = True
+
+
+def connect_to_db(flask_app):
+    
+
+    ma.app = flask_app
     db.app = flask_app
     db.init_app(flask_app)
+    ma.init_app(flask_app)
 
     print("Connected to the db!")
 
 
 if __name__ == "__main__":
-    from server import app
 
     # Call connect_to_db(app, echo=False) if your program output gets
     # too annoying; this will tell SQLAlchemy not to print out every
