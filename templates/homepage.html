@@ -1,38 +1,131 @@
-{% extends 'base.html' %}
-
-{% block head %}
+{% extends 'base.html' %} {% block head %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
-{% endblock %}
-
-{% block title %}Pup Journey Home{% endblock %}
-
-{% block body %}
-
-  {% if "user_email" in session %}
+{% endblock %} {% block title %}Pup Journey Home{% endblock %} {% block body %}
+{% if "user_email" in session %}
 <div class="container">
   <div class="row">
     <div class="card card-body col-7">
       <!-- Tabs for graph, map and check ins -->
       <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-          <button class="nav-link active" id="nav-graph-tab" data-bs-toggle="tab" data-bs-target="#nav-graph" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Graph</button>
-          <button class="nav-link" id="nav-map-tab" data-bs-toggle="tab" data-bs-target="#nav-map" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Map</button>
-          <button class="nav-link" id="nav-checkin-tab" data-bs-toggle="tab" data-bs-target="#nav-checkin" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Check Ins</button>
+          <button
+            class="nav-link active"
+            id="nav-graph-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#nav-graph"
+            type="button"
+            role="tab"
+            aria-controls="nav-graph"
+            aria-selected="true"
+          >
+            Graph
+          </button>
+          <button
+            class="nav-link"
+            id="nav-map-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#nav-map"
+            type="button"
+            role="tab"
+            aria-controls="nav-map"
+            aria-selected="false"
+          >
+            Map
+          </button>
+          <button
+            class="nav-link"
+            id="nav-checkins-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#nav-checkins"
+            type="button"
+            role="tab"
+            aria-controls="nav-checkins"
+            aria-selected="false"
+          >
+            Check Ins
+          </button>
+          <button
+            class="nav-link"
+            id="nav-summary-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#nav-summary"
+            type="button"
+            role="tab"
+            aria-controls="nav-summary"
+            aria-selected="false"
+          >
+            Summary
+          </button>
         </div>
       </nav>
-      <!-- Tab content -->
+      <!-- Begin all tab panels -->
       <div class="tab-content" id="nav-tabContent">
-        <!-- graph content -->
-        <div class="tab-pane fade show active" id="nav-graph" role="tabpanel" aria-labelledby="nav-graph-tab">
+        <!-- Begin graph panel -->
+        <div
+          class="tab-pane fade show active"
+          id="nav-graph"
+          role="tabpanel"
+          aria-labelledby="nav-graph-tab"
+        >
           <canvas id="summary-chart"></canvas>
         </div>
-        <!-- map content -->
-        <div class="tab-pane fade" id="nav-map" role="tabpanel" aria-labelledby="nav-map-tab">map</div>
-        <!-- check in content -->
-        <div class="tab-pane fade" id="nav-checkin" role="tabpanel" aria-labelledby="nav-checkin-tab">check-ins</div>
+        <!-- Begin map panel -->
+        <div
+          class="tab-pane fade"
+          id="nav-map"
+          role="tabpanel"
+          aria-labelledby="nav-map-tab"
+        >
+          map
+        </div>
+        <!-- Begin check in panel -->
+        <div
+          class="tab-pane fade"
+          id="nav-checkins"
+          role="tabpanel"
+          aria-labelledby="nav-checkins-tab"
+        >
+          check-ins
+        </div>
+        <!-- Begin summary panel -->
+        <div
+          class="tab-pane fade"
+          id="nav-summary"
+          role="tabpanel"
+          aria-labelledby="nav-summary-tab"
+        >
+          Will show summary of number of hikes completed, miles walked,
+          etc for month/year, etc
+          <p><h4>Other App Notes</h4>
+          Would like to change tab components to AJAX/React so entire page is not re-rendered when an item is updated
+          <ul>
+            <li>bookmarks (bookmark + hike page)</li>
+            <li>check ins (homepage + hike page)</li>
+            <li>comments (hike page)</li>
+            <li>pet profiles (homepage) - need to figure out why this is not working</li>
+          </ul>
+          <br>Search bar:
+          <ul>
+            <li>freeze search bar on scroll</li>
+            <li>disable city/area search unless state is selected</li>
+            <li>city/area options dependent on state selected</li>
+            <li>toggle between easy/moderate/hard, be able to select more than one</li>
+          </ul>
+          <br>Check Ins:
+          <ul>
+            <li>Be able to check in from homepage</li>
+            <li>Be able to filter check ins by date/hike/pet</li>
+            <li>Be able to view last 5 check ins from pet profile</li>
+            <li>Update model so more than one pet can be on one check in</li>
+          </ul>
+          <br>All Hikes:
+          <ul>
+            <li>Instead of listing all hikes immediately, show diff categories (example allrecipes) - difficulty, length, area</li>
+          </ul>
+          </p>
+        </div>
       </div>
     </div>
-
 
     <div class="card card-body col-3 offset-1">
       <div id="pet-profile-container">
@@ -42,28 +135,24 @@
   </div>
 </div>
 
-  {% else %}
+{% else %}
 <div class="everythingContainer">
   <div class="container">
     <div class="row align-items-center">
-
       <div class="imageContainer">
         <img src="/static/img/homepage3.jpg" id="homepage-image" />
         <div class="app-greeting">
           <div class="big">Welcome!</div>
-          <p>Find pup friendly hikes, bookmark your favorites, <br>and check in to hikes your pup has done!</p>
+          <p>
+            Find pup friendly hikes, bookmark your favorites, <br />and check in
+            to hikes your pup has done!
+          </p>
         </div>
       </div>
     </div>
   </div>
 </div>
-  {% endif %}
-
-
-
-{% endblock %}
-
-{% block js %}
-	<script src="/static/js/homepage.js"></script>
-  <script src="/static/js/petProfile.jsx" type="text/jsx"></script>
+{% endif %} {% endblock %} {% block js %}
+<script src="/static/js/homepage.js"></script>
+<script src="/static/js/petProfile.jsx" type="text/jsx"></script>
 {% endblock %}

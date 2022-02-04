@@ -3,298 +3,340 @@ endblock %} {% block body %}
 
 <div class="container">
   <div class="row">
+    <!-- SEARCH BAR -->
     <div class="col-3 card card-body" id="search-side-bar">
       <h2>Search</h2>
     </div>
 
+    <!-- HIKE INFO -->
     <div class="col-8 offset-1 card card-body" id="hike-details">
-      <h2>{{ hike.hike_name }}</h2>
-      <img src="{{ hike.hike_imgURL }}" class="hike_details" />
-      <p>{{ hike.description }}</p>
-      <ul>
-        <li>
-          <strong><span id="area">Area:</span></strong> {{ hike.area }}, {{
-          hike.city }}, {{ hike.state }}
-        </li>
-        <li>
-          <strong><span id="difficulty">Difficulty:</span></strong> {{
-          hike.difficulty }}
-        </li>
-        <li>
-          <strong><span id="leash_rule">Leash Rule:</span></strong> {{
-          hike.leash_rule }}
-        </li>
-        <li>
-          <strong><span id="address">Address:</span></strong> {{ hike.address }}
-        </li>
-        <li>
-          <strong><span id="length">Length:</span></strong> {{ hike.miles }} {{
-          hike.path }}
-        </li>
-        <li>
-          <strong><span id="parking">Parking:</span></strong> {{ hike.parking }}
-        </li>
-        <li>
-          <strong><span id="resources">Resources:</span></strong>
-          {% for hike_resource in hike_resources %}
-          <br /><a href="{{ hike_resource }}" target="_blank"
-            >{{ hike_resource }}</a
-          >
-          {% endfor %}
-        </li>
-      </ul>
-
-      {% if "login" in session %}
-
-      <p>
-        <a
-          class="btn btn-link"
-          data-bs-toggle="collapse"
-          href="#collapse-hike-check-ins"
-          role="button"
-          aria-expanded="false"
-          aria-controls="collapse-hike-check-ins"
-        >
-          View Check Ins
-        </a>
-      </p>
-
-      <div class="collapse card card-body" id="collapse-hike-check-ins">
-        <a
-          class="btn btn-link card card-title text-start"
-          data-bs-toggle="collapse"
-          href="#collapse-check-in-to-hike"
-          role="button"
-          aria-expanded="false"
-          aria-controls="collapse-check-in-to-hike"
-        >
-          + Check In
-        </a>
-
-        <div class="collapse card card-body" id="collapse-check-in-to-hike">
-          <h4 id="form-check-in-hike-heading">Add Check In</h4>
-
-          <form
-            action="/hikes/{{ hike.hike_id }}/check-in"
-            id="form-check-in"
-            method="POST"
-          >
-            <div>
-              <label for="pet_id" class="sr-only">Pet</label>
-              <select name="pet_id" class="form-control input-lg">
-                {% for pet in pets %}
-                <option value="{{ pet.pet_id }}">{{ pet.pet_name }}</option>
-                {% endfor %}
-              </select>
-            </div>
-
-            <div>
-              <label for="date_hiked" class="sr-only">Date Hiked</label>
-              <input
-                type="date"
-                name="date_hiked"
-                class="form-control input-lg"
-                required
-              />
-            </div>
-
-            <div>
-              <label for="date_started" class="sr-only">Date Started</label>
-              <input
-                type="date"
-                name="date_started"
-                class="form-control input-lg"
-              />
-            </div>
-
-            <div>
-              <label for="date_completed" class="sr-only">Date Completed</label>
-              <input
-                type="date"
-                name="date_completed"
-                class="form-control input-lg"
-              />
-            </div>
-
-            <div>
-              <label for="miles_completed" class="sr-only"
-                >Miles Completed</label
-              >
-              <input
-                type="number"
-                step=".1"
-                min="0"
-                name="miles_completed"
-                class="form-control input-lg"
-              />
-            </div>
-
-            <div>
-              <label for="total_time" class="sr-only">Total Time (Hours)</label>
-              <input
-                type="number"
-                step=".1"
-                min="0"
-                name="total_time"
-                class="form-control input-lg"
-              />
-            </div>
-
-            <button class="btn btn-sm btn-primary btn-block mt-4" type="submit">
-              Save
-            </button>
-          </form>
-        </div>
-
-        <div class="card card-body">
-          Use AJAX/React to add check ins here when a check in is submitted.
-          <ul>
-            {% for check_in in check_ins|sort(attribute='date_hiked',
-            reverse=True) %}
-            <li>
-              {{ check_in.pet.pet_name }} did this hike on {{
-              check_in.date_hiked.strftime('%b %d, %Y') }}! {% if
-              check_in.date_started != None %}
-              <br />Date started: {{ check_in.date_started.strftime('%b %d, %Y')
-              }} {% endif %} {% if check_in.date_completed != None %} <br />Date
-              completed: {{ check_in.date_completed.strftime('%b %d, %Y') }} {%
-              endif %} {% if check_in.miles_completed != None %} <br />Miles
-              completed: {{ check_in.miles_completed }} {% endif %} {% if
-              check_in.total_time != None %} <br />Total time: {{
-              check_in.total_time }} hours {% endif %}
-
-              <br />
-              <form
-                action="/edit-check-in"
-                class="edit-form"
-                id="form-edit-check-in"
-                method="POST"
-              >
-                <button
-                  class="btn btn-link"
-                  type="submit"
-                  name="edit"
-                  value="{{ check_in.check_in_id }}"
-                >
-                  Edit
-                </button>
-              </form>
-              <form
-                action="/delete-check-in"
-                class="delete-form"
-                id="form-delete-check-in"
-                method="POST"
-              >
-                <button
-                  class="btn btn-link"
-                  type="submit"
-                  name="delete"
-                  value="{{ check_in.check_in_id }}"
-                >
-                  Delete
-                </button>
-              </form>
-            </li>
+        <h2>{{ hike.hike_name }}</h2>
+        <img src="{{ hike.hike_imgURL }}" class="hike_details" />
+        <p>{{ hike.description }}</p>
+        <ul class="no-bullets">
+          <li>
+            <strong><span id="area">Area:</span></strong> {{ hike.area }}, {{
+            hike.city }}, {{ hike.state }}
+          </li>
+          <li>
+            <strong><span id="difficulty">Difficulty:</span></strong> {{
+            hike.difficulty }}
+          </li>
+          <li>
+            <strong><span id="leash_rule">Leash Rule:</span></strong> {{
+            hike.leash_rule }}
+          </li>
+          <li>
+            <strong><span id="address">Address:</span></strong> {{ hike.address }}
+          </li>
+          <li>
+            <strong><span id="length">Length:</span></strong> {{ hike.miles }} {{
+            hike.path }}
+          </li>
+          <li>
+            <strong><span id="parking">Parking:</span></strong> {{ hike.parking }}
+          </li>
+          <li>
+            <strong><span id="resources">Resources:</span></strong>
+            {% for hike_resource in hike_resources %}
+            <br /><a href="{{ hike_resource }}" target="_blank"
+              >{{ hike_resource }}</a
+            >
             {% endfor %}
-          </ul>
-        </div>
-      </div>
+          </li>
+        </ul>
 
-      <p>
-        <a
-          class="btn btn-link"
-          data-bs-toggle="collapse"
-          href="#collapse-hike-bookmarks"
-          role="button"
-          aria-expanded="false"
-          aria-controls="collapse-hike-bookmarks"
-        >
-          View Bookmarks
-        </a>
-      </p>
-
-      <div class="collapse card card-body" id="collapse-hike-bookmarks">
-        <a
-          class="btn btn-link card card-title text-start"
-          data-bs-toggle="collapse"
-          href="#collapse-bookmark-hike"
-          role="button"
-          aria-expanded="false"
-          aria-controls="collapse-bookmark-hike"
-        >
-          + Bookmark
-        </a>
-
-        <div class="collapse card card-body" id="collapse-bookmark-hike">
-          <form
-            action="/hikes/{{ hike.hike_id }}/bookmark"
-            id="form-hike-new-bookmark-list"
-            method="POST"
+      <!-- Tabs for map, comments, bookmarks and check ins -->
+      <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+          <button
+            class="nav-link active"
+            id="nav-map-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#nav-map"
+            type="button"
+            role="tab"
+            aria-controls="nav-map"
+            aria-selected="true"
           >
-            <h4 id="form-hike-new-bookmark-list-heading">
-              Add to New Bookmark List
-            </h4>
+            Map
+          </button>
 
-            <div>
-              <input
-                type="text"
-                name="bookmarks_list_name"
-                class="form-control input-lg"
-                placeholder="Hikes I Want To Visit"
-                required
-                autofocus
-              />
-            </div>
-
-            <div>
-              <button
-                class="btn btn-sm btn-primary btn-block mt-4"
-                type="submit"
-              >
-                Save
-              </button>
-            </div>
-          </form>
-
-          <br />
-
-          <form
-            action="/hikes/{{ hike.hike_id }}/bookmark"
-            id="form-hike-existing-bookmark-list"
-            method="POST"
+          <button
+            class="nav-link"
+            id="nav-comments-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#nav-comments"
+            type="button"
+            role="tab"
+            aria-controls="nav-comments"
+            aria-selected="false"
           >
-            <h4 id="form-hike-existing-bookmark-list-heading">
-              Add to Existing Bookmark List
-            </h4>
+            Comments
+          </button>
 
-            <div>
-              <select name="bookmarks_list_name" class="form-control input-lg">
-                {% for bookmarks_list in bookmarks_list_by_user %}
-                <option value="{{ bookmarks_list.bookmarks_list_name }}">
-                  {{ bookmarks_list.bookmarks_list_name }}
-                </option>
-                {% endfor %}
-              </select>
-            </div>
-
-            <div>
-              <button
-                class="btn btn-sm btn-primary btn-block mt-4"
-                type="submit"
-              >
-                Save
-              </button>
-            </div>
-          </form>
+          <button
+            class="nav-link"
+            id="nav-bookmarks-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#nav-bookmarks"
+            type="button"
+            role="tab"
+            aria-controls="nav-bookmarks"
+            aria-selected="false"
+          >
+            Bookmarks
+          </button>
+          <button
+            class="nav-link"
+            id="nav-checkins-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#nav-checkins"
+            type="button"
+            role="tab"
+            aria-controls="nav-checkins"
+            aria-selected="false"
+          >
+            Check Ins
+          </button>
         </div>
+      </nav>
+      <!-- End Tabs for comments, bookmarks and check ins -->
 
+      <!-- Begin All Tab Panels Content -->
+      <div class="tab-content" id="nav-tabContent">
+
+        <!-- Begin Map Panel content -->
+        <div
+          class="tab-pane fade show active"
+          id="nav-map"
+          role="tabpanel"
+          aria-labelledby="nav-map-tab"
+        >
+          <div class="mt-4">Map goes here</div>
+        </div>
+        <!-- End Map Panel content -->
+
+        <!-- Begin Comments Panel content -->
+        <div
+          class="tab-pane fade"
+          id="nav-comments"
+          role="tabpanel"
+          aria-labelledby="nav-comments-tab"
+        >
+          <!-- Begin Add Comment Modal -->
+          {% if "login" in session %}
+          <a class="btn btn-link btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-add-comment"><small>+ Comment</small></a>
+
+          <div class="modal fade" id="modal-add-comment" tabindex="-1" aria-labelledby="modal-add-comment-label" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="modal-add-comment-label">Add a Comment</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form
+                    action="/hikes/{{ hike.hike_id }}/comments"
+                    id="form-add-comment"
+                    method="POST"
+                  >
+                    <div class="mb-3">
+                      <input
+                        type="text"
+                        name="body"
+                        class="form-control input-lg"
+                        placeholder="Enter your comment here"
+                        required
+                      />
+                    </div>
+                  <div class="modal-footer">
+                    <button class="btn btn-sm btn-primary btn-block" type="submit">Submit</button>
+                    <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
+                  </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          <!-- End of Add Comment Modal -->
+          
+          <!-- Begin View All Comments -->
+          {% for comment in comments|sort(attribute='date_created',
+          reverse=True) %}
+          <div class="card card-body">
+            {{ comment.user.full_name }} posted on {{
+            comment.date_created.strftime('%b %d, %Y %I:%M %p') }} {% if
+            comment.edit == True %} (edited on {{
+            comment.date_edited.strftime('%b %d, %Y %I:%M %p') }}){% endif
+            %}:
+            <br />{{ comment.body }} 
+            
+            {% if "login" in session and comment.user_id == user.user_id %}
+              <!-- Begin Edit Comment Modal -->
+              {% if "login" in session %}
+              
+              <div class="input-group">
+                <button class="btn btn-link btn-sm" data-bs-toggle="modal" data-bs-target="#modal-edit-comment-{{ comment.comment_id }}"><small>Edit</small></button>
+                <!-- Begin Delete Comment Form -->
+                <form
+                  action="/delete-comment"
+                  method="POST"
+                >
+                  <button
+                    class="btn btn-link btn-sm btn-inline"
+                    type="submit"
+                    name="delete"
+                    value="{{ comment.comment_id }}"
+                  >
+                    <small>Delete</small>
+                  </button>
+                </form>
+              </div>
+                <!-- End Delete Comment Form -->
+              
+
+              <div class="modal fade" id="modal-edit-comment-{{ comment.comment_id }}" tabindex="-1" aria-labelledby="modal-edit-comment-{{ comment.comment_id }}-label" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="modal-edit-comment-{{ comment.comment_id }}-label">Edit Comment</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <form
+                        action="/edit-comment"
+                        method="POST"
+                      >
+                        <div class="mb-3">
+                          <input
+                            type="text"
+                            class="form-control input-lg"
+                            name="body"
+                            value="{{ comment.body }}"
+                            required
+                          />
+                        </div>
+
+                      <div class="modal-footer">
+                        <button class="btn btn-sm btn-primary btn-block" type="submit" name="edit" value="{{ comment.comment_id }}">Save</button>
+                        <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
+                      </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+              <!-- End of Edit Comment Modal -->
+
+            {% endif %}
+          </div>
+
+          {% endfor %}
+
+        </div>
+        <!-- End Comments Panel content -->
+
+          
+        
+
+        <!-- Begin Bookmarks Panel content -->
+        <div
+          class="tab-pane fade"
+          id="nav-bookmarks"
+          role="tabpanel"
+          aria-labelledby="nav-bookmarks-tab"
+        >
+          {% if "login" in session %}
+          <!-- Begin Add Bookmark Modal -->
+          <a class="btn btn-link btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-add-bookmark"><small>+ Bookmark</small></a>
+
+          <div class="modal fade" id="modal-add-bookmark" tabindex="-1" aria-labelledby="modal-add-bookmark-label" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="modal-add-bookmark-label">Bookmark this hike</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form
+                    action="/hikes/{{ hike.hike_id }}/bookmark"
+                    id="form-hike-new-bookmark-list"
+                    method="POST"
+                  >
+                    <h4 id="form-hike-new-bookmark-list-heading">
+                      Add to New Bookmark List
+                    </h4>
+
+                    <div class="mb-3">
+                      <input
+                        type="text"
+                        name="bookmarks_list_name"
+                        class="form-control input-lg"
+                        placeholder="Hikes I Want To Visit"
+                        required
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <button
+                        class="btn btn-sm btn-primary btn-block"
+                        type="submit"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </form>
+
+                  <form
+                    action="/hikes/{{ hike.hike_id }}/bookmark"
+                    id="form-hike-existing-bookmark-list"
+                    method="POST"
+                  >
+                    <h4 id="form-hike-existing-bookmark-list-heading">
+                      Add to Existing Bookmark List
+                    </h4>
+
+                    <div class="mb-3">
+                      <select name="bookmarks_list_name" class="form-control input-lg">
+                        {% for bookmarks_list in bookmarks_list_by_user %}
+                        <option value="{{ bookmarks_list.bookmarks_list_name }}">
+                          {{ bookmarks_list.bookmarks_list_name }}
+                        </option>
+                        {% endfor %}
+                      </select>
+                    </div>
+
+                    <div class="mb-3">
+                      <button
+                        class="btn btn-sm btn-primary btn-block"
+                        type="submit"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </form>
+                  <div class="modal-footer">
+                    <button class="btn btn-sm btn-primary btn-block" type="submit">Submit</button>
+                    <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
+                  </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- End of Add Bookmark Modal -->
+          
         {% if bookmarks_lists_by_user_hike != [] %}
         <div class="card card-body">
           You have this hike on these lists (click on list name to view all
           hikes on the list):
-          <ul>
+          <ul class="no-bullets">
             {% for bookmarks_list in bookmarks_lists_by_user_hike %}
             <li>
+              <div class="input-group">
               <a
                 class="btn btn-link"
                 data-bs-toggle="collapse"
@@ -306,17 +348,10 @@ endblock %} {% block body %}
                 {{ bookmarks_list.bookmarks_list_name }}
               </a>
 
-              <a
-                class="btn btn-link btn-sm"
-                data-bs-toggle="collapse"
-                href="#collapse-rename-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
-                role="button"
-                aria-expanded="false"
-                aria-controls="collapse-rename-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
-              >
-                Rename
-              </a>
-
+              <!-- Begin Rename Bookmark Modal -->
+              
+              <a class="btn btn-link btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-rename-bookmark-{{ bookmarks_list.bookmarks_list_id }}"><small>Rename</small></a>
+              <!-- Begin Delete Bookmark Form -->
               <form
                 action="/delete-bookmarks-list"
                 class="delete-form"
@@ -328,42 +363,45 @@ endblock %} {% block body %}
                   type="submit"
                   name="delete"
                   value="{{ bookmarks_list.bookmarks_list_id }}"
-                >
+                ><small>
                   Delete
-                </button>
+                </small></button>
               </form>
-
-              <div
-                class="collapse card card-body"
-                id="collapse-rename-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
-              >
-                <form
-                  action="/edit-bookmarks-list"
-                  class="edit-form"
-                  id="form-edit-bookmarks-list"
-                  method="POST"
-                >
-                  <div>
-                    <input
-                      type="text"
-                      name="bookmarks_list_name"
-                      class="form-control input-lg"
-                      placeholder="{{ bookmarks_list.bookmarks_list_name }}"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <button
-                      class="btn btn-link btn-sm"
-                      type="submit"
-                      name="edit"
-                      value="{{ bookmarks_list.bookmarks_list_id }}"
-                    >
-                      Save
-                    </button>
-                  </div>
-                </form>
               </div>
+              <!-- End Delete Bookmark Form -->
+
+              <div class="modal fade" id="modal-rename-bookmark-{{ bookmarks_list.bookmarks_list_id }}" tabindex="-1" aria-labelledby="modal-rename-bookmark-{{ bookmarks_list.bookmarks_list_id }}-label" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="modal-rename-bookmark-{{ bookmarks_list.bookmarks_list_id }}-label">Rename Bookmark</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <form
+                        action="/edit-bookmarks-list"
+                        method="POST"
+                      >
+                        <div class="mb-3">
+                        <input
+                          type="text"
+                          name="bookmarks_list_name"
+                          class="form-control input-lg"
+                          value="{{ bookmarks_list.bookmarks_list_name }}"
+                          required
+                        />
+                      </div>
+
+                      <div class="modal-footer">
+                        <button class="btn btn-sm btn-primary btn-block" type="submit" name="edit" value="{{ bookmarks_list.bookmarks_list_id }}">Save</button>
+                        <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
+                      </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- End Rename Bookmark Modal -->
 
               <div
                 class="collapse card card-body"
@@ -399,152 +437,250 @@ endblock %} {% block body %}
             </li>
             {% endfor %}
           </ul>
-        </div>
-        {% endif %}
-      </div>
-
-      {% endif %}
-
-      <p>
-        <a
-          class="btn btn-link"
-          data-bs-toggle="collapse"
-          href="#collapse-hike-comments"
-          role="button"
-          aria-expanded="false"
-          aria-controls="collapse-hike-comments"
-        >
-          View Comments
-        </a>
-      </p>
-
-      <div class="collapse card card-body" id="collapse-hike-comments">
-        {% if "login" in session %}
-
-        <a
-          class="btn btn-link card card-title text-start"
-          data-bs-toggle="collapse"
-          href="#collapse-add-comment"
-          role="button"
-          aria-expanded="false"
-          aria-controls="collapse-add-comment"
-        >
-          + Comment
-        </a>
-
-        <div class="collapse card card-body" id="collapse-add-comment">
-          <form
-            action="/hikes/{{ hike.hike_id }}/comments"
-            id="form-add-comment"
-            method="POST"
-          >
-            <h4 class="form-add-comment-heading">Add Comment</h4>
-
-            <div>
-              <input
-                type="text"
-                name="body"
-                class="form-control input-lg"
-                placeholder="Enter your comment here"
-                required
-              />
-            </div>
-
-            <div>
-              <button
-                class="btn btn-sm btn-primary btn-block mt-4"
-                type="submit"
-              >
-                Submit
-              </button>
-            </div>
-          </form>
-
-          {% else %} Please <a href="/login" target="_blank">log in</a> to add a
-          comment. {% endif %}
-        </div>
-
-        <div class="card card-body" id="comments">
-          <p>Use AJAX/React to add comments here when a comment is submitted</p>
-
-          {% for comment in comments|sort(attribute='date_created',
-          reverse=True) %}
-          <div class="card card-body">
-            {{ comment.user.full_name }} posted on {{
-            comment.date_created.strftime('%b %d, %Y %I:%M:%S %p') }} {% if
-            comment.edit == True %} (edited on {{
-            comment.date_edited.strftime('%b %d, %Y %I:%M:%S %p') }}){% endif
-            %}:
-            <br />{{ comment.body }} {% if "login" in session and
-            comment.user_id == user.user_id %}
-            <div>
-              <a
-                class="btn btn-link btn-sm"
-                data-bs-toggle="collapse"
-                href="#collapse-edit-comment-{{ comment.comment_id }}"
-                role="button"
-                aria-expanded="false"
-                aria-controls="collapse-edit-comment-{{ comment.comment_id }}"
-              >
-                Edit
-              </a>
-
-              <form
-                action="/delete-comment"
-                class="delete-form"
-                id="form-delete-comment"
-                method="POST"
-              >
-                <button
-                  class="btn btn-link btn-sm"
-                  type="submit"
-                  name="delete"
-                  value="{{ comment.comment_id }}"
-                >
-                  Delete
-                </button>
-              </form>
-            </div>
-
-            <div
-              class="collapse card card-body"
-              id="collapse-edit-comment-{{ comment.comment_id }}"
-            >
-              <form
-                action="/edit-comment"
-                class="edit-form"
-                id="form-edit-comment"
-                method="POST"
-              >
-                <div>
-                  <input
-                    type="text"
-                    class="form-control input-lg"
-                    name="body"
-                    placeholder="{{ comment.body }}"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <button
-                    class="btn btn-link btn-sm"
-                    type="submit"
-                    name="edit"
-                    value="{{ comment.comment_id }}"
-                  >
-                    Save
-                  </button>
-                </div>
-              </form>
-            </div>
-
-            {% endif %}
           </div>
+        {% endif %}
 
-          {% endfor %}
+
+          {% else %}
+          <div class="mt-4">Please log in to add a bookmark.</div>
+          {% endif %}
         </div>
+        <!-- End Bookmarks tab content -->
+
+
+        <!-- Begin Check ins tab content -->
+        <div
+          class="tab-pane fade"
+          id="nav-checkins"
+          role="tabpanel"
+          aria-labelledby="nav-checkins-tab"
+        >
+          {% if "login" in session %}
+          <!-- Begin Add Check In Modal -->
+          <a class="btn btn-link btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-add-check-in"><small>+ Check In</small></a>
+
+          <div class="modal fade" id="modal-add-check-in" tabindex="-1" aria-labelledby="modal-add-check-in-label" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="modal-add-check-in-label">Check in to this hike</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form
+                    action="/hikes/{{ hike.hike_id }}/check-in"
+                    id="form-check-in"
+                    method="POST"
+                  >
+                    <div class="mb-3">
+                      <label for="pet_id" class="sr-only">Pet</label>
+                      <select name="pet_id" class="form-control input-lg">
+                        {% for pet in pets %}
+                        <option value="{{ pet.pet_id }}">{{ pet.pet_name }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="date_hiked" class="sr-only">Date Hiked</label>
+                      <input
+                        type="date"
+                        name="date_hiked"
+                        class="form-control input-lg"
+                        required
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="date_started" class="sr-only">Date Started</label>
+                      <input
+                        type="date"
+                        name="date_started"
+                        class="form-control input-lg"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="date_completed" class="sr-only">Date Completed</label>
+                      <input
+                        type="date"
+                        name="date_completed"
+                        class="form-control input-lg"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="miles_completed" class="sr-only"
+                        >Miles Completed</label
+                      >
+                      <input
+                        type="number"
+                        step=".1"
+                        min="0"
+                        name="miles_completed"
+                        class="form-control input-lg"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="total_time" class="sr-only">Total Time (Hours)</label>
+                      <input
+                        type="number"
+                        step=".1"
+                        min="0"
+                        name="total_time"
+                        class="form-control input-lg"
+                      />
+                    </div>
+                  <div class="modal-footer">
+                    <button class="btn btn-sm btn-primary btn-block" type="submit">Submit</button>
+                    <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
+                  </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- End of Add Check In Modal -->
+
+          <!-- Begin check in details for the hike -->
+          {% if check_ins != [] %}
+          <div class="card card-body">
+            <ul class="no-bullets">
+              {% for check_in in check_ins|sort(attribute='date_hiked',
+              reverse=True) %}
+              <li>
+                {{ check_in.pet.pet_name }} did this hike on {{
+                check_in.date_hiked.strftime('%b %d, %Y') }}! {% if
+                check_in.date_started != None %}
+                <br />Date started: {{ check_in.date_started.strftime('%b %d, %Y')
+                }} {% endif %} {% if check_in.date_completed != None %} <br />Date
+                completed: {{ check_in.date_completed.strftime('%b %d, %Y') }} {%
+                endif %} {% if check_in.miles_completed != None %} <br />Miles
+                completed: {{ check_in.miles_completed }} {% endif %} {% if
+                check_in.total_time != None %} <br />Total time: {{
+                check_in.total_time }} hours {% endif %}
+
+                <div class="input-group">
+                <!-- Begin Edit Check In Modal -->
+                              
+                  <a class="btn btn-link btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-edit-check-in-{{ check_in.check_in_id }}"><small>Edit</small></a>
+
+
+                  <div class="modal fade" id="modal-edit-check-in-{{ check_in.check_in_id }}" tabindex="-1" aria-labelledby="modal-edit-check-in-{{ check_in.check_in_id }}-label" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="modal-edit-check-in-{{ check_in.check_in_id }}-label">Edit {{ check_in.pet.pet_name }}'s check in to this hike</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+
+                          <form
+                            action="/edit-check-in"
+                            method="POST"
+                          >
+                            
+                            <div class="mb-3">
+                              <label for="date_hiked" class="sr-only">Date Hiked</label>
+                              <input
+                                type="date"
+                                name="date_hiked"
+                                value="{{ check_in.date_hiked }}"
+                                class="form-control input-lg"
+                              />
+                            </div>
+
+                            <div class="mb-3">
+                              <label for="date_started" class="sr-only">Date Started</label>
+                              <input
+                                type="date"
+                                name="date_started"
+                                value="{{ check_in.date_started }}"
+                                class="form-control input-lg"
+                              />
+                            </div>
+
+                            <div class="mb-3">
+                              <label for="date_completed" class="sr-only">Date Completed</label>
+                              <input
+                                type="date"
+                                name="date_completed"
+                                value="{{ check_in.date_completed }}"
+                                class="form-control input-lg"
+                              />
+                            </div>
+
+                            <div class="mb-3">
+                              <label for="miles_completed" class="sr-only"
+                                >Miles Completed</label
+                              >
+                              <input
+                                type="number"
+                                step=".1"
+                                min="0"
+                                name="miles_completed"
+                                value="{{ check_in.miles_completed }}"
+                                class="form-control input-lg"
+                              />
+                            </div>
+
+                            <div class="mb-3">
+                              <label for="total_time" class="sr-only">Total Time (Hours)</label>
+                              <input
+                                type="number"
+                                step=".1"
+                                min="0"
+                                name="total_time"
+                                value="{{ check_in.total_time }}"
+                                class="form-control input-lg"
+                              />
+                            </div>
+                          <div class="modal-footer">
+                            <button class="btn btn-sm btn-primary btn-block" type="submit" name="check_in_id" value="{{ check_in.check_in_id }}">Submit</button>
+                            <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
+                          </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- End Edit Check In Modal -->
+
+
+
+                  <form
+                    action="/delete-check-in"
+                    class="delete-form"
+                    id="form-delete-check-in"
+                    method="POST"
+                  >
+                    <button
+                      class="btn btn-link btn-sm"
+                      type="submit"
+                      name="delete"
+                      value="{{ check_in.check_in_id }}"
+                    ><small>
+                      Delete
+                    </small></button>
+                  </form>
+
+                </div>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+          <!-- End check in details for the hike -->
+          {% else %}
+          <div class="mt-4">Please log in to add a check in.</div>
+          {% endif %}
+        </div>
+
+        <!-- End Check ins tab content -->
       </div>
+      <!-- End All Tab Content -->
+
     </div>
   </div>
 </div>

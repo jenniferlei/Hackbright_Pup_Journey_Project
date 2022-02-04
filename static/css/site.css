@@ -28,44 +28,15 @@ body > .everythingContainer {
   font-size: 5em;
 }
 
-.hike-details-container {
+.btn-inline {
+  margin: 0 auto;
   display: inline-block;
-  vertical-align: top;
-}
-
-#search-side-bar {
-  display: inline-block;
-  vertical-align: top;
-}
-
-#home-visuals-container {
-  display: inline-block;
-  vertical-align: top;
-}
-
-#pet-profile-container {
-  display: inline-block;
-  vertical-align: top;
-}
-
-#bookmarks-container {
-  display: inline-block;
-  vertical-align: top;
-}
-
-#bookmarks-maps-container {
-  display: inline-block;
-  vertical-align: top;
-}
-
-.bookmarks-link,
-.edit-form,
-.delete-form {
-  display: inline-block;
+  float: inline-start;
+  box-sizing: border-box;
 }
 
 ul.no-bullets {
   list-style-type: none; /* Remove bullets */
   padding: 0; /* Remove padding */
-  margin: 0; /* Remove margins */
+  margin-left: 1em; /* Remove margins */
 }

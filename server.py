@@ -258,7 +258,11 @@ def add_pet():
         db.session.commit()
         flash(f"Success! {pet_name} profile has been added.")
 
-    return redirect("/")
+        pet_schema = PetSchema()
+        pet_json = pet_schema.dump(pet)
+
+    # return jsonify({"success": True, "petAdded": pet_json})
+    return redirect(request.referrer)
 
 
 @app.route("/edit-pet", methods=["POST"])
@@ -277,37 +281,23 @@ def edit_pet():
         pet_id = request.form.get("edit")
         pet = crud_pets.get_pet_by_id(pet_id)
 
-        pet_name = request.form.get("pet_name")
-        gender = request.form.get("gender")
-
-        if gender == "":
-            gender = None
-
-        birthday = request.form.get("birthday")
-
-        if birthday == "":
-            birthday = None
-
-        breed = request.form.get("breed")
-
-        if breed == "":
-            breed = None
-
-        img_public_id = pet.img_public_id
-        if img_public_id != None:
-            cloudinary.uploader.destroy(
-                img_public_id,
-                api_key=CLOUDINARY_KEY,
-                api_secret=CLOUDINARY_SECRET,
-                cloud_name=CLOUD_NAME,
-            )
-
+        pet.pet_name = request.form.get("pet_name")
+        pet.gender = request.form.get("gender")
+        pet.birthday = request.form.get("birthday")
+        pet.breed = request.form.get("breed")
         my_file = request.files["my_file"]
 
-        if my_file.filename == "":
-            pet_imgURL = None
-            img_public_id = None
-        else:
+        # if user uploads new image file, delete old image from cloudinary
+        # then upload new image
+        if my_file.filename != "":
+            img_public_id = pet.img_public_id
+            if img_public_id != None:
+                cloudinary.uploader.destroy(
+                    img_public_id,
+                    api_key=CLOUDINARY_KEY,
+                    api_secret=CLOUDINARY_SECRET,
+                    cloud_name=CLOUD_NAME,
+            )
             # save the uploaded file to Cloudinary by making an API request
             result = cloudinary.uploader.upload(
                 my_file,
@@ -316,15 +306,8 @@ def edit_pet():
                 cloud_name=CLOUD_NAME,
             )
 
-            pet_imgURL = result["secure_url"]
-            img_public_id = result["public_id"]
-
-        pet.pet_name = pet_name
-        pet.gender = gender
-        pet.birthday = birthday
-        pet.breed = breed
-        pet.pet_imgURL = pet_imgURL
-        pet.img_public_id = img_public_id
+            pet.pet_imgURL = result["secure_url"]
+            pet.img_public_id = result["public_id"]
 
         flash(f"Success! Your {pet.pet_name}'s profile has been updated.")
 
@@ -373,29 +356,33 @@ def edit_check_in():
     else:
         # this would be better if user can edit one line at a time,
         # in case they want to keep some info and change/remove other info
-        check_in_id = request.form.get("edit")
+        check_in_id = request.form.get("check_in_id")
         check_in = crud_check_ins.get_check_ins_by_check_in_id(check_in_id)
 
         date_hiked = request.form.get("date_hiked")
+        
+        if date_hiked == "":
+            date_hiked = check_in.date_hiked
+
         date_started = request.form.get("date_started")
 
         if date_started == "":
-            date_started = None
+            date_started = check_in.date_started
 
         date_completed = request.form.get("date_completed")
 
         if date_completed == "":
-            date_completed = None
+            date_completed = check_in.date_completed
 
         miles_completed = request.form.get("miles_completed")
 
         if miles_completed == "":
-            miles_completed = None
+            miles_completed = check_in.miles_completed
 
         total_time = request.form.get("total_time")
 
         if total_time == "":
-            total_time = None
+            total_time = check_in.total_time
 
         check_in.date_hiked = date_hiked
         check_in.date_started = date_started
@@ -678,7 +665,7 @@ def process_login():
         session["login"] = True
         flash(f"Welcome back, {user.full_name}!")
 
-    return redirect("/")
+    return redirect(request.referrer)
 
 
 @app.route("/logout")
