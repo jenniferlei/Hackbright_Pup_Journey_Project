@@ -711,6 +711,39 @@ def get_check_ins_by_user_json():
     return jsonify({"checkIns": check_ins_by_user_json})
 
 
+@app.route("/check-ins-by-pets.json")
+def get_check_ins_by_pets_json():
+    """Return a JSON response with all check ins for each pet."""
+
+    logged_in_email = session.get("user_email")
+
+    user = crud_users.get_user_by_email(logged_in_email)
+    pets = crud_pets.get_pets_by_user_id(user.user_id)
+    check_ins_by_user = crud_check_ins.get_check_ins_by_user_id(user.user_id)
+
+    check_in_data = []
+
+    for pet in pets:
+        pet_data = {"pet_id": pet.pet_id, "pet_name": pet.pet_name, "data": []}
+
+        for check_in in pet.check_ins:
+            pet_data["data"].append({"date_hiked": check_in.date_hiked.isoformat(), "miles_completed": check_in.miles_completed})
+        
+        check_in_data.append(pet_data)
+
+
+
+    # for check_in in check_ins_by_user:
+    #     check_in_data = {}
+    #     check_in_data["petCheckIns"][check_in.pet_id]["date_hiked"].append(check_in.date_hiked)
+    #     check_in_data["petCheckIns"][check_in.pet_id]["miles_completed"].append(check_in.miles_completed)
+        
+
+    # check_in_schema = CheckInSchema(many=True)
+    # check_ins_by_user_json = check_in_schema.dump(check_ins_by_user)
+
+    return jsonify({"petCheckIns": check_in_data})
+
 
 # @app.route("/pet-check-ins.json")
 # def get_pet_check_ins_json():

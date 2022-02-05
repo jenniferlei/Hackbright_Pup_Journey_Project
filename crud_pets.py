@@ -26,7 +26,9 @@ def edit_pet():
 def get_pets_by_user_id(user_id):
     """Return all pets by user_id."""
 
-    return db.session.query(Pet).filter_by(user_id=user_id).all()
+    return (db.session.query(Pet).filter_by(user_id=user_id)
+                                .options(db.joinedload('check_ins'))
+                                .all())
 
 
 def get_pet_by_id(pet_id):

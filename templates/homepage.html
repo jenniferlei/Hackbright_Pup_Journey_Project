@@ -1,5 +1,13 @@
 {% extends 'base.html' %} {% block head %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+  {# ChartJS #}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+
+  {# If you want to use time scales, you have to import a date library and the Chart.js adapter #}
+  <script src="https://cdn.jsdelivr.net/npm/luxon@2.0.2/build/global/luxon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.1.0/dist/chartjs-adapter-luxon.min.js"></script>
+
+  {# randomColor: generate random colors #}
+  <script src="https://cdn.jsdelivr.net/npm/randomcolor@0.6.2/randomColor.js"></script>
 {% endblock %} {% block title %}Pup Journey Home{% endblock %} {% block body %}
 {% if "user_email" in session %}
 <div class="container">
@@ -67,8 +75,11 @@
           role="tabpanel"
           aria-labelledby="nav-graph-tab"
         >
-          <canvas id="summary-chart"></canvas>
+          <canvas id="check-in-graph"></canvas>
         </div>
+        <!-- End graph panel -->
+
+
         <!-- Begin map panel -->
         <div
           class="tab-pane fade"
@@ -78,6 +89,9 @@
         >
           map
         </div>
+        <!-- End map panel -->
+
+
         <!-- Begin check in panel -->
         <div
           class="tab-pane fade"
@@ -85,8 +99,14 @@
           role="tabpanel"
           aria-labelledby="nav-checkins-tab"
         >
-          check-ins
+          <div class="card card-body">
+            <ul class="no-bullets" id="homepage-check-ins-list">
+
+            </ul>
+          </div>
         </div>
+        <!-- End check in panel -->
+
         <!-- Begin summary panel -->
         <div
           class="tab-pane fade"
@@ -114,7 +134,7 @@
           <br>Check Ins:
           <ul>
             <li>Be able to check in from homepage</li>
-            <li>Be able to filter check ins by date/hike/pet</li>
+            <li>Be able to filter check ins by date/hike/pet or change formatting</li>
             <li>Be able to view last 5 check ins from pet profile</li>
             <li>Update model so more than one pet can be on one check in</li>
           </ul>
@@ -124,6 +144,8 @@
           </ul>
           </p>
         </div>
+      <!-- End summary panel -->
+
       </div>
     </div>
 
@@ -154,5 +176,6 @@
 </div>
 {% endif %} {% endblock %} {% block js %}
 <script src="/static/js/homepage.js"></script>
+<script src="/static/js/chart.js"></script>
 <script src="/static/js/petProfile.jsx" type="text/jsx"></script>
 {% endblock %}

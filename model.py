@@ -192,7 +192,7 @@ class PetSchema(ma.SQLAlchemyAutoSchema):
         model = Pet
         include_fk = True
         load_instance = True
-
+    check_ins = fields.List(fields.Nested("CheckInSchema", exclude=("pet",)))
 
 class HikeSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
