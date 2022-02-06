@@ -52,6 +52,26 @@ def all_hikes():
     )
 
 
+@app.route("/dashboard")
+def dashboard():
+    """View dashboard."""
+
+    if "user_email" in session:
+        user = crud_users.get_user_by_email(session["user_email"])
+        pets = crud_pets.get_pets_by_user_id(user.user_id)
+        hikes = crud_hikes.get_hikes()
+        check_ins = crud_check_ins.get_check_ins_by_user_id(user.user_id)
+        bookmarks_lists = crud_bookmarks_lists.get_bookmarks_lists_by_user_id(
+            user.user_id
+        )
+
+        return render_template("dashboard.html", pets=pets, hikes=hikes, check_ins=check_ins, bookmarks_lists=bookmarks_lists)
+    else:
+        flash("You must log in to view your dashboard.")
+
+        return redirect("/")
+
+
 @app.route("/hikes/search")
 def find_hikes():
     """Search for hikes"""
@@ -282,10 +302,18 @@ def edit_pet():
         pet = crud_pets.get_pet_by_id(pet_id)
 
         pet.pet_name = request.form.get("pet_name")
-        pet.gender = request.form.get("gender")
-        pet.birthday = request.form.get("birthday")
-        pet.breed = request.form.get("breed")
+
+        gender = request.form.get("gender")
+        birthday = request.form.get("birthday")
+        breed = request.form.get("breed")
         my_file = request.files["my_file"]
+
+        if gender != "":
+            pet.gender = gender
+        if birthday != "":
+            pet.birthday = birthday
+        if breed != "":
+            pet.breed = breed
 
         # if user uploads new image file, delete old image from cloudinary
         # then upload new image
@@ -340,7 +368,7 @@ def delete_pet():
         db.session.delete(pet)
         db.session.commit()
 
-    return redirect("/")
+    return redirect(request.referrer)
 
 
 @app.route("/edit-check-in", methods=["POST"])
@@ -512,8 +540,8 @@ def remove_hike():
     return redirect(request.referrer)
 
 
-@app.route("/hikes/<hike_id>/check-in", methods=["POST"])
-def add_check_in(hike_id):
+@app.route("/check-in", methods=["POST"])
+def add_check_in():
     """Add check in for a hike."""
 
     logged_in_email = session.get("user_email")
@@ -521,6 +549,7 @@ def add_check_in(hike_id):
     if logged_in_email is None:
         flash("You must log in to check in.")
     else:
+        hike_id = request.form.get("hike_id")
         hike = crud_hikes.get_hike_by_id(hike_id)
         pet_id = request.form.get("pet_id")
         pet = crud_pets.get_pet_by_id(pet_id)
@@ -558,7 +587,7 @@ def add_check_in(hike_id):
         db.session.commit()
         flash(f"Success! {pet.pet_name} has been checked into {hike.hike_name}.")
 
-    return redirect(f"/hikes/{hike_id}")
+    return redirect(request.referrer)
 
 
 @app.route("/hikes/<hike_id>/bookmark", methods=["POST"])
@@ -726,7 +755,9 @@ def get_check_ins_by_pets_json():
     for pet in pets:
         pet_data = {"pet_id": pet.pet_id, "pet_name": pet.pet_name, "data": []}
 
-        for check_in in pet.check_ins:
+        sorted_check_ins = sorted(pet.check_ins, key=lambda x: x.date_hiked, reverse=True)
+
+        for check_in in sorted_check_ins:
             pet_data["data"].append({"date_hiked": check_in.date_hiked.isoformat(), "miles_completed": check_in.miles_completed})
         
         check_in_data.append(pet_data)

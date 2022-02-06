@@ -17,10 +17,16 @@ fetch("/check-ins-by-pets.json")
         y: checkIn.miles_completed,
       }));
 
+      const lineColor = randomColor();
+
       all_data.push({
         label: label,
         data: data,
         fill: false,
+        lineTension: 0.4,
+        radius: 6,
+        borderColor: lineColor,
+        backgroundColor: lineColor,
       });
     }
 
@@ -38,8 +44,11 @@ fetch("/check-ins-by-pets.json")
         datasets: all_data,
       },
       options: {
-        title: { display: true, position: "top", text: "Pup Journey" },
-        legend: { display: true, position: "bottom" },
+        plugins: {
+          title: { display: true, position: "top", text: "Pup Journey" },
+          legend: { display: true, position: "bottom" },
+        },
+
         scales: {
           x: {
             type: "time",
@@ -48,16 +57,17 @@ fetch("/check-ins-by-pets.json")
               unit: "day",
             },
             display: true,
-            scaleLabel: {
+            title: {
               display: true,
-              labelString: "Date",
+              text: "Date",
             },
           },
+
           y: {
             display: true,
-            scaleLabel: {
+            title: {
               display: true,
-              labelString: "Miles",
+              text: "Miles",
             },
           },
         },

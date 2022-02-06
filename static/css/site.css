@@ -1,4 +1,4 @@
-body > .everythingContainer {
+body > .welcome-page {
   background-color: rgb(134, 134, 134);
 }
 
@@ -28,11 +28,17 @@ body > .everythingContainer {
   font-size: 5em;
 }
 
-.btn-inline {
-  margin: 0 auto;
-  display: inline-block;
-  float: inline-start;
-  box-sizing: border-box;
+.nav-pills .nav-link.active {
+  background-color: rgb(48, 48, 48);
+}
+
+.nav-pills .nav-link {
+  color: rgb(48, 48, 48);
+}
+
+.check-ins-scroll {
+  height: 7em;
+  overflow-y: scroll;
 }
 
 ul.no-bullets {

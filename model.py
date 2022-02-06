@@ -159,6 +159,23 @@ class BookmarksList(db.Model):
         return f"<Bookmarks List bookmarks_list_id={self.bookmarks_list_id} bookmarks_list_name={self.bookmarks_list_name}>"
 
 
+# class PetCheckIn(db.Model):
+#     """Association table for a pet on a check in."""
+
+#     __tablename__ = "pets_check_ins"
+
+#     pet_check_in_id = db.Column(
+#         db.Integer, autoincrement=True, primary_key=True, nullable=False
+#     )
+#     pet_id = db.Column(db.Integer, db.ForeignKey("pets.pet_id"), nullable=False)
+#     check_in_id = db.Column(
+#         db.Integer, db.ForeignKey("check_ins.check_in_id"), nullable=False
+#     )
+
+#     def __repr__(self):
+#         return f"<Pet on Check In pet_check_in_id={self.pet_check_in_id} pet_id={self.pet_id} check_in_id={self.check_in_id}>"
+
+
 class HikeBookmarksList(db.Model):
     """Association table for a hike on a bookmarks list."""
 
