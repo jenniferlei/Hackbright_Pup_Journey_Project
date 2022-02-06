@@ -1,4 +1,7 @@
-{% extends 'base.html' %} {% block head %} {# ChartJS #}
+{% extends 'base.html' %} {% block head %} 
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+{# ChartJS #}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
 
 {# If you want to use time scales, you have to import a date library and the
@@ -260,52 +263,57 @@ Chart.js adapter #}
 <!-- END MODALS -->
 
 <div class="container">
+
   <!-- start tabs and panels -->
   <div class="d-flex align-items-start">
+
     <!-- start tabs -->
-    <div
+    <nav
       class="nav flex-column nav-pills me-3 mt-4"
       id="v-pills-tab"
       role="tablist"
       aria-orientation="vertical"
     >
-      <button
-        class="nav-link active"
+      <a
+        class="nav-link"
         id="v-pills-profile-tab"
-        data-bs-toggle="pill"
+        data-bs-toggle="tab"
         data-bs-target="#v-pills-profile"
+        href="#v-pills-profile"
         type="button"
         role="tab"
         aria-controls="v-pills-profile"
         aria-selected="true"
       >
         Profile
-      </button>
-      <button
+        </a>
+      <a
         class="nav-link"
         id="v-pills-activity-tab"
-        data-bs-toggle="pill"
+        data-bs-toggle="tab"
         data-bs-target="#v-pills-activity"
+        href="#v-pills-activity"
         type="button"
         role="tab"
         aria-controls="v-pills-activity"
         aria-selected="false"
       >
         Activity
-      </button>
-      <button
+        </a>
+      <a
         class="nav-link"
         id="v-pills-bookmarks-tab"
-        data-bs-toggle="pill"
+        data-bs-toggle="tab"
         data-bs-target="#v-pills-bookmarks"
+        href="#v-pills-bookmarks"
         type="button"
         role="tab"
         aria-controls="v-pills-bookmarks"
         aria-selected="false"
       >
         Bookmarks
-      </button>
-    </div>
+        </a>
+    </nav>
     <!-- end tabs -->
     <!-- start panels -->
     <div class="tab-content mt-4" id="v-pills-tabContent" style="width: 100vw">
@@ -844,7 +852,6 @@ Chart.js adapter #}
   <!-- end tabs and panels -->
 </div>
 {% endblock %} {% block js %}
-<script src="/static/js/homepage.js"></script>
-<script src="/static/js/chart.js"></script>
+<script src="/static/js/dashboard.js"></script>
 <script src="/static/js/petProfile.jsx" type="text/jsx"></script>
 {% endblock %}

@@ -189,7 +189,7 @@ def add_bookmarks_list():
 
         flash(f"Success! {bookmarks_list_name} has been added to your bookmarks.")
 
-        return redirect("/bookmarks")
+        return redirect(request.referrer)
     else:
         flash("You must log in to add a bookmark list.")
 
