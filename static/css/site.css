@@ -3,7 +3,7 @@ body > .welcome-page {
 }
 
 .pet-profile-img {
-  height: 6em;
+  height: 10em;
 }
 
 .imageContainer {
@@ -37,12 +37,39 @@ body > .welcome-page {
 }
 
 .check-ins-scroll {
-  height: 7em;
+  height: 10em;
   overflow-y: scroll;
+}
+
+.square-button {
+  height: 10em;
+  width: 10em;
+  display: inline-block;
+  margin-right: 1em;
+  margin-bottom: 1em;
 }
 
 ul.no-bullets {
   list-style-type: none; /* Remove bullets */
   padding: 0; /* Remove padding */
   margin-left: 1em; /* Remove margins */
+}
+
+table#pet-profile-table {
+  width: 20em;
+}
+
+#pet-profile-div {
+  display: inline-block;
+}
+
+#map-container {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
 }

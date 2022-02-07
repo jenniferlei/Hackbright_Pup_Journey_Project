@@ -211,7 +211,7 @@ def edit_bookmarks_list():
         )
         bookmarks_list.bookmarks_list_name = request.form.get("bookmarks_list_name")
 
-        flash(f"Success! Your list has been renamed to {bookmarks_list_name}.")
+        flash(f"Success! Your list has been renamed to {bookmarks_list.bookmarks_list_name}.")
 
         db.session.commit()
 
@@ -590,32 +590,22 @@ def add_check_in():
     return redirect(request.referrer)
 
 
-@app.route("/hikes/<hike_id>/bookmark", methods=["POST"])
-def add_hike_to_bookmark(hike_id):
+@app.route("/add-hike", methods=["POST"])
+def add_hike_to_bookmark():
     """Add hike to a bookmarks list"""
     logged_in_email = session.get("user_email")
 
     if logged_in_email is None:
         flash("You must log in to bookmark a hike.")
     else:
+        hike_id = request.form.get("hike_id")
         user = crud_users.get_user_by_email(logged_in_email)
         hike = crud_hikes.get_hike_by_id(hike_id)
+        bookmarks_list_id = request.form.get("bookmarks_list_id")
         bookmarks_list_name = request.form.get("bookmarks_list_name")
 
-        # check list of all of user's bookmarks lists
-        # if bookmarks list object exists, add hike to bookmarks list
-        # if not, create bookmarks list then add hike
-        bookmarks_lists_names_by_user = (
-            crud_bookmarks_lists.get_names_of_bookmarks_lists_by_user_id(user.user_id)
-        )
-
-        if bookmarks_list_name in bookmarks_lists_names_by_user:
-            existing_bookmarks_list_id = crud_bookmarks_lists.get_bookmarks_list_by_user_id_and_bookmarks_list_name(
-                user.user_id, bookmarks_list_name
-            ).bookmarks_list_id
-            hike_bookmark = crud_hikes_bookmarks_lists.create_hike_bookmarks_list(
-                hike_id, existing_bookmarks_list_id
-            )
+        if bookmarks_list_id != None and bookmarks_list_id != "":
+            hike_bookmark = crud_hikes_bookmarks_lists.create_hike_bookmarks_list(hike_id, bookmarks_list_id)
         else:
             hikes = [hike]
             hike_bookmark = crud_bookmarks_lists.create_bookmarks_list(
@@ -626,10 +616,10 @@ def add_hike_to_bookmark(hike_id):
         db.session.commit()
 
         flash(
-            f"A bookmark to {hike.hike_name} has been added to your {bookmarks_list_name} bookmark list."
+            f"A bookmark to {hike.hike_name} has been added to your list."
         )
 
-    return redirect(f"/hikes/{hike_id}")
+    return redirect(request.referrer)
 
 
 @app.route("/hikes/<hike_id>/comments", methods=["POST"])

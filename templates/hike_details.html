@@ -262,13 +262,10 @@ endblock %} {% block body %}
                 </div>
                 <div class="modal-body">
                   <form
-                    action="/hikes/{{ hike.hike_id }}/bookmark"
-                    id="form-hike-new-bookmark-list"
+                    action="/add-hike"
                     method="POST"
                   >
-                    <h4 id="form-hike-new-bookmark-list-heading">
-                      Add to New Bookmark List
-                    </h4>
+                    <h4>Add to New Bookmark List</h4>
 
                     <div class="mb-3">
                       <input
@@ -284,6 +281,8 @@ endblock %} {% block body %}
                       <button
                         class="btn btn-sm btn-primary btn-block"
                         type="submit"
+                        name="hike_id"
+                        value="{{ hike.hike_id }}"
                       >
                         Save
                       </button>
@@ -291,18 +290,15 @@ endblock %} {% block body %}
                   </form>
 
                   <form
-                    action="/hikes/{{ hike.hike_id }}/bookmark"
-                    id="form-hike-existing-bookmark-list"
+                    action="/add-hike"
                     method="POST"
                   >
-                    <h4 id="form-hike-existing-bookmark-list-heading">
-                      Add to Existing Bookmark List
-                    </h4>
+                    <h4>Add to Existing Bookmark List</h4>
 
                     <div class="mb-3">
-                      <select name="bookmarks_list_name" class="form-control input-lg">
+                      <select name="bookmarks_list_id" class="form-control input-lg">
                         {% for bookmarks_list in bookmarks_list_by_user %}
-                        <option value="{{ bookmarks_list.bookmarks_list_name }}">
+                        <option value="{{ bookmarks_list.bookmarks_list_id }}">
                           {{ bookmarks_list.bookmarks_list_name }}
                         </option>
                         {% endfor %}
@@ -313,6 +309,8 @@ endblock %} {% block body %}
                       <button
                         class="btn btn-sm btn-primary btn-block"
                         type="submit"
+                        name="hike_id"
+                        value="{{ hike.hike_id }}"
                       >
                         Save
                       </button>
@@ -468,8 +466,7 @@ endblock %} {% block body %}
                 </div>
                 <div class="modal-body">
                   <form
-                    action="/hikes/{{ hike.hike_id }}/check-in"
-                    id="form-check-in"
+                    action="/check-in"
                     method="POST"
                   >
                     <div class="mb-3">
@@ -533,7 +530,7 @@ endblock %} {% block body %}
                       />
                     </div>
                   <div class="modal-footer">
-                    <button class="btn btn-sm btn-primary btn-block" type="submit">Submit</button>
+                    <button class="btn btn-sm btn-primary btn-block" type="submit" name="hike_id" value="{{ hike.hike_id }}">Submit</button>
                     <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
                   </div>
                   </form>

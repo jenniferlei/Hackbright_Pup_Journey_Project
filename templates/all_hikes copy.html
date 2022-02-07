@@ -8,12 +8,9 @@
 
   <div class="row align-items-start">
 
-    <!-- START SEARCH BAR -->
+    <div class="col-3 card card-body" id="search-side-bar">
+      <h2>Search</h2>
 
-    <div class="card col-3 mt-4">
-      <div class="card-header"><h3>Search</h3></div>
-
-      <div class="card-body">
       <small><a href="/hikes">View all hikes</a></small>
 
       <form method="GET" action="/hikes/search">
@@ -127,41 +124,13 @@
         </div>
 
       </form>
-      </div>
     </div>
-
-    <!-- END SEARCH BAR -->
   
-    <div class="col-8 offset-1 card card-body mt-4" id="all-hikes">
+    <div class="col-8 offset-1 card card-body" id="all-hikes">
 
       <h2>Hikes</h2>
 
-      <h5>Find a Hike by State</h5>
-
-      <div class="input-group">
-      {% for state in states|sort() %}
-      <form method="GET" action="/hikes/search">
-        <button type="submit" name="state" value="{{ state }}" class="btn btn-outline-dark square-button">{{ state }}</button>
-      </form>
-      {% endfor %}
-      </div>
-      
-
-      <h5>Find a Hike by Area</h5>
-
-      <div class="input-group">
-      {% for area in areas|sort() %}
-      <form method="GET" action="/hikes/search">
-        <button type="submit" name="area" value="{{ area }}" class="btn btn-outline-dark square-button">{{ area }}</button>
-      </form>
-      {% endfor %}
-      </div>
-
-
-      
-      
-
-      <!-- <ul class="no-bullets">
+      <ul class="no-bullets">
         {% for hike in search_hikes %}
           <li>
             <a href="/hikes/{{ hike.hike_id }}">
@@ -169,7 +138,7 @@
             </a>
           </li>
         {% endfor %}
-      </ul> -->
+      </ul>
     </div>
 
   </div>

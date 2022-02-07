@@ -121,85 +121,85 @@ Chart.js adapter #}
           aria-label="Close"
         ></button>
       </div>
-      <form
-                    action="/check-in"
-                    method="POST"
-                  >
-                    <div class="mb-3">
-                      <label for="hike_id" class="sr-only">Hike</label>
-                      <select name="hike_id" class="form-control input-lg">
-                        {% for hike in hikes|sort(attribute='hike_name') %}
-                        <option value="{{ hike.hike_id }}">{{ hike.hike_name }}</option>
-                        {% endfor %}
-                      </select>
-                    </div>
+        <form
+          action="/check-in"
+          method="POST"
+        >
+          <div class="mb-3">
+            <label for="hike_id" class="sr-only">Hike</label>
+            <select name="hike_id" class="form-control input-lg">
+              {% for hike in hikes|sort(attribute='hike_name') %}
+              <option value="{{ hike.hike_id }}">{{ hike.hike_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
 
 
-                    <div class="mb-3">
-                      <label for="pet_id" class="sr-only">Pet</label>
-                      <select name="pet_id" class="form-control input-lg">
-                        {% for pet in pets %}
-                        <option value="{{ pet.pet_id }}">{{ pet.pet_name }}</option>
-                        {% endfor %}
-                      </select>
-                    </div>
+          <div class="mb-3">
+            <label for="pet_id" class="sr-only">Pet</label>
+            <select name="pet_id" class="form-control input-lg">
+              {% for pet in pets %}
+              <option value="{{ pet.pet_id }}">{{ pet.pet_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
 
-                    <div class="mb-3">
-                      <label for="date_hiked" class="sr-only">Date Hiked</label>
-                      <input
-                        type="date"
-                        name="date_hiked"
-                        class="form-control input-lg"
-                        required
-                      />
-                    </div>
+          <div class="mb-3">
+            <label for="date_hiked" class="sr-only">Date Hiked</label>
+            <input
+              type="date"
+              name="date_hiked"
+              class="form-control input-lg"
+              required
+            />
+          </div>
 
-                    <div class="mb-3">
-                      <label for="date_started" class="sr-only">Date Started</label>
-                      <input
-                        type="date"
-                        name="date_started"
-                        class="form-control input-lg"
-                      />
-                    </div>
+          <div class="mb-3">
+            <label for="date_started" class="sr-only">Date Started</label>
+            <input
+              type="date"
+              name="date_started"
+              class="form-control input-lg"
+            />
+          </div>
 
-                    <div class="mb-3">
-                      <label for="date_completed" class="sr-only">Date Completed</label>
-                      <input
-                        type="date"
-                        name="date_completed"
-                        class="form-control input-lg"
-                      />
-                    </div>
+          <div class="mb-3">
+            <label for="date_completed" class="sr-only">Date Completed</label>
+            <input
+              type="date"
+              name="date_completed"
+              class="form-control input-lg"
+            />
+          </div>
 
-                    <div class="mb-3">
-                      <label for="miles_completed" class="sr-only"
-                        >Miles Completed</label
-                      >
-                      <input
-                        type="number"
-                        step=".1"
-                        min="0"
-                        name="miles_completed"
-                        class="form-control input-lg"
-                      />
-                    </div>
+          <div class="mb-3">
+            <label for="miles_completed" class="sr-only"
+              >Miles Completed</label
+            >
+            <input
+              type="number"
+              step=".1"
+              min="0"
+              name="miles_completed"
+              class="form-control input-lg"
+            />
+          </div>
 
-                    <div class="mb-3">
-                      <label for="total_time" class="sr-only">Total Time (Hours)</label>
-                      <input
-                        type="number"
-                        step=".1"
-                        min="0"
-                        name="total_time"
-                        class="form-control input-lg"
-                      />
-                    </div>
-                  <div class="modal-footer">
-                    <button class="btn btn-sm btn-primary btn-block" type="submit">Submit</button>
-                    <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
-                  </div>
-                  </form>
+          <div class="mb-3">
+            <label for="total_time" class="sr-only">Total Time (Hours)</label>
+            <input
+              type="number"
+              step=".1"
+              min="0"
+              name="total_time"
+              class="form-control input-lg"
+            />
+          </div>
+        <div class="modal-footer">
+          <button class="btn btn-sm btn-primary btn-block" type="submit">Submit</button>
+          <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
+        </div>
+        </form>
       </div>
     </div>
   </div>
@@ -269,7 +269,7 @@ Chart.js adapter #}
 
     <!-- start tabs -->
     <nav
-      class="nav flex-column nav-pills me-3 mt-4"
+      class="nav flex-column nav-pills mt-4"
       id="v-pills-tab"
       role="tablist"
       aria-orientation="vertical"
@@ -317,6 +317,7 @@ Chart.js adapter #}
     <!-- end tabs -->
     <!-- start panels -->
     <div class="tab-content mt-4" id="v-pills-tabContent" style="width: 100vw">
+      
       <!-- start profile (pet profiles) panel -->
       <div
         class="tab-pane fade show active card"
@@ -324,8 +325,9 @@ Chart.js adapter #}
         role="tabpanel"
         aria-labelledby="v-pills-profile-tab"
       >
-        <div class="card-header">
-          <div style="clear: both">
+        
+        <div class="card-header">  <!-- start pet profile header -->
+          <div class="clearfix">
             <h3 style="float: left">Pet Profiles</h3>
             <button
               type="button"
@@ -337,57 +339,61 @@ Chart.js adapter #}
               <small>+ Pet</small>
             </button>
           </div>
-          <hr style="width: 0" />
-        </div>
-
-        <div class="card-body">
+          
+        </div>  <!-- end pet profile header -->
+        
+        <div class="card-body">  <!-- start pet profile card body -->
+          <div>
           {% if pets != [] %}
-          <table class="table">
-            <tbody>
-              {% for pet in pets|sort(attribute='birthday') %}
-              <tr>
-                <td>
-                  <h6
-                    class="card-title pet-profile-header"
-                    id="pet-header-{{ pet.pet_id }}"
-                  >
-                    {{ pet.pet_name }}
-                  </h6>
-                  <!-- pet image -->
-                  <div class="row">
-                    <div class="col">
-                      <img
-                        src="{{ pet.pet_imgURL }}"
-                        alt="profile"
-                        class="pet-profile-img"
-                        id="pet-img-{{ pet.pet_id }}"
-                      />
-                      <div class="input-group">
-                        <button
-                          class="btn btn-link btn-sm"
-                          data-bs-toggle="modal"
-                          data-bs-target="#modal-edit-{{ pet.pet_id }}"
-                        >
-                          <small>Edit</small>
-                        </button>
-
-                        <form
-                          action="/delete-pet"
-                          class="delete-form"
-                          id="form-delete-pet"
-                          method="POST"
-                        >
+          <div id="pet-profile-div">
+            <table class="table" id="pet-profile-table"> <!-- start pet profile table -->
+              <tbody>
+                {% for pet in pets|sort(attribute='birthday') %}
+                <tr>
+                  <td style="width:10em">
+                    <h6
+                      class="card-title pet-profile-header"
+                      id="pet-header-{{ pet.pet_id }}"
+                    >
+                      {{ pet.pet_name }}
+                    </h6>
+                    <!-- pet image -->
+                    <div class="row">
+                      <div class="col">
+                        <img
+                          src="{{ pet.pet_imgURL }}"
+                          alt="profile"
+                          class="pet-profile-img"
+                          id="pet-img-{{ pet.pet_id }}"
+                        />
+                        <div class="input-group">
                           <button
                             class="btn btn-link btn-sm"
-                            type="submit"
-                            name="delete"
-                            value="{{ pet.pet_id }}"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-edit-{{ pet.pet_id }}"
                           >
-                            <small>Delete</small>
+                            <small>Edit</small>
                           </button>
-                        </form>
+
+                          <form
+                            action="/delete-pet"
+                            class="delete-form"
+                            id="form-delete-pet"
+                            method="POST"
+                          >
+                            <button
+                              class="btn btn-link btn-sm"
+                              type="submit"
+                              name="delete"
+                              value="{{ pet.pet_id }}"
+                            >
+                              <small>Delete</small>
+                            </button>
+                          </form>
+                        </div>
                       </div>
                     </div>
+                  </td>
                     <!-- START EDIT PET MODAL -->
                     <div
                       class="modal fade"
@@ -501,37 +507,37 @@ Chart.js adapter #}
                         </div>
                       </div>
                     </div>
-
                     <!-- END EDIT PET MODAL -->
-
-                    <div class="col">
-                      <small>
-                        {% if pet.breed != None and pet.breed != "" %}
-                        <div class="row">{{ pet.breed }}</div>
-                        {% endif %} {% if pet.gender != None and pet.gender !=
-                        "" %}
-                        <div class="row">{{ pet.gender }}</div>
-                        {% endif %} {% if pet.birthday != None and pet.birthday
-                        != "" %}
-                        <div class="row">
-                          🎂 {{ pet.birthday.strftime('%b %d, %Y') }}
-                        </div>
-                        {% endif %}
-                      </small>
+                <td style="width:10em">
+                  <small>
+                    {% if pet.breed != None and pet.breed != "" %}
+                    <div class="row">{{ pet.breed }}</div>
+                    {% endif %} {% if pet.gender != None and pet.gender !=
+                    "" %}
+                    <div class="row">{{ pet.gender }}</div>
+                    {% endif %} {% if pet.birthday != None and pet.birthday
+                    != "" %}
+                    <div class="row">
+                      🎂 {{ pet.birthday.strftime('%b %d, %Y') }}
                     </div>
-                  </div>
-                </td>
-                <td>
-                    So much space. What should I put here :/
+                    {% endif %}
+                  </small>
                 </td>
               </tr>
               {% endfor %}
             </tbody>
-          </table>
-          {% else %} {% endif %}
+          </table> 
+        </div>  <!-- start pet profile table -->
+
+        <div id="map-container">
+          Map here?
         </div>
-      </div>
-      <!-- end profile (pet profile and check ins) panel -->
+
+          </div>
+          {% else %} You have no pet profiles 🐕 {% endif %}
+        </div>   <!-- end pet profile card body -->
+      </div> <!-- end profile (pet profile and check ins) panel -->
+
       <!-- start activity (check ins, graph and map) panel -->
       <div
         class="tab-pane fade card"
@@ -540,7 +546,7 @@ Chart.js adapter #}
         aria-labelledby="v-pills-activity-tab"
       >
         <div class="card-header">
-          <div style="clear: both">
+          <div class="clearfix">
             <h3 style="float: left">Check Ins</h3>
             <button
               type="button"
@@ -552,164 +558,162 @@ Chart.js adapter #}
               <small>+ Check In</small>
             </button>
           </div>
-          <hr style="width: 0" />
         </div>
         <div class="card-body">
             {% if check_ins != [] %}
-            <div class="col">
-                <table class="table">
-                    <tbody>
-                    {% for pet in pets|sort(attribute='birthday') %}
-                    <tr>
-                        <td>
-                        <h6
-                            class="card-title pet-profile-header"
-                            id="pet-header-{{ pet.pet_id }}"
-                        >
-                            {{ pet.pet_name }}
-                        </h6>
-                        <!-- pet image -->
-                            <div class="col">
-                            <img
-                                src="{{ pet.pet_imgURL }}"
-                                alt="profile"
-                                class="pet-profile-img"
-                                id="pet-img-{{ pet.pet_id }}"
-                            />
-                            </div>
+            <div class="row"><canvas id="check-in-graph"></canvas></div>
+            <div class="row">
+              <table class="table">
+                <tbody>
+                  {% for pet in pets|sort(attribute='birthday') %}
+                  <tr>
+                    <td>
+                      <h6
+                          class="card-title pet-profile-header"
+                          id="pet-header-{{ pet.pet_id }}"
+                      >
+                          {{ pet.pet_name }}
+                      </h6>
+                      <!-- pet image -->
+                      <img
+                          src="{{ pet.pet_imgURL }}"
+                          alt="profile"
+                          class="pet-profile-img"
+                          id="pet-img-{{ pet.pet_id }}"
+                      />
+                    </td>
 
-                        </td>
-
-                        <td>
-                        {% if pet.check_ins != [] %}
-                            <div class="check-ins-scroll">
-                                
-                            {% for check_in in
-                            pet.check_ins|sort(attribute='date_hiked', reverse=True)
-                            %}
-                                
-                                <small
-                                >{{check_in.date_hiked.strftime('%b %d, %Y') }} hiked {% if check_in.miles_completed != None %} {{ check_in.miles_completed }} miles {% endif %}
-                                at <a href="/hikes/{{ check_in.hike_id }}">{{ check_in.hike.hike_name }}</a> 
-                                    
-                                    <div class="input-group">
-                                    <button class="btn btn-link btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-edit-check-in-{{ check_in.check_in_id }}"><small>Edit</small></button><form
-                                        action="/delete-check-in"
-                                        class="delete-form"
-                                        id="form-delete-check-in"
-                                        method="POST"
-                                    ><button
-                                        class="btn btn-link btn-sm"
-                                        type="submit"
-                                        name="delete"
-                                        value="{{ check_in.check_in_id }}"
-                                        ><small>
-                                        Delete
-                                        </small></button></form></div>
-
-                                
-                                    <!-- Begin Edit Check In Modal -->
-                                    <div class="modal fade" id="modal-edit-check-in-{{ check_in.check_in_id }}" tabindex="-1" aria-labelledby="modal-edit-check-in-{{ check_in.check_in_id }}-label" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                            <h5 class="modal-title" id="modal-edit-check-in-{{ check_in.check_in_id }}-label">Edit {{ check_in.pet.pet_name }}'s check in to this hike</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-
-                                            <form
-                                                action="/edit-check-in"
-                                                method="POST"
-                                            >
-                                                
-                                                <div class="mb-3">
-                                                <label for="date_hiked" class="sr-only">Date Hiked</label>
-                                                <input
-                                                    type="date"
-                                                    name="date_hiked"
-                                                    value="{{ check_in.date_hiked }}"
-                                                    class="form-control input-lg"
-                                                />
-                                                </div>
-
-                                                <div class="mb-3">
-                                                <label for="date_started" class="sr-only">Date Started</label>
-                                                <input
-                                                    type="date"
-                                                    name="date_started"
-                                                    value="{{ check_in.date_started }}"
-                                                    class="form-control input-lg"
-                                                />
-                                                </div>
-
-                                                <div class="mb-3">
-                                                <label for="date_completed" class="sr-only">Date Completed</label>
-                                                <input
-                                                    type="date"
-                                                    name="date_completed"
-                                                    value="{{ check_in.date_completed }}"
-                                                    class="form-control input-lg"
-                                                />
-                                                </div>
-
-                                                <div class="mb-3">
-                                                <label for="miles_completed" class="sr-only"
-                                                    >Miles Completed</label
-                                                >
-                                                <input
-                                                    type="number"
-                                                    step=".1"
-                                                    min="0"
-                                                    name="miles_completed"
-                                                    value="{{ check_in.miles_completed }}"
-                                                    class="form-control input-lg"
-                                                />
-                                                </div>
-
-                                                <div class="mb-3">
-                                                <label for="total_time" class="sr-only">Total Time (Hours)</label>
-                                                <input
-                                                    type="number"
-                                                    step=".1"
-                                                    min="0"
-                                                    name="total_time"
-                                                    value="{{ check_in.total_time }}"
-                                                    class="form-control input-lg"
-                                                />
-                                                </div>
-                                            <div class="modal-footer">
-                                                <button class="btn btn-sm btn-primary btn-block" type="submit" name="check_in_id" value="{{ check_in.check_in_id }}">Submit</button>
-                                                <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
-                                            </div>
-                                            </form>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </div>
-                                    <!-- End Edit Check In Modal -->
-
-
-
-
+                    <td>
+                    {% if pet.check_ins != [] %}
+                      <!-- START CHECK IN SCROLL -->
+                      <div class="check-ins-scroll">
+                        {% for check_in in pet.check_ins|sort(attribute='date_hiked', reverse=True) %}
+                              
+                        <small>
+                          {{check_in.date_hiked.strftime('%b %d, %Y') }} hiked {% if check_in.miles_completed != None %} {{ check_in.miles_completed }} miles {% endif %}
+                        at <a href="/hikes/{{ check_in.hike_id }}">{{ check_in.hike.hike_name }}</a>
+                        </small>
+                          
+                          <div class="input-group">
+                            <button class="btn btn-link btn-sm" data-bs-toggle="modal" data-bs-target="#modal-edit-check-in-{{ check_in.check_in_id }}">
+                              <small>Edit</small>
+                            </button>
+                            
+                            <form
+                              action="/delete-check-in"
+                              class="delete-form"
+                              id="form-delete-check-in"
+                              method="POST"
+                            >
+                              <button
+                                class="btn btn-link btn-sm"
+                                type="submit"
+                                name="delete"
+                                value="{{ check_in.check_in_id }}"
+                              >
+                                <small>
+                                  Delete
                                 </small>
-                            {% endfor %}
-                            </div>
-                        </div>
-                        {% else %}
-                        <small>{{ pet.pet_name }} has no check ins yet!</small>
+                              </button>
+                            </form>
+                          </div>
 
-                        {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                          <!-- Begin Edit Check In Modal -->
+                          <div class="modal fade" id="modal-edit-check-in-{{ check_in.check_in_id }}" tabindex="-1" aria-labelledby="modal-edit-check-in-{{ check_in.check_in_id }}-label" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="modal-edit-check-in-{{ check_in.check_in_id }}-label">Edit {{ check_in.pet.pet_name }}'s check in to this hike</h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+
+                                  <form
+                                    action="/edit-check-in"
+                                    method="POST"
+                                  >
+                                    
+                                    <div class="mb-3">
+                                      <label for="date_hiked" class="sr-only">Date Hiked</label>
+                                      <input
+                                          type="date"
+                                          name="date_hiked"
+                                          value="{{ check_in.date_hiked }}"
+                                          class="form-control input-lg"
+                                      />
+                                    </div>
+
+                                    <div class="mb-3">
+                                      <label for="date_started" class="sr-only">Date Started</label>
+                                      <input
+                                          type="date"
+                                          name="date_started"
+                                          value="{{ check_in.date_started }}"
+                                          class="form-control input-lg"
+                                      />
+                                    </div>
+
+                                    <div class="mb-3">
+                                      <label for="date_completed" class="sr-only">Date Completed</label>
+                                      <input
+                                          type="date"
+                                          name="date_completed"
+                                          value="{{ check_in.date_completed }}"
+                                          class="form-control input-lg"
+                                      />
+                                    </div>
+
+                                    <div class="mb-3">
+                                      <label for="miles_completed" class="sr-only"
+                                          >Miles Completed</label
+                                      >
+                                      <input
+                                          type="number"
+                                          step=".1"
+                                          min="0"
+                                          name="miles_completed"
+                                          value="{{ check_in.miles_completed }}"
+                                          class="form-control input-lg"
+                                      />
+                                    </div>
+
+                                    <div class="mb-3">
+                                      <label for="total_time" class="sr-only">Total Time (Hours)</label>
+                                      <input
+                                          type="number"
+                                          step=".1"
+                                          min="0"
+                                          name="total_time"
+                                          value="{{ check_in.total_time }}"
+                                          class="form-control input-lg"
+                                      />
+                                    </div>
+                                  <div class="modal-footer">
+                                    <button class="btn btn-sm btn-primary btn-block" type="submit" name="check_in_id" value="{{ check_in.check_in_id }}">Submit</button>
+                                    <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
+                                  </div>
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <!-- End Edit Check In Modal -->
+                        {% endfor %}
+                      </div>
+                      <!-- END CHECK IN SCROLL -->
+                  
+                    {% else %}
+                    <small>{{ pet.pet_name }} has no check ins yet!</small>
+
+                    {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
-            <div class="col"><canvas id="check-in-graph"></canvas></div>
             
-          
-          
+
           {% else %}There hasn't been any activity yet! Please add a check in.{% endif %}
         </div>
       </div>
@@ -741,6 +745,7 @@ Chart.js adapter #}
         <ul class="no-bullets">
         {% for bookmarks_list in bookmarks_lists %}
         <li>
+          <div class="input-group">
           <a
             class="btn btn-link"
             data-bs-toggle="collapse"
@@ -752,16 +757,8 @@ Chart.js adapter #}
             {{ bookmarks_list.bookmarks_list_name }}
           </a>
 
-          <a
-            class="btn btn-link btn-sm"
-            data-bs-toggle="collapse"
-            href="#collapse-rename-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
-            role="button"
-            aria-expanded="false"
-            aria-controls="collapse-rename-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
-          >
-            Rename
-          </a>
+          
+            <a class="btn btn-link btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-rename-bookmark-{{ bookmarks_list.bookmarks_list_id }}"><small>Rename</small></a>
 
           <form
             action="/delete-bookmarks-list"
@@ -774,68 +771,167 @@ Chart.js adapter #}
               type="submit"
               name="delete"
               value="{{ bookmarks_list.bookmarks_list_id }}"
-            >
+            ><small>
               Delete
-            </button>
+            </small></button>
           </form>
-
-          <div
-            class="collapse card card-body"
-            id="collapse-rename-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
-          >
-            <form
-              action="/edit-bookmarks-list"
-              class="edit-form"
-              id="form-edit-bookmarks-list"
-              method="POST"
-            >
-              <div>
-                <input
-                  type="text"
-                  name="bookmarks_list_name"
-                  class="form-control input-lg"
-                  placeholder="{{ bookmarks_list.bookmarks_list_name }}"
-                  autofocus
-                  required
-                />
-              </div>
-              <div>
-                <button
-                  class="btn btn-link btn-sm"
-                  type="submit"
-                  name="edit"
-                  value="{{ bookmarks_list.bookmarks_list_id }}"
-                >
-                  Save
-                </button>
-              </div>
-            </form>
           </div>
+
+          <!-- START RENAME BOOKMARK LIST MODAL -->
+          <div
+            class="modal fade"
+            id="collapse-rename-bookmark-{{ bookmarks_list.bookmarks_list_id }}"
+            tabindex="-1"
+            aria-labelledby="modal-rename-bookmark-label"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="modal-rename-bookmark-label">
+                    Rename List
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  
+                  <form
+                    action="/edit-bookmarks-list"
+                    method="POST"
+                  >
+                    <div class="mb-3">
+                      <input
+                        type="text"
+                        name="bookmarks_list_name"
+                        class="form-control input-lg"
+                        value="{{ bookmarks_list.bookmarks_list_name }}"
+                        autofocus
+                        required
+                      />
+                    </div>
+
+                <div class="modal-footer">
+                      <button
+                        class="btn btn-sm btn-primary btn-block mt-4"
+                        type="submit"
+                        name="edit"
+                        value="{{ bookmarks_list.bookmarks_list_id }}"
+                      >
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-secondary btn-block mt-4"
+                        data-bs-dismiss="modal"
+                      >
+                        Close
+                      </button>
+                </div>
+                    </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- END RENAME BOOKMARK LIST MODAL -->
+
 
           <div
             class="collapse card card-body"
             id="collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
           >
-            {% for hike in bookmarks_list.hikes %}
-            <a href="/hikes/{{ hike.hike_id }}" target="_blank"
-              >{{ hike.hike_name }}</a
+            <button
+              type="button"
+              class="btn btn-link btn-sm"
+              data-bs-toggle="modal"
+              data-bs-target="#modal-add-hike"
+              style="text-align: left"
             >
+              <small>+ Hike</small>
+            </button>
 
-            <form
-              action="/remove-hike"
-              class="delete-form"
-              id="form-remove-hike"
-              method="POST"
+            <!-- START ADD HIKE TO BOOKMARK MODAL -->
+            <div
+              class="modal fade"
+              id="modal-add-hike"
+              tabindex="-1"
+              aria-labelledby="modal-add-hike-label"
+              aria-hidden="true"
             >
-              <button
-                class="btn btn-link btn-sm"
-                type="submit"
-                name="delete"
-                value="{{ hike.hike_id }},{{ bookmarks_list.bookmarks_list_id }}"
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="modal-add-hike-label">Add Hike</h5>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body">
+                    <form action="/add-hike" method="POST">
+                      <div class="mb-3">
+                        <label for="hike_id" class="sr-only">Hike</label>
+                        <select name="hike_id" class="form-control input-lg">
+                          {% for hike in hikes|sort(attribute='hike_name') %}
+                          <option value="{{ hike.hike_id }}">{{ hike.hike_name }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+
+                      <div class="modal-footer">
+                        <button
+                          type="submit"
+                          class="btn btn-sm btn-primary btn-block mt-4"
+                          data-bs-dismiss="modal"
+                          name="bookmarks_list_id"
+                          value="{{ bookmarks_list.bookmarks_list_id }}"
+                        >
+                          Save
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-secondary btn-block mt-4"
+                          data-bs-dismiss="modal"
+                        >
+                          Close
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- END ADD HIKE TO BOOKMARK MODAL -->
+
+
+            {% for hike in bookmarks_list.hikes %}
+            <div class="input-group">
+              <a href="/hikes/{{ hike.hike_id }}" target="_blank"
+                >{{ hike.hike_name }}</a
               >
-                Remove
-              </button>
-            </form>
+              <form
+                action="/remove-hike"
+                class="delete-form"
+                id="form-remove-hike"
+                method="POST"
+              >
+                <a
+                  class="btn btn-link btn-sm"
+                  type="submit"
+                  name="delete"
+                  value="{{ hike.hike_id }},{{ bookmarks_list.bookmarks_list_id }}"
+                ><small>
+                  Remove
+                </small></a>
+              </form>
+            </div>
             {% endfor %}
           </div>
         </li>
