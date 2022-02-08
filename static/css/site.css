@@ -1,3 +1,9 @@
+html,
+body {
+  margin: 0px;
+  height: 100%;
+}
+
 body > .welcome-page {
   background-color: rgb(134, 134, 134);
 }
@@ -18,6 +24,16 @@ body > .welcome-page {
   position: absolute;
   top: 30px;
   left: 50px;
+  background-color: rgba(109, 109, 109, 0.342);
+  color: rgb(209, 209, 209);
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.app-img-credits {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
   background-color: rgba(109, 109, 109, 0.342);
   color: rgb(209, 209, 209);
   padding-left: 15px;
@@ -45,8 +61,26 @@ body > .welcome-page {
   height: 10em;
   width: 10em;
   display: inline-block;
+  margin: 0.5em;
+}
+
+.search-bar-container {
   margin-right: 1em;
-  margin-bottom: 1em;
+}
+
+.all-hikes-container {
+  height: 75vh;
+  overflow-y: scroll;
+}
+
+.all-bookmarks-container {
+  height: 75vh;
+  overflow-y: scroll;
+}
+
+.search-category-scroll {
+  height: 11em;
+  overflow-y: scroll;
 }
 
 ul.no-bullets {
@@ -57,15 +91,6 @@ ul.no-bullets {
 
 table#pet-profile-table {
   width: 20em;
-}
-
-#pet-profile-div {
-  display: inline-block;
-}
-
-#map-container {
-  display: inline-block;
-  vertical-align: top;
 }
 
 .clearfix::after {

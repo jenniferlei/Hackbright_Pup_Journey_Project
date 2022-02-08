@@ -1,147 +1,37 @@
-{% extends 'base.html' %}
-{% block title %}All Hikes{% endblock %}
+<!-- Search buttons by different categories -->
 
-{% block body %}
+<h5>Find a Hike by State</h5>
 
-
-<div class="container">
-
-  <div class="row align-items-start">
-
-    <div class="col-3 card card-body" id="search-side-bar">
-      <h2>Search</h2>
-
-      <small><a href="/hikes">View all hikes</a></small>
-
-      <form method="GET" action="/hikes/search">
-        <div class="row">
-          <label class="form-label" for="search-keyword">Search Keyword</label>
-          <input id="search-keyword"
-                  class="form-control"
-                  type="text"
-                  name="keyword"
-          ></input>
-        </div>
-
-        <div class="row">
-          <label class="form-label" for="search-difficulty">Difficulty</label>
-          <select id="search-difficulty"
-                  class="form-control"
-                  name="difficulty">
-            <option value=""></option>
-            <option value="easy">easy</option>
-            <option value="moderate">moderate</option>
-            <option value="difficult">difficult</option>
-          </select>
-        </div>
-  
-        <div class="row">
-          <label class="form-label" for="search-leash-rule">Leash Rule</label>
-          <select id="search-leash-rule"
-                  class="form-control"
-                  name="leash_rule">
-            <option value=""></option>
-            <option value="on leash">on leash</option>
-            <option value="off leash">off leash</option>
-          </select>
-        </div>
-
-        <div class="row">
-          <label class="form-label" for="search-state">State</label>
-          <select id="search-state"
-                  class="form-control"
-                  name="state">
-            <option value=""></option>
-            {% for state in states|sort() %}
-            <option value="{{ state }}">{{ state }}</option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <div class="row">
-          <div class="col">
-            <label class="form-label" for="search-area">Area</label>
-            <select id="search-area"
-                    class="form-control"
-                    name="area">
-              <option value=""></option>
-              {% for area in areas|sort() %}
-              <option value="{{ area }}">{{ area }}</option>
-              {% endfor %}
-            </select>
-          </div>
-
-          <div class="col">
-            <label class="form-label" for="search-city">City</label>
-            <select id="search-state"
-                    class="form-control"
-                    name="city">
-              <option value=""></option>
-              {% for city in cities|sort() %}
-              <option value="{{ city }}">{{ city }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
-
-
-        <div class="row">Length (Miles)</div>
-        <div class="row">
-          
-          <div class="col">
-            <label class="form-label" for="search-length-min"><small class="form-text text-muted">min</small></label>
-            <input type="number"
-                    step=0
-                    min=0
-                    name="length_min"
-                    class="form-control">
-          </div>
-
-          <div class="col">
-            <label class="form-label" for="search-length-max"><small class="form-text text-muted">max</small></label>
-            <input type="number"
-                    step=0
-                    min=0
-                    name="length_max"
-                    class="form-control">
-          </div>
-        </div>
-
-        <div class="row">
-          <label class="form-label" for="search-parking">Parking</label>
-          <select id="search-parking"
-                  class="form-control"
-                  name="parking">
-            <option value=""></option>
-            {% for park in parking|sort() %}
-            <option value="{{ park }}">{{ park }}</option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <div class="row">
-          <button class="btn btn-sm btn-primary btn-block mt-4" type="submit">Submit</button>
-        </div>
-
-      </form>
-    </div>
-  
-    <div class="col-8 offset-1 card card-body" id="all-hikes">
-
-      <h2>Hikes</h2>
-
-      <ul class="no-bullets">
-        {% for hike in search_hikes %}
-          <li>
-            <a href="/hikes/{{ hike.hike_id }}">
-              {{ hike.hike_name }}
-            </a>
-          </li>
-        {% endfor %}
-      </ul>
-    </div>
-
-  </div>
-
+<div class="input-group">
+  {% for state in states|sort() %}
+  <form method="GET" action="/hikes/search">
+    <button
+      type="submit"
+      name="state"
+      value="{{ state }}"
+      class="btn btn-outline-dark square-button"
+    >
+      {{ state }}
+    </button>
+  </form>
+  {% endfor %}
 </div>
-{% endblock %}
+
+<h5>Find a Hike by Area</h5>
+
+<div class="search-category-scroll">
+  <div class="input-group">
+    {% for area in areas|sort() %}
+    <form method="GET" action="/hikes/search">
+      <button
+        type="submit"
+        name="area"
+        value="{{ area }}"
+        class="btn btn-outline-dark square-button"
+      >
+        {{ area }}
+      </button>
+    </form>
+    {% endfor %}
+  </div>
+</div>

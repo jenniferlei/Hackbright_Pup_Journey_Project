@@ -67,23 +67,23 @@ def get_hikes_by_search(
 
     queries = []
 
-    if keyword != "" and keyword != None:
-        queries.append(Hike.name.like(f"%{keyword}%"))
-    if difficulty != "" and difficulty != None:
+    if keyword != "":
+        queries.append(Hike.hike_name.ilike(f"%{keyword}%"))
+    if difficulty != "":
         queries.append(Hike.difficulty == difficulty)
-    if leash_rule != "" and leash_rule != None:
+    if leash_rule != "":
         queries.append(Hike.leash_rule == leash_rule)
-    if area != "" and area != None:
+    if area != "":
         queries.append(Hike.area == area)
-    if city != "" and city != None:
+    if city != "":
         queries.append(Hike.city == city)
-    if state != "" and state != None:
+    if state != "":
         queries.append(Hike.state == state)
-    if length_min != "" and length_min != None:
+    if length_min != "":
         queries.append(Hike.miles >= length_min)
-    if length_max != "" and length_max != None:
+    if length_max != "":
         queries.append(Hike.miles <= length_max)
-    if parking != "" and parking != None:
+    if parking != "":
         queries.append(Hike.parking == parking)
 
     return db.session.query(Hike).filter(*queries).all()

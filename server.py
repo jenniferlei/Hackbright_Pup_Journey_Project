@@ -113,6 +113,10 @@ def show_hike(hike_id):
     hike = crud_hikes.get_hike_by_id(hike_id)
     hike_resources = hike.resources.split(",")
     comments = crud_comments.get_comment_by_hike_id(hike_id)
+    states = crud_hikes.get_hike_states()
+    cities = crud_hikes.get_hike_cities()
+    areas = crud_hikes.get_hike_areas()
+    parking = crud_hikes.get_hike_parking()
 
     logged_in_email = session.get("user_email")
 
@@ -123,6 +127,10 @@ def show_hike(hike_id):
             hike=hike,
             hike_resources=hike_resources,
             comments=comments,
+            states=states,
+            cities=cities,
+            areas=areas,
+            parking=parking,
         )
     else:
         user = crud_users.get_user_by_email(logged_in_email)
@@ -152,6 +160,10 @@ def show_hike(hike_id):
             check_ins=sorted_check_ins,
             bookmarks_list_by_user=bookmarks_list_by_user,
             bookmarks_lists_by_user_hike=bookmarks_lists_by_user_hike,
+            states=states,
+            cities=cities,
+            areas=areas,
+            parking=parking,
         )
 
 
@@ -504,7 +516,7 @@ def delete_bookmarks_list():
         )
         bookmarks_list.hikes.clear()
 
-        flash(f"Success! Your {bookmarks_list.bookmarks_list_name} has been deleted.")
+        flash(f"Success! Your lisit named {bookmarks_list.bookmarks_list_name} has been deleted.")
 
         db.session.delete(bookmarks_list)
         db.session.commit()

@@ -2,15 +2,187 @@
 endblock %} {% block body %}
 
 <div class="container">
-  <div class="row">
-    <!-- SEARCH BAR -->
-    <div class="col-3 card card-body" id="search-side-bar">
-      <h2>Search</h2>
+  <div class="d-flex justify-content-start">
+
+    <!-- START SEARCH BAR -->
+
+    <div class="card col-3 mt-4 search-bar-container">
+      <div class="card-header"><h3>Search</h3></div>
+
+      <div class="card-body">
+      <small><a href="/hikes">View all hikes</a></small>
+
+      <div style="padding:.5em">
+      <form method="GET" action="/hikes/search">
+        <div class="form-floating row mt-2">
+          <input id="search-keyword"
+                  class="form-control"
+                  type="text"
+                  name="keyword"
+                  placeholder="keyword"
+          ></input>
+          <label class="form-label" for="search-keyword"><small class="form-text text-muted">Keyword</small></label>
+        </div>
+
+        <div class="row mt-3"><label class="form-label">Difficulty</label></div>
+        <div class="row">
+
+          <div class="col">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="difficulty" value="easy" id="search-difficulty-easy">
+              <label class="form-check-label" for="search-difficulty-easy">
+                easy
+              </label>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="difficulty" value="moderate" id="search-difficulty-moderate">
+              <label class="form-check-label" for="search-difficulty-moderate">
+                moderate
+              </label>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="difficulty" value="hard" id="search-difficulty-hard">
+              <label class="form-check-label" for="search-difficulty-hard">
+                hard
+              </label>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="row mt-3"><label class="form-label">Leash Rule</label></div>
+        <div class="row">
+
+          <div class="col">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="leash_rule" value="easy" id="search-on-leash">
+              <label class="form-check-label" for="search-on-leash">
+                on leash
+              </label>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="leash_rule" value="moderate" id="search-off-leash">
+              <label class="form-check-label" for="search-off-leash">
+                off leash
+              </label>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="form-label mt-3">Location</div>
+
+        <div class="form-floating row mt-2">
+          <select id="search-state"
+                  class="form-select"
+                  name="state"
+                  aria-label="search-state">
+            <option value=""></option>
+            {% for state in states|sort() %}
+            <option value="{{ state }}">{{ state }}</option>
+            {% endfor %}
+          </select>
+          <label class="form-label" for="search-state">State</label>
+        </div>
+
+        <div class="row g-2 mt-2">
+
+          <div class="form-floating col">
+            <select id="search-state"
+                    class="form-select"
+                    name="city"
+                    aria-label="search-city">
+              <option value=""></option>
+              {% for city in cities|sort() %}
+              <option value="{{ city }}">{{ city }}</option>
+              {% endfor %}
+            </select>
+            <label class="form-label" for="search-city">City</label>
+          </div>
+          
+          <div class="form-floating col">
+            <select id="search-area"
+                    class="form-select"
+                    name="area"
+                    aria-label="search-area">
+              <option value=""></option>
+              {% for area in areas|sort() %}
+              <option value="{{ area }}">{{ area }}</option>
+              {% endfor %}
+            </select>
+            <label class="form-label" for="search-area">Area</label>
+          </div>
+
+        </div>
+
+        <div class="row mt-3"><label class="form-label">Length (Miles)</label></div>
+        <div class="row g-2">
+          
+          <div class="form-floating col">
+            <input type="number"
+                    step=0
+                    min=0
+                    name="length_min"
+                    placeholder=0
+                    class="form-control"
+                    id="search-length-min">
+            <label class="form-label" for="search-length-min"><small class="form-text text-muted">min</small></label>
+          </div>
+
+          <div class="form-floating col">
+            <input type="number"
+                    step=0
+                    min=0
+                    name="length_max"
+                    placeholder=0
+                    class="form-control"
+                    id="search-length-max">
+            <label class="form-label" for="search-length-max"><small class="form-text text-muted">max</small></label>
+          </div>
+        </div>
+
+        <div class="mt-3"><label class="form-label" for="search-parking">Parking</label></div>
+        <div class="form-floating row">
+          <select id="search-parking"
+                  class="form-select"
+                  name="parking"
+                  aria-label="search-parking">
+            <option value=""></option>
+            {% for park in parking|sort() %}
+            <option value="{{ park }}">{{ park }}</option>
+            {% endfor %}
+          </select>
+          <label class="form-label" for="search-parking">Parking</label>
+        </div>
+
+        <div class="row">
+          <button class="btn btn-sm btn-outline-dark btn-block mt-4" type="submit">Submit</button>
+        </div>
+
+      </form>
+      </div>
+      </div>
     </div>
 
+    <!-- END SEARCH BAR -->
+
     <!-- HIKE INFO -->
-    <div class="col-8 offset-1 card card-body" id="hike-details">
-        <h2>{{ hike.hike_name }}</h2>
+
+    <div class="card col mt-4" style="width:100vw">
+
+      <div class="card-header"><h3>{{ hike.hike_name }}</h3></div>
+
+      <div class="card-body">
+
         <img src="{{ hike.hike_imgURL }}" class="hike_details" />
         <p>{{ hike.description }}</p>
         <ul class="no-bullets">
@@ -151,7 +323,7 @@ endblock %} {% block body %}
                       />
                     </div>
                   <div class="modal-footer">
-                    <button class="btn btn-sm btn-primary btn-block" type="submit">Submit</button>
+                    <button class="btn btn-sm btn-outline-dark btn-block" type="submit">Submit</button>
                     <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
                   </div>
                   </form>
@@ -220,7 +392,7 @@ endblock %} {% block body %}
                         </div>
 
                       <div class="modal-footer">
-                        <button class="btn btn-sm btn-primary btn-block" type="submit" name="edit" value="{{ comment.comment_id }}">Save</button>
+                        <button class="btn btn-sm btn-outline-dark btn-block" type="submit" name="edit" value="{{ comment.comment_id }}">Save</button>
                         <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
                       </div>
                       </form>
@@ -279,7 +451,7 @@ endblock %} {% block body %}
 
                     <div class="mb-3">
                       <button
-                        class="btn btn-sm btn-primary btn-block"
+                        class="btn btn-sm btn-outline-dark btn-block"
                         type="submit"
                         name="hike_id"
                         value="{{ hike.hike_id }}"
@@ -307,7 +479,7 @@ endblock %} {% block body %}
 
                     <div class="mb-3">
                       <button
-                        class="btn btn-sm btn-primary btn-block"
+                        class="btn btn-sm btn-outline-dark btn-block"
                         type="submit"
                         name="hike_id"
                         value="{{ hike.hike_id }}"
@@ -317,7 +489,7 @@ endblock %} {% block body %}
                     </div>
                   </form>
                   <div class="modal-footer">
-                    <button class="btn btn-sm btn-primary btn-block" type="submit">Submit</button>
+                    <button class="btn btn-sm btn-outline-dark btn-block" type="submit">Submit</button>
                     <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
                   </div>
                   </form>
@@ -391,7 +563,7 @@ endblock %} {% block body %}
                       </div>
 
                       <div class="modal-footer">
-                        <button class="btn btn-sm btn-primary btn-block" type="submit" name="edit" value="{{ bookmarks_list.bookmarks_list_id }}">Save</button>
+                        <button class="btn btn-sm btn-outline-dark btn-block" type="submit" name="edit" value="{{ bookmarks_list.bookmarks_list_id }}">Save</button>
                         <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
                       </div>
                       </form>
@@ -530,7 +702,7 @@ endblock %} {% block body %}
                       />
                     </div>
                   <div class="modal-footer">
-                    <button class="btn btn-sm btn-primary btn-block" type="submit" name="hike_id" value="{{ hike.hike_id }}">Submit</button>
+                    <button class="btn btn-sm btn-outline-dark btn-block" type="submit" name="hike_id" value="{{ hike.hike_id }}">Submit</button>
                     <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
                   </div>
                   </form>
@@ -634,7 +806,7 @@ endblock %} {% block body %}
                               />
                             </div>
                           <div class="modal-footer">
-                            <button class="btn btn-sm btn-primary btn-block" type="submit" name="check_in_id" value="{{ check_in.check_in_id }}">Submit</button>
+                            <button class="btn btn-sm btn-outline-dark btn-block" type="submit" name="check_in_id" value="{{ check_in.check_in_id }}">Submit</button>
                             <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
                           </div>
                           </form>
@@ -677,7 +849,7 @@ endblock %} {% block body %}
         <!-- End Check ins tab content -->
       </div>
       <!-- End All Tab Content -->
-
+      </div>
     </div>
   </div>
 </div>

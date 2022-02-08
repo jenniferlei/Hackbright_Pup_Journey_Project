@@ -2,7 +2,7 @@
 Journey{% endblock %} {% block body %}
 <div class="welcome-page">
   <div class="container">
-    <div class="row align-items-center">
+    <div class="d-flex justify-content-center">
       <div class="imageContainer">
         <img src="/static/img/homepage3.jpg" id="homepage-image" />
         <div class="app-greeting">
@@ -12,22 +12,24 @@ Journey{% endblock %} {% block body %}
             to hikes your pup has done!
           </p>
         </div>
+        <div class="app-img-credits">
+          <small class="fw-lighter"
+            >Photo by
+            <a
+              class="text-reset"
+              href="https://www.pexels.com/@bekka419?utm_content=attributionCopyText&utm_medium=referral&utm_source=pexels"
+              >Bekka Mongeau</a
+            >
+            from
+            <a
+              class="text-reset"
+              href="https://www.pexels.com/photo/photo-of-person-holding-black-and-white-dog-1452717/?utm_content=attributionCopyText&utm_medium=referral&utm_source=pexels"
+              >Pexels</a
+            >
+          </small>
+        </div>
       </div>
     </div>
-    <small class="fw-lighter"
-      >Photo by
-      <a
-        class="text-reset"
-        href="https://www.pexels.com/@bekka419?utm_content=attributionCopyText&utm_medium=referral&utm_source=pexels"
-        >Bekka Mongeau</a
-      >
-      from
-      <a
-        class="text-reset"
-        href="https://www.pexels.com/photo/photo-of-person-holding-black-and-white-dog-1452717/?utm_content=attributionCopyText&utm_medium=referral&utm_source=pexels"
-        >Pexels</a
-      ></small
-    >
   </div>
 </div>
 {% endblock %}

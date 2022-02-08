@@ -78,6 +78,8 @@ fetch("/check-ins-by-pets.json")
         datasets: all_data,
       },
       options: {
+        responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           title: { display: true, position: "top", text: "Pup Journey" },
           legend: { display: true, position: "bottom" },

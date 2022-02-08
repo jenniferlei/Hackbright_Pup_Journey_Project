@@ -17,7 +17,7 @@
 </head>
 
 <body>
-  <nav class="navbar navbar-dark bg-dark navbar-expand-lg sticky-top">
+  <nav class="navbar navbar-dark bg-dark navbar-expand-lg sticky-top" style="height:3em">
     <div class="container-fluid">
       <a class="navbar-brand" href="/">Pup Journey</a>
       <div class="collapse navbar-collapse">
@@ -64,35 +64,39 @@
 
           <form action="/users" class="form-sign-up" method="POST">
         
-            <div class="mb-3">
-              <label for="full_name" class="sr-only">Full Name</label>
+            <div class="form-floating mb-3">
               <input type="text"
                       name="full_name"
-                      class="form-control input-lg"
+                      class="form-control"
+                      id="floating-signup-full_name"
                       placeholder="Full Name"
                       required>
+              <label for="floating-signup-full_name">Full Name</label>
             </div>
             
-            <div class="mb-3">
-              <label for="email" class="sr-only">Email Address</label>
+            <div class="form-floating mb-3">
               <input type="email"
                       name="email"
-                      class="form-control input-lg"
-                      placeholder="Email Address"
+                      class="form-control"
+                      id="floating-signup-email"
+                      placeholder="name@example.com"
                       required>
+              <label for="floating-signup-email">Email Address</label>
+              
             </div>
 
-            <div class="mb-3">
-              <label for="password" class="sr-only">Password</label>
+            <div class="form-floating mb-3">
               <input type="password"
                       name="password"
-                      class="form-control input-lg"
+                      class="form-control"
+                      id="floating-signup-password"
                       placeholder="Password"
                       required>
+              <label for="floating-signup-password">Password</label>
             </div>
 
           <div class="modal-footer">
-            <button class="btn btn-sm btn-primary btn-block" type="submit">Sign Up</button>
+            <button class="btn btn-sm btn-outline-dark btn-block" type="submit">Sign Up</button>
             <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
           </div>
           </form>
@@ -112,27 +116,30 @@
         </div>
         <div class="modal-body">
           <form action="/login" class="form-signin" method="POST">
-        
-            <div class="mb-3">
-              <label for="email" class="sr-only">Email Address</label>
+
+            <div class="form-floating mb-3">
               <input type="email"
                       name="email"
-                      class="form-control input-lg"
-                      placeholder="Email Address"
+                      class="form-control"
+                      id="floating-login-email"
+                      placeholder="name@example.com"
                       required>
+              <label for="floating-login-email">Email Address</label>
+              
             </div>
 
-            <div class="mb-3">
-              <label for="password" class="sr-only">Password</label>
+            <div class="form-floating mb-3">
               <input type="password"
                       name="password"
-                      class="form-control input-lg"
+                      class="form-control"
+                      id="floating-login-password"
                       placeholder="Password"
                       required>
+              <label for="floating-login-password">Password</label>
             </div>
 
           <div class="modal-footer">
-            <button class="btn btn-sm btn-primary btn-block" type="submit">Log In</button>
+            <button class="btn btn-sm btn-outline-dark btn-block" type="submit">Log In</button>
             </form>
             <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
           </div>
