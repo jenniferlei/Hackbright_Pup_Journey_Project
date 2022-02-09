@@ -1,129 +1,227 @@
-// 'use strict';
+"use strict";
 
-// // Need to add server.py function to fetch json data of pet profiles
-// // then fetch the data and add each pet profile
-// // make sure to only call the relevant user_id
+function SearchSideBar(props) {
+  // Set
+  const [pet_name, setPetName] = React.useState("");
+  const [gender, setGender] = React.useState("");
+  const [birthday, setBirthday] = React.useState("");
+  const [breed, setBreed] = React.useState("");
+  const [my_file, setMyFile] = React.useState("");
 
+  // Send data back with fetch then use the data go
+  function createNewSearch() {
+    fetch("/add-pet", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ pet_name, gender, birthday, breed, my_file }),
+    }).then((response) => {
+      response.json().then((jsonResponse) => {
+        const { petAdded } = jsonResponse; // same as petAdded = jsonResponse.petAdded
+        const { pet_id, pet_name, gender, birthday, breed, pet_imgURL } =
+          petAdded;
+        props.addSearchResults(
+          pet_id,
+          pet_name,
+          gender,
+          birthday,
+          breed,
+          pet_imgURL
+        );
+      });
+    });
+  }
 
-// function SearchSideBar(props) {
-//   return (
-//     <React.Fragment>
-//     <h2>Search</h2>
+  return (
+    <React.Fragment>
+      <div
+        className="modal fade"
+        id="modal-add-pet"
+        tabindex="-1"
+        aria-labelledby="modal-add-pet-label"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="modal-add-pet-label">
+                Add Pet Info
+              </h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              <form
+                action="/add-pet"
+                method="POST"
+                enctype="multipart/form-data"
+                // onSubmit={addNewProfile}
+              >
+                <div className="mb-3">
+                  <label htmlFor="pet_name" className="sr-only">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    name="pet_name"
+                    value={pet_name}
+                    onChange={(event) => setPetName(event.target.value)}
+                    className="form-control input-lg"
+                    placeholder="Name"
+                    required
+                  />
+                </div>
 
-//     <form method="GET" action="/hikes/search">
-//       <div className="row">
-//         <label className="form-label" for="search-keyword">Search Keyword</label>
-//         <input id="search-keyword"
-//                 className="form-control"
-//                 type="text"
-//                 name="keyword"
-//         ></input>
-//       </div>
+                <div className="mb-3">
+                  <label for="gender" className="sr-only">
+                    Gender
+                  </label>
+                  <select
+                    name="gender"
+                    value={gender}
+                    onChange={(event) => setGender(event.target.value)}
+                    className="form-control input-lg"
+                  >
+                    <option value=""></option>
+                    <option value="female">female</option>
+                    <option value="male">male</option>
+                  </select>
+                </div>
 
-//       <div className="row">
-//         <label className="form-label" for="search-difficulty">Difficulty</label>
-//         <select id="search-difficulty"
-//                 className="form-control"
-//                 name="difficulty">
-//           <option value=""></option>
-//           <option value="easy">easy</option>
-//           <option value="moderate">moderate</option>
-//           <option value="difficult">difficult</option>
-//         </select>
-//       </div>
+                <div className="mb-3">
+                  <label htmlFor="birthday" className="sr-only">
+                    Birthday
+                  </label>
+                  <input
+                    type="date"
+                    name="birthday"
+                    value={birthday}
+                    onChange={(event) => setBirthday(event.target.value)}
+                    className="form-control input-lg"
+                  />
+                </div>
 
-//       <div className="row">
-//         <label className="form-label" for="search-leash-rule">Leash Rule</label>
-//         <select id="search-leash-rule"
-//                 className="form-control"
-//                 name="leash_rule">
-//           <option value=""></option>
-//           <option value="on leash">on leash</option>
-//           <option value="off leash">off leash</option>
-//         </select>
-//       </div>
+                <div className="mb-3">
+                  <label htmlFor="breed" className="sr-only">
+                    Breed
+                  </label>
+                  <input
+                    type="text"
+                    name="breed"
+                    value={breed}
+                    onChange={(event) => setBreed(event.target.value)}
+                    className="form-control input-lg"
+                    placeholder="Breed"
+                  />
+                </div>
 
-//       <div className="row">
-//         <label className="form-label" for="search-area">Area</label>
-//         <select id="search-area"
-//                 className="form-control"
-//                 name="area">
-//           <option value=""></option>
-//           {% for area in areas|sort() %}
-//           <option value="{{ area }}">{{ area }}</option>
-//           {% endfor %}
-//         </select>
-//       </div>
+                <div className="mb-3">
+                  <label htmlFor="my_file" className="sr-only">
+                    Image
+                  </label>
+                  <input
+                    type="file"
+                    name="my_file"
+                    className="form-control input-lg"
+                    value={my_file}
+                    onChange={(event) => setMyFile(event.target.file)}
+                    accept="image/png, image/jpeg"
+                  />
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="submit"
+                    className="btn btn-sm btn-primary btn-block mt-4"
+                    data-bs-dismiss="modal"
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-secondary btn-block mt-4"
+                    data-bs-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </React.Fragment>
+  );
+}
 
-//       <div className="row">
-//         <div className="col">
-//           <label className="form-label" for="search-state">State</label>
-//           <select id="search-state"
-//                   className="form-control"
-//                   name="state">
-//             <option value=""></option>
-//             {% for state in states|sort() %}
-//             <option value="{{ state }}">{{ state }}</option>
-//             {% endfor %}
-//           </select>
-//         </div>
+function SearchResultsContainer() {
+  const [pets, setPets] = React.useState([]);
 
-//         <div className="col">
-//           <label className="form-label" for="search-city">City</label>
-//           <select id="search-state"
-//                   className="form-control"
-//                   name="city">
-//             <option value=""></option>
-//             {% for city in cities|sort() %}
-//             <option value="{{ city }}">{{ city }}</option>
-//             {% endfor %}
-//           </select>
-//         </div>
-//       </div>
+  function addSearchResults(
+    pet_id,
+    pet_name,
+    gender,
+    birthday,
+    breed,
+    pet_imgURL
+  ) {
+    const newPet = { pet_id, pet_name, gender, birthday, breed, pet_imgURL }; // equivalent to { cardId: cardId, skill: skill, name: name, imgUrl: imgUrl }
+    const currentPets = [...pets]; // makes a copy of pets. similar to doing currentPets = pets[:] in Python
+    // [...currentPets, newPet] is an array containing all elements in currentPets followed by newPet
+    setPets([...currentPets, newPet]);
+  }
 
+  React.useEffect(() => {
+    fetch("/pets.json")
+      .then((response) => response.json())
+      .then((data) => setPets(data.pets));
+  }, []);
 
-//       <div className="row">Length (Miles)</div>
-//       <div className="row">
-        
-//         <div className="col">
-//           <label className="form-label" for="search-length-min"><small className="form-text text-muted">min</small></label>
-//           <input type="number"
-//                   step=0
-//                   min=0
-//                   name="length_min"
-//                   className="form-control">
-//         </div>
+  const petProfiles = [];
 
-//         <div className="col">
-//           <label className="form-label" for="search-length-max"><small className="form-text text-muted">max</small></label>
-//           <input type="number"
-//                   step=0
-//                   min=0
-//                   name="length_max"
-//                   className="form-control">
-//         </div>
-//       </div>
+  for (const currentPet of pets) {
+    petProfiles.push(
+      <PetProfile
+        key={currentPet.pet_id}
+        pet_id={currentPet.pet_id}
+        pet_name={currentPet.pet_name}
+        gender={currentPet.gender}
+        birthday={currentPet.birthday}
+        breed={currentPet.breed}
+        pet_imgURL={currentPet.pet_imgURL}
+      />
+    );
+  }
 
-//       <div className="row">
-//         <label className="form-label" for="search-parking">Parking</label>
-//         <select id="search-parking"
-//                 className="form-control"
-//                 name="parking">
-//           <option value=""></option>
-//           {% for park in parking|sort() %}
-//           <option value="{{ park }}">{{ park }}</option>
-//           {% endfor %}
-//         </select>
-//       </div>
+  return (
+    <React.Fragment>
+      <div className="row">
+        <div className="col">
+          <h2>Pets</h2>
+        </div>
 
-//       <div className="row">
-//         <button className="btn btn-sm btn-primary btn-block mt-4" type="submit">Submit</button>
-//       </div>
+        <div className="col">
+          <button
+            type="button"
+            className="btn btn-link btn-sm"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-add-pet"
+          >
+            <small>+ Pet</small>
+          </button>
+        </div>
+      </div>
+      <AddPetProfile addProfile={addProfile} />
+      <div className="grid">{petProfiles}</div>
+    </React.Fragment>
+  );
+}
 
-//     </form>
-
-//     </React.Fragment>
-//   );
-// }
-
-// ReactDOM.render(<SearchSideBar />, document.getElementById('search-side-bar'));
+ReactDOM.render(
+  <PetProfileContainer />,
+  document.getElementById("pet-profile-container")
+);

@@ -374,25 +374,29 @@ Chart.js adapter #}
                             id="form-delete-pet"
                             method="POST"
                           >
-                            <a
+                            <button
+                              class="btn btn-sm"
+                              style="padding:0"
                               type="submit"
                               name="delete"
                               value="{{ pet.pet_id }}"
                             >
                               <i class="bi bi-x"></i>
-                            </a>
+                            </button>
                           </form>
                         </div>
                       </div>
                       <!-- pet image -->
                       <div class="row">
                         <div class="col">
+                          {% if pet.pet_imgURL != None %}
                           <img
                             src="{{ pet.pet_imgURL }}"
                             alt="profile"
                             class="pet-profile-img"
                             id="pet-img-{{ pet.pet_id }}"
                           />
+                          {% endif %}
                           
                         </div>
                       </div>
@@ -787,13 +791,15 @@ Chart.js adapter #}
                 id="form-delete-bookmarks-list"
                 method="POST"
               >
-                <a
+                <button
+                  class="btn btn-sm"
+                  style="padding:0"
                   type="submit"
                   name="delete"
                   value="{{ bookmarks_list.bookmarks_list_id }}"
                 >
                   <i class="bi bi-x"></i>
-                </a>
+                </button>
               </form>
               </div>
 
@@ -935,7 +941,7 @@ Chart.js adapter #}
                   <div class="input-group">
                     <a href="/hikes/{{ hike.hike_id }}" target="_blank"
                       >{{ hike.hike_name }}</a
-                    >
+                    >&nbsp;&nbsp;&nbsp;
                     <form
                       action="/remove-hike"
                       class="delete-form"
@@ -943,7 +949,8 @@ Chart.js adapter #}
                       method="POST"
                     >
                       <button
-                        class="btn btn-link btn-sm"
+                        class="btn btn-sm"
+                        style="padding:0"
                         type="submit"
                         name="delete"
                         value="{{ hike.hike_id }},{{ bookmarks_list.bookmarks_list_id }}"

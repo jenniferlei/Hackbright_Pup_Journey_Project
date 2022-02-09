@@ -1,5 +1,6 @@
 "use strict";
 
+//////////// KEEP LAST ACTIVE TAB ACTIVE ////////////
 // In jQuery, if you want an event to work on your page, you should call it inside the $(document).ready() function.
 // Everything inside it will load as soon as the DOM is loaded and before the page contents are loaded.
 // A $ with a selector specifies that it is a jQuery selector. It is given a shorter identifier as $ just to reduce the time for writing larger syntax.
@@ -13,28 +14,11 @@ $(document).ready(function () {
   }
 });
 
-// $(document).ready(function () {
-//   $('a[data-bs-toggle="tabs"]').on("show.bs.tab", function (e) {
-//     localStorage.setItem("activeTab", $(e.target).attr("href"));
-//   });
-//   var activeTab = localStorage.getItem("activeTab");
-//   if (activeTab) {
-//     $('#v-pills-tab a[href="' + activeTab + '"]').tab("show");
-//   }
-// });
+//////////// CHART ////////////
+// modify chart min and max when dropdown is changed
 
-// $(function () {
-//   var lastTab = localStorage.getItem("lastTab");
-//   $(".container, .tab-content").removeClass("hidden");
-//   if (lastTab) {
-//     $('[data-target="' + lastTab + '"]').tab("show");
-//   }
-//   $('a[data-toggle="tab"]').on("shown.bs.tab", function (e) {
-//     localStorage.setItem("lastTab", $(this).data("target"));
-//   });
-// });
+// select the dropdown and add event listener
 
-// check if graph can be filtered by length of time (month/year)
 // Add random color for each pet
 
 fetch("/check-ins-by-pets.json")
