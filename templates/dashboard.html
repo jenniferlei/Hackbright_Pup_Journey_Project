@@ -526,8 +526,8 @@ Chart.js adapter #}
                         {% endif %}
                         <br>
                         {% if pet.check_ins != [] %}
-                        <div class="row">I've done {{ pet.check_ins|length }} hikes</div>
-                        <div class="row">and walked {{ pet.check_ins|sum(attribute="miles_completed") }} miles!</div>
+                        <div class="row">I've done {{ pet.check_ins|length }} {% if pet.check_ins|length > 1 %} hikes{% else %} hike{% endif %}</div>
+                        <div class="row">and walked {{ pet.check_ins|sum(attribute="miles_completed") }} {% if pet.check_ins|sum(attribute="miles_completed") > 1 %} miles{% else %} mile{% endif %}!</div>
                         {% endif %}
                       </small>
                     </td>
@@ -767,7 +767,6 @@ Chart.js adapter #}
             <li>
               <div class="input-group">
               <a
-                class="btn btn-link"
                 data-bs-toggle="collapse"
                 href="#collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
                 role="button"
@@ -775,10 +774,12 @@ Chart.js adapter #}
                 aria-controls="collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
               >
                 {{ bookmarks_list.bookmarks_list_name }}
-              </a>
+              </a>&nbsp;&nbsp;&nbsp;
 
               
-                <a class="btn btn-link btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-rename-bookmark-{{ bookmarks_list.bookmarks_list_id }}"><small>Rename</small></a>
+                <a data-bs-toggle="modal" data-bs-target="#modal-rename-bookmark-{{ bookmarks_list.bookmarks_list_id }}">
+                  <small><i class="bi bi-pencil"></i></small>
+                </a>&nbsp;&nbsp;&nbsp;
 
               <form
                 action="/delete-bookmarks-list"
@@ -786,14 +787,13 @@ Chart.js adapter #}
                 id="form-delete-bookmarks-list"
                 method="POST"
               >
-                <button
-                  class="btn btn-link btn-sm"
+                <a
                   type="submit"
                   name="delete"
                   value="{{ bookmarks_list.bookmarks_list_id }}"
-                ><small>
-                  Delete
-                </small></button>
+                >
+                  <i class="bi bi-x"></i>
+                </a>
               </form>
               </div>
 
