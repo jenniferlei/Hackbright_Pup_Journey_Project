@@ -122,6 +122,7 @@ Chart.js adapter #}
         ></button>
       </div>
         <form
+          style="margin:1.5em"
           action="/check-in"
           method="POST"
         >
@@ -349,7 +350,7 @@ Chart.js adapter #}
             <div id="pet-profile-div">
               <table class="table" id="pet-profile-table"> <!-- start pet profile table -->
                 <tbody>
-                  {% for pet in pets|sort(attribute='birthday') %}
+                  {% for pet in pets|sort(attribute='birthday', reverse=True) %}
                   <tr>
                     <td style="width:10em">
                       <div class="d-flex">
@@ -362,10 +363,12 @@ Chart.js adapter #}
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         <div class="input-group">
                           <a
+                            href="" 
                             data-bs-toggle="modal"
                             data-bs-target="#modal-edit-{{ pet.pet_id }}"
+                            style="color: rgb(44, 44, 44)"
                           >
-                            <small><i class="bi bi-pencil"></i></small>
+                            <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="edit pet profile" class="bi bi-pencil"></i></small>
                           </a>&nbsp;&nbsp;&nbsp;
 
                           <form
@@ -380,8 +383,9 @@ Chart.js adapter #}
                               type="submit"
                               name="delete"
                               value="{{ pet.pet_id }}"
+                              onclick="return confirm('Do you want to delete this pet profile?');"
                             >
-                              <i class="bi bi-x"></i>
+                              <i data-bs-toggle="tooltip" data-bs-placement="right" title="delete pet profile" class="bi bi-x"></i>
                             </button>
                           </form>
                         </div>
@@ -517,22 +521,27 @@ Chart.js adapter #}
                       <!-- END EDIT PET MODAL -->
                     <td style="width:10em">
                       <small>
-                        {% if pet.breed != None and pet.breed != "" %}
+                        {% if pet.breed != None and pet.breed != "" and pet.breed != "None" %}
                         <div class="row">{{ pet.breed }}</div>
-                        {% endif %} {% if pet.gender != None and pet.gender !=
-                        "" %}
+                        {% else %}
+                        {% endif %}
+
+                        {% if pet.gender != None and pet.gender != "" %}
                         <div class="row">{{ pet.gender }}</div>
-                        {% endif %} {% if pet.birthday != None and pet.birthday
-                        != "" %}
+                        {% endif %}
+
+                        {% if pet.birthday != None and pet.birthday != "" %}
                         <div class="row">
                           🎂&nbsp;&nbsp;{{ pet.birthday.strftime('%b %d, %Y') }}
                         </div>
                         {% endif %}
+
                         <br>
                         {% if pet.check_ins != [] %}
                         <div class="row">I've done {{ pet.check_ins|length }} {% if pet.check_ins|length > 1 %} hikes{% else %} hike{% endif %}</div>
                         <div class="row">and walked {{ pet.check_ins|sum(attribute="miles_completed") }} {% if pet.check_ins|sum(attribute="miles_completed") > 1 %} miles{% else %} mile{% endif %}!</div>
                         {% endif %}
+                        
                       </small>
                     </td>
                   </tr>
@@ -574,9 +583,15 @@ Chart.js adapter #}
           </div>
         </div>
         <div class="card-body">
+          <!-- Dropdown here for chart -->
+          {% if check_ins != [] %}
+          <div><h5>How Far We've Gone!</h5></div>
+          {% endif %}
           <div class="d-flex justify-content-start">
             {% if check_ins != [] %}
+            
             <div style="position: relative; width: 40vw">
+              
               <canvas id="check-in-graph"></canvas>
             </div>
             
@@ -584,7 +599,7 @@ Chart.js adapter #}
             <div style="position: relative; width: 30vw">
             <table class="table">
               <tbody>
-                {% for pet in pets|sort(attribute='birthday') %}
+                {% for pet in pets|sort(attribute='birthday', reverse=True) %}
                 <tr>
                   <td>
                     <h6
@@ -607,35 +622,42 @@ Chart.js adapter #}
                     <!-- START CHECK IN SCROLL -->
                     <div class="check-ins-scroll">
                       {% for check_in in pet.check_ins|sort(attribute='date_hiked', reverse=True) %}
-                            
-                      <small>
-                        {{check_in.date_hiked.strftime('%b %d, %Y') }} hiked {% if check_in.miles_completed != None %} {{ check_in.miles_completed }} miles {% endif %}
-                      at <a href="/hikes/{{ check_in.hike_id }}">{{ check_in.hike.hike_name }}</a>
-                      </small>
+                      <div class="d-flex justify-content-start">
+
+                        <small>
+                          {{check_in.date_hiked.strftime('%b %d, %Y') }} hiked {% if check_in.miles_completed != None %} {{ check_in.miles_completed }} miles {% endif %}
+                        at <a href="/hikes/{{ check_in.hike_id }}">{{ check_in.hike.hike_name }}</a>
+                        </small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                        <a
+                          href="" 
+                          data-bs-toggle="modal" 
+                          data-bs-target="#modal-edit-check-in-{{ check_in.check_in_id }}" 
+                          style="color: rgb(44, 44, 44)"
+                        >
+                          <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="edit check in" class="bi bi-pencil"></i></small>
+                        </a>&nbsp;&nbsp;&nbsp;
                         
-                        <div class="input-group">
-                          <button class="btn btn-link btn-sm" data-bs-toggle="modal" data-bs-target="#modal-edit-check-in-{{ check_in.check_in_id }}">
-                            <small>Edit</small>
-                          </button>
-                          
-                          <form
-                            action="/delete-check-in"
-                            class="delete-form"
-                            id="form-delete-check-in"
-                            method="POST"
+                        <form
+                          action="/delete-check-in"
+                          class="delete-form"
+                          id="form-delete-check-in"
+                          method="POST"
+                        >
+                          <button
+                            class="btn btn-sm"
+                            style="padding:0"
+                            type="submit"
+                            name="delete"
+                            value="{{ check_in.check_in_id }}"
+                            onclick="return confirm('Do you want to delete this check in?');"
                           >
-                            <button
-                              class="btn btn-link btn-sm"
-                              type="submit"
-                              name="delete"
-                              value="{{ check_in.check_in_id }}"
-                            >
-                              <small>
-                                Delete
-                              </small>
-                            </button>
-                          </form>
-                        </div>
+                            <small>
+                              <i data-bs-toggle="tooltip" data-bs-placement="right" title="delete check in" class="bi bi-x"></i>
+                            </small>
+                          </button>
+                        </form>
+                      </div>
 
                         <!-- Begin Edit Check In Modal -->
                         <div class="modal fade" id="modal-edit-check-in-{{ check_in.check_in_id }}" tabindex="-1" aria-labelledby="modal-edit-check-in-{{ check_in.check_in_id }}-label" aria-hidden="true">
@@ -693,6 +715,7 @@ Chart.js adapter #}
                                         name="miles_completed"
                                         value="{{ check_in.miles_completed }}"
                                         class="form-control"
+                                        required
                                     />
                                   </div>
 
@@ -755,7 +778,7 @@ Chart.js adapter #}
               data-bs-target="#modal-add-bookmark"
               style="float: right"
             >
-              <small>+ Bookmark</small>
+              <small>+ List</small>
             </button>
           </div>
         </div>
@@ -781,8 +804,13 @@ Chart.js adapter #}
               </a>&nbsp;&nbsp;&nbsp;
 
               
-                <a data-bs-toggle="modal" data-bs-target="#modal-rename-bookmark-{{ bookmarks_list.bookmarks_list_id }}">
-                  <small><i class="bi bi-pencil"></i></small>
+                <a 
+                  href="" 
+                  data-bs-toggle="modal" 
+                  data-bs-target="#modal-rename-bookmark-{{ bookmarks_list.bookmarks_list_id }}"
+                  style="color: rgb(44, 44, 44)"
+                >
+                  <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="rename list" class="bi bi-pencil"></i></small>
                 </a>&nbsp;&nbsp;&nbsp;
 
               <form
@@ -797,8 +825,9 @@ Chart.js adapter #}
                   type="submit"
                   name="delete"
                   value="{{ bookmarks_list.bookmarks_list_id }}"
+                  onclick="return confirm('Do you want to delete this list?');"
                 >
-                  <i class="bi bi-x"></i>
+                  <i data-bs-toggle="tooltip" data-bs-placement="right" title="delete list" class="bi bi-x"></i>
                 </button>
               </form>
               </div>
@@ -871,15 +900,15 @@ Chart.js adapter #}
                 class="collapse card card-body"
                 id="collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
               >
-                <button
-                  type="button"
+                <a
+                  href=""
                   class="btn btn-link btn-sm"
                   data-bs-toggle="modal"
                   data-bs-target="#modal-add-hike"
                   style="text-align: left"
                 >
                   <small>+ Hike</small>
-                </button>
+                </a>
 
                 <!-- START ADD HIKE TO BOOKMARK MODAL -->
                 <div
@@ -954,8 +983,9 @@ Chart.js adapter #}
                         type="submit"
                         name="delete"
                         value="{{ hike.hike_id }},{{ bookmarks_list.bookmarks_list_id }}"
+                        onclick="return confirm('Do you want to remove this hike?');"
                       ><small>
-                        <i class="bi bi-x"></i>
+                        <i data-bs-toggle="tooltip" data-bs-placement="right" title="remove from list" class="bi bi-x"></i>
                       </small></button>
                     </form>
                   </div>

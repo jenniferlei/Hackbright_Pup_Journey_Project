@@ -73,6 +73,8 @@ class Hike(db.Model):
     difficulty = db.Column(db.String)
     leash_rule = db.Column(db.String)
     description = db.Column(db.Text)
+    latitude = db.Column(db.String)
+    longitude = db.Column(db.String)
     address = db.Column(db.Text, nullable=False)
     city = db.Column(db.String)
     state = db.Column(db.String)

@@ -17,9 +17,12 @@ $(document).ready(function () {
 //////////// CHART ////////////
 // modify chart min and max when dropdown is changed
 
-// select the dropdown and add event listener
+// Toggle between year and month -> year > dropdown of year there is data for, month > dropdown of month and dropdown of year there is data for
+// Default current month/year
+// select the dropdown and add event listener, onChange
 
-// Add random color for each pet
+// fetch data and filter based on dropdown selection
+// set min and max x axis based on selection
 
 fetch("/check-ins-by-pets.json")
   .then((response) => response.json())
@@ -65,13 +68,14 @@ fetch("/check-ins-by-pets.json")
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          title: { display: true, position: "top", text: "Pup Journey" },
           legend: { display: true, position: "bottom" },
         },
 
         scales: {
           x: {
             type: "time",
+            min: new Date(2022, 1, 1, 0, 0),
+            max: new Date(2022, 1, 28, 0, 0),
             time: {
               tooltipFormat: "LLLL dd", // Luxon format string
               unit: "day",
@@ -84,8 +88,12 @@ fetch("/check-ins-by-pets.json")
           },
 
           y: {
-            suggestedMin: 0,
+            min: 0,
+            suggestedMax: 30,
             display: true,
+            ticks: {
+              stepSize: 1,
+            },
             title: {
               display: true,
               text: "Miles",
