@@ -4,6 +4,7 @@ from flask import Flask, render_template, json, jsonify, request, flash, session
 import cloudinary.uploader
 import os
 from datetime import datetime
+from calendar import month_abbr
 
 from model import connect_to_db, db, ma, app, PetSchema, CheckInSchema
 import crud_bookmarks_lists
@@ -61,11 +62,22 @@ def dashboard():
         pets = crud_pets.get_pets_by_user_id(user.user_id)
         hikes = crud_hikes.get_hikes()
         check_ins = crud_check_ins.get_check_ins_by_user_id(user.user_id)
+        years = list(set(check_in.date_hiked.year
+                            for check_in in check_ins))
+        month_nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        current_date = datetime.now()
+        current_month_index = current_date.month
+        month_nums_sorted = month_nums[current_month_index-1:] + month_nums[0: current_month_index-1]
+        months_abbr = month_abbr[current_month_index:] + month_abbr[1:current_month_index]
+        months = zip(month_nums_sorted, months_abbr)
+
+        # month = datetime.now().month
+        
         bookmarks_lists = crud_bookmarks_lists.get_bookmarks_lists_by_user_id(
             user.user_id
         )
 
-        return render_template("dashboard.html", pets=pets, hikes=hikes, check_ins=check_ins, bookmarks_lists=bookmarks_lists)
+        return render_template("dashboard.html", pets=pets, hikes=hikes, check_ins=check_ins, months=months, years=years, bookmarks_lists=bookmarks_lists)
     else:
         flash("You must log in to view your dashboard.")
 
@@ -763,8 +775,6 @@ def get_check_ins_by_pets_json():
             pet_data["data"].append({"date_hiked": check_in.date_hiked.isoformat(), "miles_completed": check_in.miles_completed})
         
         check_in_data.append(pet_data)
-
-
 
     # for check_in in check_ins_by_user:
     #     check_in_data = {}

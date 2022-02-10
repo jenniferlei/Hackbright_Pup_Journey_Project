@@ -1,5 +1,4 @@
 {% extends 'base.html' %} {% block head %} 
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
 {# ChartJS #}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
@@ -373,8 +372,6 @@ Chart.js adapter #}
 
                           <form
                             action="/delete-pet"
-                            class="delete-form"
-                            id="form-delete-pet"
                             method="POST"
                           >
                             <button
@@ -551,7 +548,7 @@ Chart.js adapter #}
             </div>  <!-- start pet profile table -->
 
             <div>
-              <h5>Where We've Been</h5>
+              <h5>Where We've Been 🗺</h5>
               Map here
             </div>
 
@@ -585,7 +582,71 @@ Chart.js adapter #}
         <div class="card-body">
           <!-- Dropdown here for chart -->
           {% if check_ins != [] %}
-          <div><h5>How Far We've Gone!</h5></div>
+          <div><h5>How Far We've Come! 🐾</h5></div>
+          <div class="d-flex">
+            View by&nbsp;&nbsp;
+            
+            <input type="radio" class="btn-check" name="chart-view" value="month-view" id="month-view" autocomplete="off" checked>
+            <label class="btn btn-outline-dark btn-sm" for="month-view">month</label>&nbsp;
+
+            <input type="radio" class="btn-check" name="chart-view" value="year-view" id="year-view" autocomplete="off">
+            <label class="btn btn-outline-dark btn-sm" for="year-view">year</label>&nbsp;&nbsp;
+
+            <div id="show-month-view" class="chart-form">
+                <div class="d-flex">
+
+                  <select class="form-select btn-sm" name="month-view-month" aria-label="month-view-select-month">
+                      {% for month_num, month_abbrev in months %}
+                      <option value="{{ month_num }}"><small>{{ month_abbrev }}</small></option>
+                      {% endfor %}
+                  </select>
+
+                  &nbsp;
+
+                  <select class="form-select btn-sm" name="month-view-year" aria-label="month-view-select-year">
+                      {% for year in years|sort(reverse=True) %}
+                      <option value="{{ year }}">{{ year }}</option>
+                      {% endfor %}
+                  </select>
+
+                  &nbsp;
+
+                  <button
+                    class="chart-view-submit btn btn-sm btn-outline-dark"
+                    type="submit"
+                    name="view"
+                    value="month"
+                  >
+                    Submit
+                  </button>
+
+                </div>
+
+            </div>
+
+            <div id="show-year-view" class="chart-form">
+
+                <div class="d-flex">
+                  <select class="form-select btn-sm" name="year-view-year" aria-label="year-view-select-year">
+                      {% for year in years|sort(reverse=True) %}
+                      <option value="{{ year }}">{{ year }}</option>
+                      {% endfor %}
+                  </select>
+
+                    &nbsp;
+
+                    <button
+                      class="chart-view-submit btn btn-sm btn-outline-dark"
+                      type="submit"
+                      name="view"
+                      value="year"
+                    >
+                      Submit
+                    </button>
+                  </div>
+
+            </div>
+          </div>
           {% endif %}
           <div class="d-flex justify-content-start">
             {% if check_ins != [] %}
@@ -596,7 +657,7 @@ Chart.js adapter #}
             </div>
             
 
-            <div style="position: relative; width: 30vw">
+            <div style="position: relative; width: 35vw">
             <table class="table">
               <tbody>
                 {% for pet in pets|sort(attribute='birthday', reverse=True) %}
@@ -624,24 +685,8 @@ Chart.js adapter #}
                       {% for check_in in pet.check_ins|sort(attribute='date_hiked', reverse=True) %}
                       <div class="d-flex justify-content-start">
 
-                        <small>
-                          {{check_in.date_hiked.strftime('%b %d, %Y') }} hiked {% if check_in.miles_completed != None %} {{ check_in.miles_completed }} miles {% endif %}
-                        at <a href="/hikes/{{ check_in.hike_id }}">{{ check_in.hike.hike_name }}</a>
-                        </small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-                        <a
-                          href="" 
-                          data-bs-toggle="modal" 
-                          data-bs-target="#modal-edit-check-in-{{ check_in.check_in_id }}" 
-                          style="color: rgb(44, 44, 44)"
-                        >
-                          <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="edit check in" class="bi bi-pencil"></i></small>
-                        </a>&nbsp;&nbsp;&nbsp;
-                        
                         <form
                           action="/delete-check-in"
-                          class="delete-form"
-                          id="form-delete-check-in"
                           method="POST"
                         >
                           <button
@@ -657,6 +702,27 @@ Chart.js adapter #}
                             </small>
                           </button>
                         </form>
+
+                        &nbsp;
+
+                        <a
+                          href="" 
+                          data-bs-toggle="modal" 
+                          data-bs-target="#modal-edit-check-in-{{ check_in.check_in_id }}" 
+                          style="color: rgb(44, 44, 44)"
+                        >
+                          <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="edit check in" class="bi bi-pencil"></i></small>
+                        </a>&nbsp;&nbsp;&nbsp;
+
+
+                        <small>
+                          {{check_in.date_hiked.strftime('%b %d, %Y') }} hiked {% if check_in.miles_completed != None %} {{ check_in.miles_completed }} miles {% endif %}
+                        at <a href="/hikes/{{ check_in.hike_id }}">{{ check_in.hike.hike_name }}</a>
+                        </small>
+
+                        
+                        
+                        
                       </div>
 
                         <!-- Begin Edit Check In Modal -->
@@ -793,17 +859,25 @@ Chart.js adapter #}
             {% for bookmarks_list in bookmarks_lists %}
             <li>
               <div class="input-group">
-              <a
-                data-bs-toggle="collapse"
-                href="#collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
-                role="button"
-                aria-expanded="false"
-                aria-controls="collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
-              >
-                {{ bookmarks_list.bookmarks_list_name }}
-              </a>&nbsp;&nbsp;&nbsp;
-
+                
+                <form
+                  action="/delete-bookmarks-list"
+                  method="POST"
+                >
+                  <button
+                    class="btn btn-sm"
+                    style="padding:0"
+                    type="submit"
+                    name="delete"
+                    value="{{ bookmarks_list.bookmarks_list_id }}"
+                    onclick="return confirm('Do you want to delete this list?');"
+                  >
+                    <i data-bs-toggle="tooltip" data-bs-placement="right" title="delete list" class="bi bi-x"></i>
+                  </button>
+                </form>
               
+                &nbsp;
+
                 <a 
                   href="" 
                   data-bs-toggle="modal" 
@@ -811,26 +885,19 @@ Chart.js adapter #}
                   style="color: rgb(44, 44, 44)"
                 >
                   <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="rename list" class="bi bi-pencil"></i></small>
-                </a>&nbsp;&nbsp;&nbsp;
-
-              <form
-                action="/delete-bookmarks-list"
-                class="delete-form"
-                id="form-delete-bookmarks-list"
-                method="POST"
-              >
-                <button
-                  class="btn btn-sm"
-                  style="padding:0"
-                  type="submit"
-                  name="delete"
-                  value="{{ bookmarks_list.bookmarks_list_id }}"
-                  onclick="return confirm('Do you want to delete this list?');"
+                </a>
+                
+                &nbsp;&nbsp;&nbsp;
+                <a
+                  data-bs-toggle="collapse"
+                  href="#collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
+                  role="button"
+                  aria-expanded="false"
+                  aria-controls="collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
                 >
-                  <i data-bs-toggle="tooltip" data-bs-placement="right" title="delete list" class="bi bi-x"></i>
-                </button>
-              </form>
-              </div>
+                  {{ bookmarks_list.bookmarks_list_name }}
+                </a>
+                </div>
 
               <!-- START RENAME BOOKMARK LIST MODAL -->
               <div
@@ -902,7 +969,7 @@ Chart.js adapter #}
               >
                 <a
                   href=""
-                  class="btn btn-link btn-sm"
+                  class="btn-sm"
                   data-bs-toggle="modal"
                   data-bs-target="#modal-add-hike"
                   style="text-align: left"
@@ -968,13 +1035,8 @@ Chart.js adapter #}
 
                   {% for hike in bookmarks_list.hikes %}
                   <div class="input-group">
-                    <a href="/hikes/{{ hike.hike_id }}" target="_blank"
-                      >{{ hike.hike_name }}</a
-                    >&nbsp;&nbsp;&nbsp;
                     <form
                       action="/remove-hike"
-                      class="delete-form"
-                      id="form-remove-hike"
                       method="POST"
                     >
                       <button
@@ -988,6 +1050,13 @@ Chart.js adapter #}
                         <i data-bs-toggle="tooltip" data-bs-placement="right" title="remove from list" class="bi bi-x"></i>
                       </small></button>
                     </form>
+
+                    &nbsp;&nbsp;&nbsp;
+
+                    <a href="/hikes/{{ hike.hike_id }}" target="_blank"
+                      >{{ hike.hike_name }}</a
+                    >
+                    
                   </div>
                   {% endfor %}
                 </div>
@@ -1010,5 +1079,4 @@ Chart.js adapter #}
 </div>
 {% endblock %} {% block js %}
 <script src="/static/js/dashboard.js"></script>
-<script src="/static/js/petProfile.jsx" type="text/jsx"></script>
 {% endblock %}

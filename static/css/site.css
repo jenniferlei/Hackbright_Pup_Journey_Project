@@ -45,11 +45,11 @@ body > .welcome-page {
 }
 
 .nav-pills .nav-link.active {
-  background-color: rgb(48, 48, 48);
+  background-color: rgb(44, 44, 44);
 }
 
 .nav-pills .nav-link {
-  color: rgb(48, 48, 48);
+  color: rgb(44, 44, 44);
 }
 
 .check-ins-scroll {
@@ -69,12 +69,12 @@ body > .welcome-page {
 }
 
 .all-hikes-container {
-  height: 75vh;
+  height: 80vh;
   overflow-y: scroll;
 }
 
 .all-bookmarks-container {
-  height: 75vh;
+  height: 80vh;
   overflow-y: scroll;
 }
 

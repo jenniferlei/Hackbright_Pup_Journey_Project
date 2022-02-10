@@ -338,31 +338,41 @@ endblock %} {% block body %}
           {% for comment in comments|sort(attribute='date_created',
           reverse=True) %}
           <div class="card card-body">
-            {{ comment.user.full_name }} posted on {{
-            comment.date_created.strftime('%b %d, %Y %I:%M %p') }} {% if
+            {{ comment.user.full_name }} <small class="text-muted">posted on {{
+            comment.date_created.strftime('%b %d, %Y %I:%M %p') }}{% if
             comment.edit == True %} (edited on {{
             comment.date_edited.strftime('%b %d, %Y %I:%M %p') }}){% endif
-            %}:
-            <br />{{ comment.body }} 
+            %}</small>
+            {{ comment.body }} 
             
             {% if "login" in session and comment.user_id == user.user_id %}
               <!-- Begin Edit Comment Modal -->
               {% if "login" in session %}
               
               <div class="input-group">
-                <button class="btn btn-link btn-sm" data-bs-toggle="modal" data-bs-target="#modal-edit-comment-{{ comment.comment_id }}"><small>Edit</small></button>
+                <a
+                  href="" 
+                  data-bs-toggle="modal"
+                  data-bs-target="#modal-edit-comment-{{ comment.comment_id }}"
+                  style="color: rgb(44, 44, 44)"
+                >
+                  <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="edit comment" class="bi bi-pencil"></i></small>
+                </a>&nbsp;&nbsp;&nbsp;
+      
                 <!-- Begin Delete Comment Form -->
                 <form
                   action="/delete-comment"
                   method="POST"
                 >
                   <button
-                    class="btn btn-link btn-sm btn-inline"
+                    class="btn btn-sm"
+                    style="padding:0"
                     type="submit"
                     name="delete"
                     value="{{ comment.comment_id }}"
+                    onclick="return confirm('Do you want to delete this comment?');"
                   >
-                    <small>Delete</small>
+                    <i data-bs-toggle="tooltip" data-bs-placement="right" title="delete comment" class="bi bi-x"></i>
                   </button>
                 </form>
               </div>
@@ -489,10 +499,8 @@ endblock %} {% block body %}
                     </div>
                   </form>
                   <div class="modal-footer">
-                    <button class="btn btn-sm btn-outline-dark btn-block" type="submit">Submit</button>
                     <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
                   </div>
-                  </form>
                 </div>
               </div>
             </div>
@@ -508,7 +516,6 @@ endblock %} {% block body %}
             <li>
               <div class="input-group">
               <a
-                class="btn btn-link"
                 data-bs-toggle="collapse"
                 href="#collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
                 role="button"
@@ -516,27 +523,33 @@ endblock %} {% block body %}
                 aria-controls="collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
               >
                 {{ bookmarks_list.bookmarks_list_name }}
-              </a>
+              </a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-              <!-- Begin Rename Bookmark Modal -->
               
-              <a class="btn btn-link btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-rename-bookmark-{{ bookmarks_list.bookmarks_list_id }}"><small>Rename</small></a>
-              <!-- Begin Delete Bookmark Form -->
-              <form
-                action="/delete-bookmarks-list"
-                class="delete-form"
-                id="form-delete-bookmarks-list"
-                method="POST"
-              >
-                <button
-                  class="btn btn-link btn-sm"
-                  type="submit"
-                  name="delete"
-                  value="{{ bookmarks_list.bookmarks_list_id }}"
-                ><small>
-                  Delete
-                </small></button>
-              </form>
+               <a 
+                  href="" 
+                  data-bs-toggle="modal" 
+                  data-bs-target="#modal-rename-bookmark-{{ bookmarks_list.bookmarks_list_id }}"
+                  style="color: rgb(44, 44, 44)"
+                >
+                  <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="rename list" class="bi bi-pencil"></i></small>
+                </a>&nbsp;&nbsp;&nbsp;
+
+                <form
+                  action="/delete-bookmarks-list"
+                  method="POST"
+                >
+                  <button
+                    class="btn btn-sm"
+                    style="padding:0"
+                    type="submit"
+                    name="delete"
+                    value="{{ bookmarks_list.bookmarks_list_id }}"
+                    onclick="return confirm('Do you want to delete this list?');"
+                  >
+                    <i data-bs-toggle="tooltip" data-bs-placement="right" title="delete list" class="bi bi-x"></i>
+                  </button>
+                </form>
               </div>
               <!-- End Delete Bookmark Form -->
 
@@ -581,24 +594,26 @@ endblock %} {% block body %}
                   <ul class="no-bullets">
                     {% for hike in bookmarks_list.hikes %}
                     <li>
-                      <a href="/hikes/{{ hike.hike_id }}" target="_blank"
-                        >{{ hike.hike_name }}</a
-                      >
-                      <form
-                        action="/remove-hike"
-                        class="delete-form"
-                        id="form-remove-hike"
-                        method="POST"
-                      >
-                        <button
-                          class="btn btn-link btn-sm"
-                          type="submit"
-                          name="delete"
-                          value="{{ hike.hike_id }},{{ bookmarks_list.bookmarks_list_id }}"
+                      <div class="input-group">
+                        <a href="/hikes/{{ hike.hike_id }}" target="_blank"
+                          >{{ hike.hike_name }}</a
+                        >&nbsp;&nbsp;&nbsp;
+                        <form
+                          action="/remove-hike"
+                          method="POST"
                         >
-                          Remove
-                        </button>
-                      </form>
+                          <button
+                            class="btn btn-sm"
+                            style="padding:0"
+                            type="submit"
+                            name="delete"
+                            value="{{ hike.hike_id }},{{ bookmarks_list.bookmarks_list_id }}"
+                            onclick="return confirm('Do you want to remove this hike?');"
+                          ><small>
+                            <i data-bs-toggle="tooltip" data-bs-placement="right" title="remove from list" class="bi bi-x"></i>
+                          </small></button>
+                        </form>
+                      </div>
                     </li>
                     {% endfor %}
                   </ul>
@@ -731,10 +746,17 @@ endblock %} {% block body %}
                 check_in.total_time }} hours {% endif %}
 
                 <div class="input-group">
-                <!-- Begin Edit Check In Modal -->
-                              
-                  <a class="btn btn-link btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-edit-check-in-{{ check_in.check_in_id }}"><small>Edit</small></a>
 
+                  <a
+                    href="" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#modal-edit-check-in-{{ check_in.check_in_id }}" 
+                    style="color: rgb(44, 44, 44)"
+                  >
+                    <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="edit check in" class="bi bi-pencil"></i></small>
+                  </a>&nbsp;&nbsp;&nbsp;
+                  
+                  <!-- Start Edit Check In Modal -->
 
                   <div class="modal fade" id="modal-edit-check-in-{{ check_in.check_in_id }}" tabindex="-1" aria-labelledby="modal-edit-check-in-{{ check_in.check_in_id }}-label" aria-hidden="true">
                     <div class="modal-dialog">
@@ -820,18 +842,20 @@ endblock %} {% block body %}
 
                   <form
                     action="/delete-check-in"
-                    class="delete-form"
-                    id="form-delete-check-in"
                     method="POST"
                   >
                     <button
-                      class="btn btn-link btn-sm"
+                      class="btn btn-sm"
+                      style="padding:0"
                       type="submit"
                       name="delete"
                       value="{{ check_in.check_in_id }}"
-                    ><small>
-                      Delete
-                    </small></button>
+                      onclick="return confirm('Do you want to delete this check in?');"
+                    >
+                      <small>
+                        <i data-bs-toggle="tooltip" data-bs-placement="right" title="delete check in" class="bi bi-x"></i>
+                      </small>
+                    </button>
                   </form>
 
                 </div>
@@ -853,4 +877,17 @@ endblock %} {% block body %}
     </div>
   </div>
 </div>
+{% endblock %}
+{% block js %}
+<script>
+  $(document).ready(function () {
+  $('button[data-bs-toggle="tab"]').on("show.bs.tab", function (evt) {
+    localStorage.setItem("activeTab", $(evt.target).attr("data-bs-target"));
+  });
+  const activeTab = localStorage.getItem("activeTab");
+  if (activeTab) {
+    $('#nav-tab button[data-bs-target="' + activeTab + '"]').tab("show");
+  }
+});
+</script>
 {% endblock %}
