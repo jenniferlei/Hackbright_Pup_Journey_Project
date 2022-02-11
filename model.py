@@ -54,7 +54,8 @@ class Pet(db.Model):
     # user = User object
     # (db.relationship("Pets", backref="user") on User model)
 
-    check_ins = db.relationship("CheckIn", backref="pet", cascade="all, delete-orphan")
+    # check_ins = list of CheckIn objects
+    # (db.relationship("Pet", secondary="pets_check_ins", backref="check_ins") on CheckIn model)
 
     def __repr__(self):
         return f"<Pet pet_id={self.pet_id} pet_name={self.pet_name}>"
@@ -126,20 +127,19 @@ class CheckIn(db.Model):
         db.Integer, autoincrement=True, primary_key=True, nullable=False
     )
     hike_id = db.Column(db.Integer, db.ForeignKey("hikes.hike_id"), nullable=False)
-    pet_id = db.Column(db.Integer, db.ForeignKey("pets.pet_id"), nullable=False)
     date_hiked = db.Column(db.Date, nullable=False)
-    date_started = db.Column(db.Date, nullable=True)
-    date_completed = db.Column(db.Date, nullable=True)
-    miles_completed = db.Column(db.Float, nullable=True)
+    miles_completed = db.Column(db.Float, nullable=False)
     total_time = db.Column(db.Float, nullable=True)
+    notes = db.Column(db.Text, nullable=True)
 
     hike = db.relationship("Hike", backref="check_ins")
 
-    # pet = a Pet object
-    # (db.relationship("CheckIn", backref="pet") on pet Model)
+    pets = db.relationship(
+        "Pet", secondary="pets_check_ins", backref="check_ins"
+    )
 
     def __repr__(self):
-        return f"<Hike completed by pet check_in_id={self.check_in_id} hike_id={self.hike_id} pet_id={self.pet_id} date_hiked={self.date_hiked}>"
+        return f"<Check In check_in_id={self.check_in_id} hike_id={self.hike_id} date_hiked={self.date_hiked}>"
 
 
 class BookmarksList(db.Model):
@@ -161,21 +161,21 @@ class BookmarksList(db.Model):
         return f"<Bookmarks List bookmarks_list_id={self.bookmarks_list_id} bookmarks_list_name={self.bookmarks_list_name}>"
 
 
-# class PetCheckIn(db.Model):
-#     """Association table for a pet on a check in."""
+class PetCheckIn(db.Model):
+    """Association table for a pet on a check in."""
 
-#     __tablename__ = "pets_check_ins"
+    __tablename__ = "pets_check_ins"
 
-#     pet_check_in_id = db.Column(
-#         db.Integer, autoincrement=True, primary_key=True, nullable=False
-#     )
-#     pet_id = db.Column(db.Integer, db.ForeignKey("pets.pet_id"), nullable=False)
-#     check_in_id = db.Column(
-#         db.Integer, db.ForeignKey("check_ins.check_in_id"), nullable=False
-#     )
+    pet_check_in_id = db.Column(
+        db.Integer, autoincrement=True, primary_key=True, nullable=False
+    )
+    pet_id = db.Column(db.Integer, db.ForeignKey("pets.pet_id"), nullable=False)
+    check_in_id = db.Column(
+        db.Integer, db.ForeignKey("check_ins.check_in_id"), nullable=False
+    )
 
-#     def __repr__(self):
-#         return f"<Pet on Check In pet_check_in_id={self.pet_check_in_id} pet_id={self.pet_id} check_in_id={self.check_in_id}>"
+    def __repr__(self):
+        return f"<Pet on Check In pet_check_in_id={self.pet_check_in_id} pet_id={self.pet_id} check_in_id={self.check_in_id}>"
 
 
 class HikeBookmarksList(db.Model):
@@ -206,12 +206,14 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
     bookmarks_lists = fields.List(fields.Nested("BookmarksListSchema", exclude=("user",)))
     comments = fields.List(fields.Nested("CommentSchema", exclude=("user",)))
 
+
 class PetSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Pet
         include_fk = True
         load_instance = True
     check_ins = fields.List(fields.Nested("CheckInSchema", exclude=("pet",)))
+
 
 class HikeSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -239,7 +241,7 @@ class CheckInSchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
 
     hike = fields.Nested(HikeSchema(only=("hike_name",)))
-    pet = fields.Nested(PetSchema(only=("pet_name",)))
+    pets = fields.Nested(PetSchema(only=("pet_name",)))
 
 
 class BookmarksListSchema(ma.SQLAlchemyAutoSchema):

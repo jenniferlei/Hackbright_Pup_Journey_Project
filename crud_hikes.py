@@ -1,16 +1,6 @@
 """CRUD operations for Hike Model."""
 
-from model import (
-    db,
-    User,
-    Pet,
-    Hike,
-    Comment,
-    CheckIn,
-    BookmarksList,
-    HikeBookmarksList,
-    connect_to_db,
-)
+from model import db, User, Pet, Hike, Comment, CheckIn, PetCheckIn, BookmarksList, HikeBookmarksList, connect_to_db
 
 
 def create_hike(

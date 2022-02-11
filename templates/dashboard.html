@@ -136,12 +136,15 @@ Chart.js adapter #}
 
 
           <div class="mb-3">
-            <label for="pet_id" class="sr-only">Pet</label>
-            <select name="pet_id" class="form-control" required>
-              {% for pet in pets %}
-              <option value="{{ pet.pet_id }}">{{ pet.pet_name }}</option>
-              {% endfor %}
-            </select>
+            <label for="pet_id" class="sr-only">Pets</label>
+            {% for pet in pets|sort(attribute='birthday', reverse=True) %}
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="pet_id" value="{{ pet.pet_id }}" id="check-in-{{ pet.pet_id }}">
+              <label class="form-check-label" for="check-in-{{ pet.pet_id }}">
+                {{ pet.pet_name }}
+              </label>
+            </div>
+            {% endfor %}
           </div>
 
           <div class="mb-3">
@@ -151,24 +154,6 @@ Chart.js adapter #}
               name="date_hiked"
               class="form-control"
               required
-            />
-          </div>
-
-          <div class="mb-3">
-            <label for="date_started" class="sr-only">Date Started</label>
-            <input
-              type="date"
-              name="date_started"
-              class="form-control"
-            />
-          </div>
-
-          <div class="mb-3">
-            <label for="date_completed" class="sr-only">Date Completed</label>
-            <input
-              type="date"
-              name="date_completed"
-              class="form-control"
             />
           </div>
 
@@ -193,6 +178,15 @@ Chart.js adapter #}
               min="0"
               name="total_time"
               class="form-control"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="notes" class="sr-only">Notes</label>
+            <input
+                type="text"
+                name="notes"
+                class="form-control"
             />
           </div>
         <div class="modal-footer">
@@ -670,12 +664,14 @@ Chart.js adapter #}
                         {{ pet.pet_name }}
                     </h6>
                     <!-- pet image -->
+                    {% if pet.pet_imgURL != None %}
                     <img
-                        src="{{ pet.pet_imgURL }}"
-                        alt="profile"
-                        class="pet-profile-img"
-                        id="pet-img-{{ pet.pet_id }}"
+                      src="{{ pet.pet_imgURL }}"
+                      alt="profile"
+                      class="pet-profile-img"
+                      id="pet-img-{{ pet.pet_id }}"
                     />
+                    {% endif %}
                   </td>
 
                   <td>
@@ -686,7 +682,7 @@ Chart.js adapter #}
                       <div class="d-flex justify-content-start">
 
                         <form
-                          action="/delete-check-in"
+                          action="/delete-pet-check-in"
                           method="POST"
                         >
                           <button
@@ -694,8 +690,8 @@ Chart.js adapter #}
                             style="padding:0"
                             type="submit"
                             name="delete"
-                            value="{{ check_in.check_in_id }}"
-                            onclick="return confirm('Do you want to delete this check in?');"
+                            value="{{ pet.pet_id }},{{ check_in.check_in_id }}"
+                            onclick="return confirm('Do you want to delete this check in for this pet? ');"
                           >
                             <small>
                               <i data-bs-toggle="tooltip" data-bs-placement="right" title="delete check in" class="bi bi-x"></i>
@@ -730,7 +726,7 @@ Chart.js adapter #}
                           <div class="modal-dialog">
                             <div class="modal-content">
                               <div class="modal-header">
-                                <h5 class="modal-title" id="modal-edit-check-in-{{ check_in.check_in_id }}-label">Edit {{ check_in.pet.pet_name }}'s check in to this hike</h5>
+                                <h5 class="modal-title" id="modal-edit-check-in-{{ check_in.check_in_id }}-label">Edit Check In</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                               </div>
                               <div class="modal-body">
@@ -739,6 +735,27 @@ Chart.js adapter #}
                                   action="/edit-check-in"
                                   method="POST"
                                 >
+
+                                  <div class="mb-3">
+                                    <label for="pet_id" class="sr-only">Add a Pet</label>
+                                    {% for pet in pets|sort(attribute='birthday', reverse=True) %}
+                                    {% if pet not in check_in.pets %}
+                                    <div class="form-check">
+                                      <input class="form-check-input" type="checkbox" name="pet_id" value="{{ pet.pet_id }}" id="check-in-{{ pet.pet_id }}">
+                                      <label class="form-check-label" for="check-in-{{ pet.pet_id }}">
+                                        {{ pet.pet_name }}
+                                      </label>
+                                    </div>
+                                    {% else %}
+                                    <div class="form-check">
+                                      <input class="form-check-input" type="checkbox" name="pet_id" value="{{ pet.pet_id }}" id="check-in-{{ pet.pet_id }}" disabled>
+                                      <label class="form-check-label" for="check-in-{{ pet.pet_id }}">
+                                        {{ pet.pet_name }}
+                                      </label>
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                  </div>
                                   
                                   <div class="mb-3">
                                     <label for="date_hiked" class="sr-only">Date Hiked</label>
@@ -746,26 +763,6 @@ Chart.js adapter #}
                                         type="date"
                                         name="date_hiked"
                                         value="{{ check_in.date_hiked }}"
-                                        class="form-control"
-                                    />
-                                  </div>
-
-                                  <div class="mb-3">
-                                    <label for="date_started" class="sr-only">Date Started</label>
-                                    <input
-                                        type="date"
-                                        name="date_started"
-                                        value="{{ check_in.date_started }}"
-                                        class="form-control"
-                                    />
-                                  </div>
-
-                                  <div class="mb-3">
-                                    <label for="date_completed" class="sr-only">Date Completed</label>
-                                    <input
-                                        type="date"
-                                        name="date_completed"
-                                        value="{{ check_in.date_completed }}"
                                         class="form-control"
                                     />
                                   </div>
@@ -793,6 +790,16 @@ Chart.js adapter #}
                                         min="0"
                                         name="total_time"
                                         value="{{ check_in.total_time }}"
+                                        class="form-control"
+                                    />
+                                  </div>
+
+                                  <div class="mb-3">
+                                    <label for="notes" class="sr-only">Notes</label>
+                                    <input
+                                        type="text"
+                                        name="notes"
+                                        value="{{ check_in.notes }}"
                                         class="form-control"
                                     />
                                   </div>

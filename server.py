@@ -12,6 +12,7 @@ import crud_check_ins
 import crud_comments
 import crud_hikes_bookmarks_lists
 import crud_hikes
+import crud_pets_check_ins
 import crud_pets
 import crud_users
 
@@ -146,13 +147,13 @@ def show_hike(hike_id):
         )
     else:
         user = crud_users.get_user_by_email(logged_in_email)
+
         pets = crud_pets.get_pets_by_user_id(user.user_id)
-        check_ins = crud_check_ins.get_check_ins_by_user_id_and_hike_id(
-            user.user_id, hike.hike_id
-        )
 
-        sorted_check_ins = sorted(check_ins, key=lambda x: x.date_hiked, reverse=True)
+        # find all check ins for all user's pets for the hike
+        check_ins = crud_check_ins.get_check_ins_by_user_id_hike_id(user.user_id, hike.hike_id)
 
+        # find all bookmarks for the user for the hike
         bookmarks_list_by_user = crud_bookmarks_lists.get_bookmarks_lists_by_user_id(
             user.user_id
         )
@@ -169,7 +170,7 @@ def show_hike(hike_id):
             user=user,
             comments=comments,
             pets=pets,
-            check_ins=sorted_check_ins,
+            check_ins=check_ins,
             bookmarks_list_by_user=bookmarks_list_by_user,
             bookmarks_lists_by_user_hike=bookmarks_lists_by_user_hike,
             states=states,
@@ -177,69 +178,6 @@ def show_hike(hike_id):
             areas=areas,
             parking=parking,
         )
-
-
-@app.route("/bookmarks")
-def all_bookmarks():
-    """View all bookmarks."""
-
-    if "user_email" in session:
-        user = crud_users.get_user_by_email(session["user_email"])
-        bookmarks_lists = crud_bookmarks_lists.get_bookmarks_lists_by_user_id(
-            user.user_id
-        )
-
-        return render_template("all_bookmarks.html", bookmarks_lists=bookmarks_lists)
-    else:
-        flash("You must log in to view your bookmarks.")
-        return redirect("/")
-
-
-@app.route("/add-bookmarks-list", methods=["POST"])
-def add_bookmarks_list():
-    """Create a bookmark list"""
-
-    if "user_email" in session:
-        user = crud_users.get_user_by_email(session["user_email"])
-        bookmarks_list_name = request.form.get("bookmarks_list_name")
-        hikes = []
-
-        bookmarks_list = crud_bookmarks_lists.create_bookmarks_list(
-            bookmarks_list_name, user.user_id, hikes
-        )
-
-        db.session.add(bookmarks_list)
-        db.session.commit()
-
-        flash(f"Success! {bookmarks_list_name} has been added to your bookmarks.")
-
-        return redirect(request.referrer)
-    else:
-        flash("You must log in to add a bookmark list.")
-
-        return redirect("/")
-
-
-@app.route("/edit-bookmarks-list", methods=["POST"])
-def edit_bookmarks_list():
-    """Edit a bookmark list"""
-
-    logged_in_email = session.get("user_email")
-
-    if logged_in_email is None:
-        flash("You must log in to edit a bookmarks list.")
-    else:
-        bookmarks_list_id = request.form.get("edit")
-        bookmarks_list = crud_bookmarks_lists.get_bookmarks_list_by_bookmarks_list_id(
-            bookmarks_list_id
-        )
-        bookmarks_list.bookmarks_list_name = request.form.get("bookmarks_list_name")
-
-        flash(f"Success! Your list has been renamed to {bookmarks_list.bookmarks_list_name}.")
-
-        db.session.commit()
-
-    return redirect(request.referrer)
 
 
 @app.route("/add-pet", methods=["POST"])
@@ -395,6 +333,58 @@ def delete_pet():
     return redirect(request.referrer)
 
 
+@app.route("/check-in", methods=["POST"])
+def add_check_in():
+    """Add check in for a hike."""
+
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email is None:
+        flash("You must log in to check in.")
+    else:
+        hike_id = request.form.get("hike_id")
+        hike = crud_hikes.get_hike_by_id(hike_id)
+
+        pet_ids = request.form.getlist("pet_id") # this should be a list
+
+        pets = []
+
+        for pet_id in pet_ids:
+            pets.append(crud_pets.get_pet_by_id(pet_id))
+
+        date_hiked = request.form.get("date_hiked")
+
+        miles_completed = request.form.get("miles_completed")
+
+        if miles_completed == "":
+            miles_completed = None
+
+        total_time = request.form.get("total_time")
+
+        if total_time == "":
+            total_time = None
+
+        notes = request.form.get("notes")
+
+        if notes == "":
+            notes = None
+
+        check_in = crud_check_ins.create_check_in(
+            hike,
+            pets,
+            date_hiked,
+            miles_completed,
+            total_time,
+            notes
+        )
+
+        db.session.add(check_in)
+        db.session.commit()
+        flash(f"Success! You've checked into {hike.hike_name}.")
+
+    return redirect(request.referrer)
+
+
 @app.route("/edit-check-in", methods=["POST"])
 def edit_check_in():
     """Edit a check in"""
@@ -406,25 +396,20 @@ def edit_check_in():
     if logged_in_email is None:
         flash("You must log in to edit a check in.")
     else:
-        # this would be better if user can edit one line at a time,
-        # in case they want to keep some info and change/remove other info
+        pet_ids = request.form.getlist("pet_id")
         check_in_id = request.form.get("check_in_id")
+        
+        # Add pets to check in
+        for pet_id in pet_ids:
+            pet_check_in = crud_pets_check_ins.create_pet_check_in(pet_id, check_in_id)
+            db.session.add(pet_check_in)
+        
         check_in = crud_check_ins.get_check_ins_by_check_in_id(check_in_id)
 
         date_hiked = request.form.get("date_hiked")
         
         if date_hiked == "":
             date_hiked = check_in.date_hiked
-
-        date_started = request.form.get("date_started")
-
-        if date_started == "":
-            date_started = check_in.date_started
-
-        date_completed = request.form.get("date_completed")
-
-        if date_completed == "":
-            date_completed = check_in.date_completed
 
         miles_completed = request.form.get("miles_completed")
 
@@ -436,11 +421,12 @@ def edit_check_in():
         if total_time == "":
             total_time = check_in.total_time
 
+        notes = request.form.get("notes")
+
         check_in.date_hiked = date_hiked
-        check_in.date_started = date_started
-        check_in.date_completed = date_completed
         check_in.miles_completed = miles_completed
         check_in.total_time = total_time
+        check_in.notes = notes
 
         flash(f"Success! Your check in has been updated.")
 
@@ -460,15 +446,198 @@ def delete_check_in():
     else:
         check_in_id = request.form.get("delete")
         check_in = crud_check_ins.get_check_ins_by_check_in_id(check_in_id)
+        check_in.pets.clear()
 
         flash(
-            f"Success! Check in at {check_in.hike.hike_name} by {check_in.pet.pet_name} has been deleted."
+            f"Success! Check in at {check_in.hike.hike_name} has been deleted."
         )
 
         db.session.delete(check_in)
         db.session.commit()
 
     return redirect(request.referrer)
+
+
+@app.route("/delete-pet-check-in", methods=["POST"])
+def delete_pet_check_in():
+    """Delete a check-in from a pet"""
+
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email is None:
+        flash("You must log in to delete a check in.")
+    else:
+        pet_id, check_in_id = request.form.get("delete").split(",")
+        pet_check_in = crud_pets_check_ins.get_pet_check_in_by_pet_id_check_in_id(pet_id, check_in_id)
+        check_in = crud_check_ins.get_check_ins_by_check_in_id(check_in_id)
+        pet = crud_pets.get_pet_by_id(pet_id)
+
+        flash(
+            f"Success! Check in at {check_in.hike.hike_name} by {pet.pet_name} has been deleted."
+        )
+
+        db.session.delete(pet_check_in)
+        db.session.commit()
+
+    return redirect(request.referrer)
+
+
+@app.route("/add-bookmarks-list", methods=["POST"])
+def add_bookmarks_list():
+    """Create a bookmark list"""
+
+    if "user_email" in session:
+        user = crud_users.get_user_by_email(session["user_email"])
+        bookmarks_list_name = request.form.get("bookmarks_list_name")
+        hikes = []
+
+        bookmarks_list = crud_bookmarks_lists.create_bookmarks_list(
+            bookmarks_list_name, user.user_id, hikes
+        )
+
+        db.session.add(bookmarks_list)
+        db.session.commit()
+
+        flash(f"Success! {bookmarks_list_name} has been added to your bookmarks.")
+
+        return redirect(request.referrer)
+    else:
+        flash("You must log in to add a bookmark list.")
+
+        return redirect("/")
+
+
+@app.route("/edit-bookmarks-list", methods=["POST"])
+def edit_bookmarks_list():
+    """Edit a bookmark list"""
+
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email is None:
+        flash("You must log in to edit a bookmarks list.")
+    else:
+        bookmarks_list_id = request.form.get("edit")
+        bookmarks_list = crud_bookmarks_lists.get_bookmarks_list_by_bookmarks_list_id(
+            bookmarks_list_id
+        )
+        bookmarks_list.bookmarks_list_name = request.form.get("bookmarks_list_name")
+
+        flash(f"Success! Your list has been renamed to {bookmarks_list.bookmarks_list_name}.")
+
+        db.session.commit()
+
+    return redirect(request.referrer)
+
+
+@app.route("/delete-bookmarks-list", methods=["POST"])
+def delete_bookmarks_list():
+    """Delete a bookmarks list"""
+
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email is None:
+        flash("You must log in to delete a bookmarks list.")
+    else:
+        bookmarks_list_id = request.form.get("delete")
+        bookmarks_list = crud_bookmarks_lists.get_bookmarks_list_by_bookmarks_list_id(
+            bookmarks_list_id
+        )
+        bookmarks_list.hikes.clear()
+
+        flash(f"Success! Your lisit named {bookmarks_list.bookmarks_list_name} has been deleted.")
+
+        db.session.delete(bookmarks_list)
+        db.session.commit()
+
+    return redirect(request.referrer)
+
+
+@app.route("/add-hike", methods=["POST"])
+def add_hike_to_bookmark():
+    """Add hike to a bookmarks list"""
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email is None:
+        flash("You must log in to bookmark a hike.")
+    else:
+        hike_id = request.form.get("hike_id")
+        user = crud_users.get_user_by_email(logged_in_email)
+        hike = crud_hikes.get_hike_by_id(hike_id)
+        bookmarks_list_id = request.form.get("bookmarks_list_id")
+        bookmarks_list_name = request.form.get("bookmarks_list_name")
+
+        # if there is an existing bookmarks list, create a new association object between hike and bookmarks list
+        if bookmarks_list_id != None and bookmarks_list_id != "":
+            hike_bookmark = crud_hikes_bookmarks_lists.create_hike_bookmarks_list(hike_id, bookmarks_list_id)
+        # otherwise, create a new bookmarks with hike as a list of hike objects
+        else:
+            hikes = [hike]
+            hike_bookmark = crud_bookmarks_lists.create_bookmarks_list(
+                bookmarks_list_name, user.user_id, hikes
+            )
+
+        db.session.add(hike_bookmark)
+        db.session.commit()
+
+        flash(
+            f"A bookmark to {hike.hike_name} has been added to your list."
+        )
+
+    return redirect(request.referrer)
+
+
+@app.route("/remove-hike", methods=["POST"])
+def remove_hike():
+    """Delete a hike from a bookmarks list"""
+
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email is None:
+        flash("You must log in to remove a hike from your bookmarks.")
+    else:
+        hike_id, bookmarks_list_id = request.form.get("delete").split(",")
+        hike = crud_hikes.get_hike_by_id(hike_id)
+        bookmarks_list = crud_bookmarks_lists.get_bookmarks_list_by_bookmarks_list_id(
+            bookmarks_list_id
+        )
+        hikes_bookmarks_list = crud_hikes_bookmarks_lists.get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(
+            hike_id, bookmarks_list_id
+        )
+
+        flash(
+            f"Success! {hike.hike_name} has been removed from {bookmarks_list.bookmarks_list_name}."
+        )
+
+        db.session.delete(hikes_bookmarks_list)
+        db.session.commit()
+
+    return redirect(request.referrer)
+
+
+@app.route("/hikes/<hike_id>/comments", methods=["POST"])
+def add_comment(hike_id):
+    """Add a comment for a hike"""
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email is None:
+        flash("You must log in to add a comment.")
+    else:
+        user = crud_users.get_user_by_email(logged_in_email)
+        hike = crud_hikes.get_hike_by_id(hike_id)
+        body = request.form.get("body")
+        date_created = datetime.now()
+        edit = False
+        date_edited = None
+
+        comment = crud_comments.create_comment(
+            user, hike, body, date_created, edit, date_edited
+        )
+        db.session.add(comment)
+        db.session.commit()
+
+        flash("Your comment has been added.")
+
+    return redirect(f"/hikes/{hike_id}")
 
 
 @app.route("/edit-comment", methods=["POST"])
@@ -511,165 +680,6 @@ def delete_comment():
         db.session.commit()
 
     return redirect(request.referrer)
-
-
-@app.route("/delete-bookmarks-list", methods=["POST"])
-def delete_bookmarks_list():
-    """Delete a bookmarks list"""
-
-    logged_in_email = session.get("user_email")
-
-    if logged_in_email is None:
-        flash("You must log in to delete a bookmarks list.")
-    else:
-        bookmarks_list_id = request.form.get("delete")
-        bookmarks_list = crud_bookmarks_lists.get_bookmarks_list_by_bookmarks_list_id(
-            bookmarks_list_id
-        )
-        bookmarks_list.hikes.clear()
-
-        flash(f"Success! Your lisit named {bookmarks_list.bookmarks_list_name} has been deleted.")
-
-        db.session.delete(bookmarks_list)
-        db.session.commit()
-
-    return redirect(request.referrer)
-
-
-@app.route("/remove-hike", methods=["POST"])
-def remove_hike():
-    """Delete a hike from a bookmarks list"""
-
-    logged_in_email = session.get("user_email")
-
-    if logged_in_email is None:
-        flash("You must log in to remove a hike from your bookmarks.")
-    else:
-        hike_id, bookmarks_list_id = request.form.get("delete").split(",")
-        hike = crud_hikes.get_hike_by_id(hike_id)
-        bookmarks_list = crud_bookmarks_lists.get_bookmarks_list_by_bookmarks_list_id(
-            bookmarks_list_id
-        )
-        hikes_bookmarks_list = crud_hikes_bookmarks_lists.get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(
-            hike_id, bookmarks_list_id
-        )
-
-        flash(
-            f"Success! {hike.hike_name} has been removed from {bookmarks_list.bookmarks_list_name}."
-        )
-
-        db.session.delete(hikes_bookmarks_list)
-        db.session.commit()
-
-    return redirect(request.referrer)
-
-
-@app.route("/check-in", methods=["POST"])
-def add_check_in():
-    """Add check in for a hike."""
-
-    logged_in_email = session.get("user_email")
-
-    if logged_in_email is None:
-        flash("You must log in to check in.")
-    else:
-        hike_id = request.form.get("hike_id")
-        hike = crud_hikes.get_hike_by_id(hike_id)
-        pet_id = request.form.get("pet_id")
-        pet = crud_pets.get_pet_by_id(pet_id)
-        date_hiked = request.form.get("date_hiked")
-        date_started = request.form.get("date_started")
-
-        if date_started == "":
-            date_started = None
-
-        date_completed = request.form.get("date_completed")
-
-        if date_completed == "":
-            date_completed = None
-
-        miles_completed = request.form.get("miles_completed")
-
-        if miles_completed == "":
-            miles_completed = None
-
-        total_time = request.form.get("total_time")
-
-        if total_time == "":
-            total_time = None
-
-        check_in = crud_check_ins.create_check_in(
-            hike,
-            pet,
-            date_hiked,
-            date_started,
-            date_completed,
-            miles_completed,
-            total_time,
-        )
-        db.session.add(check_in)
-        db.session.commit()
-        flash(f"Success! {pet.pet_name} has been checked into {hike.hike_name}.")
-
-    return redirect(request.referrer)
-
-
-@app.route("/add-hike", methods=["POST"])
-def add_hike_to_bookmark():
-    """Add hike to a bookmarks list"""
-    logged_in_email = session.get("user_email")
-
-    if logged_in_email is None:
-        flash("You must log in to bookmark a hike.")
-    else:
-        hike_id = request.form.get("hike_id")
-        user = crud_users.get_user_by_email(logged_in_email)
-        hike = crud_hikes.get_hike_by_id(hike_id)
-        bookmarks_list_id = request.form.get("bookmarks_list_id")
-        bookmarks_list_name = request.form.get("bookmarks_list_name")
-
-        if bookmarks_list_id != None and bookmarks_list_id != "":
-            hike_bookmark = crud_hikes_bookmarks_lists.create_hike_bookmarks_list(hike_id, bookmarks_list_id)
-        else:
-            hikes = [hike]
-            hike_bookmark = crud_bookmarks_lists.create_bookmarks_list(
-                bookmarks_list_name, user.user_id, hikes
-            )
-
-        db.session.add(hike_bookmark)
-        db.session.commit()
-
-        flash(
-            f"A bookmark to {hike.hike_name} has been added to your list."
-        )
-
-    return redirect(request.referrer)
-
-
-@app.route("/hikes/<hike_id>/comments", methods=["POST"])
-def add_comment(hike_id):
-    """Add a comment for a hike"""
-    logged_in_email = session.get("user_email")
-
-    if logged_in_email is None:
-        flash("You must log in to add a comment.")
-    else:
-        user = crud_users.get_user_by_email(logged_in_email)
-        hike = crud_hikes.get_hike_by_id(hike_id)
-        body = request.form.get("body")
-        date_created = datetime.now()
-        edit = False
-        date_edited = None
-
-        comment = crud_comments.create_comment(
-            user, hike, body, date_created, edit, date_edited
-        )
-        db.session.add(comment)
-        db.session.commit()
-
-        flash("Your comment has been added.")
-
-    return redirect(f"/hikes/{hike_id}")
 
 
 @app.route("/users", methods=["POST"])
@@ -739,30 +749,23 @@ def get_pets_json():
     return jsonify({"pets": pets_json})
 
 
-@app.route("/check-ins-by-user.json")
-def get_check_ins_by_user_json():
-    """Return a JSON response with all check ins for a pet."""
-
-    logged_in_email = session.get("user_email")
-
-    user = crud_users.get_user_by_email(logged_in_email)
-    check_ins_by_user = crud_check_ins.get_check_ins_by_user_id(user.user_id)
-
-    check_in_schema = CheckInSchema(many=True)
-    check_ins_by_user_json = check_in_schema.dump(check_ins_by_user)
-
-    return jsonify({"checkIns": check_ins_by_user_json})
-
-
 @app.route("/check-ins-by-pets.json")
 def get_check_ins_by_pets_json():
     """Return a JSON response with all check ins for each pet."""
 
     logged_in_email = session.get("user_email")
-
     user = crud_users.get_user_by_email(logged_in_email)
-    pets = crud_pets.get_pets_by_user_id(user.user_id)
+
+    # Get unique check in objects for the user
     check_ins_by_user = crud_check_ins.get_check_ins_by_user_id(user.user_id)
+
+    # Get all pet objects for the user
+    pets = crud_pets.get_pets_by_user_id(user.user_id)
+
+    # For each pet:
+    # Create a new object with pet_id, pet_name, and data
+    # Sort the pet's check ins and append to data
+    # Append pet's data to check in data
 
     check_in_data = []
 
@@ -776,80 +779,7 @@ def get_check_ins_by_pets_json():
         
         check_in_data.append(pet_data)
 
-    # for check_in in check_ins_by_user:
-    #     check_in_data = {}
-    #     check_in_data["petCheckIns"][check_in.pet_id]["date_hiked"].append(check_in.date_hiked)
-    #     check_in_data["petCheckIns"][check_in.pet_id]["miles_completed"].append(check_in.miles_completed)
-        
-
-    # check_in_schema = CheckInSchema(many=True)
-    # check_ins_by_user_json = check_in_schema.dump(check_ins_by_user)
-
     return jsonify({"petCheckIns": check_in_data})
-
-
-# @app.route("/pet-check-ins.json")
-# def get_pet_check_ins_json():
-#     """Return a JSON response with all check ins for a pet."""
-
-#     logged_in_email = session.get("user_email")
-
-#     user = crud_users.get_user_by_email(logged_in_email)
-    # pets = crud_pets.get_pets_by_user_id(user.user_id)
-    # pets_json = []
-
-    # for pet in pets:
-    #     if pet.birthday != None:
-    #         birthday = pet.birthday.strftime("%b %d, %Y")
-    #     else:
-    #         birthday = pet.birthday
-    #     pets_json.append(
-    #         {
-    #             "pet_id": pet.pet_id,
-    #             "user_id": pet.user_id,
-    #             "pet_name": pet.pet_name,
-    #             "gender": pet.gender,
-    #             "birthday": birthday,
-    #             "breed": pet.breed,
-    #             "pet_imgURL": pet.pet_imgURL,
-    #             "img_public_id": pet.img_public_id,
-    #         }
-    #     )
-
-    # return jsonify({"pets": pets_json})
-    # pass
-
-
-@app.route("/hike-check-ins.json")
-def get_hike_check_ins_json():
-    """Return a JSON response with all check ins for a hike/user."""
-
-    # logged_in_email = session.get("user_email")
-
-    # user = crud_users.get_user_by_email(logged_in_email)
-    # pets = crud_pets.get_pets_by_user_id(user.user_id)
-    # pets_json = []
-
-    # for pet in pets:
-    #     if pet.birthday != None:
-    #         birthday = pet.birthday.strftime("%b %d, %Y")
-    #     else:
-    #         birthday = pet.birthday
-    #     pets_json.append(
-    #         {
-    #             "pet_id": pet.pet_id,
-    #             "user_id": pet.user_id,
-    #             "pet_name": pet.pet_name,
-    #             "gender": pet.gender,
-    #             "birthday": birthday,
-    #             "breed": pet.breed,
-    #             "pet_imgURL": pet.pet_imgURL,
-    #             "img_public_id": pet.img_public_id,
-    #         }
-    #     )
-
-    # return jsonify({"pets": pets_json})
-    pass
 
 
 if __name__ == "__main__":

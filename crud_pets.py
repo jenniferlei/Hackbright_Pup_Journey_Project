@@ -1,6 +1,6 @@
 """CRUD operations for Pet model."""
 
-from model import db, User, Pet, Hike, Comment, CheckIn, BookmarksList, HikeBookmarksList, connect_to_db
+from model import db, User, Pet, Hike, Comment, CheckIn, PetCheckIn, BookmarksList, HikeBookmarksList, connect_to_db
 
 
 def create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, img_public_id, check_ins):
@@ -16,11 +16,6 @@ def create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, img_public_i
             check_ins=check_ins)
 
     return pet
-
-
-def edit_pet():
-    """Edit a pet."""
-    pass
 
 
 def get_pets_by_user_id(user_id):

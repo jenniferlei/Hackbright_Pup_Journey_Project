@@ -1,6 +1,6 @@
 """CRUD operations for Comment model."""
 
-from model import db, User, Pet, Hike, Comment, CheckIn, BookmarksList, HikeBookmarksList, connect_to_db
+from model import db, User, Pet, Hike, Comment, CheckIn, PetCheckIn, BookmarksList, HikeBookmarksList, connect_to_db
 
 
 def create_comment(user, hike, body, date_created, edit, date_edited):

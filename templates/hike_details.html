@@ -317,7 +317,7 @@ endblock %} {% block body %}
                       <input
                         type="text"
                         name="body"
-                        class="form-control input-lg"
+                        class="form-control"
                         placeholder="Enter your comment here"
                         required
                       />
@@ -657,12 +657,15 @@ endblock %} {% block body %}
                     method="POST"
                   >
                     <div class="mb-3">
-                      <label for="pet_id" class="sr-only">Pet</label>
-                      <select name="pet_id" class="form-control input-lg">
-                        {% for pet in pets %}
-                        <option value="{{ pet.pet_id }}">{{ pet.pet_name }}</option>
-                        {% endfor %}
-                      </select>
+                      <label for="pet_id" class="sr-only">Pets</label>
+                      {% for pet in pets|sort(attribute='birthday', reverse=True) %}
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="pet_id" value="{{ pet.pet_id }}" id="check-in-{{ pet.pet_id }}">
+                        <label class="form-check-label" for="check-in-{{ pet.pet_id }}">
+                          {{ pet.pet_name }}
+                        </label>
+                      </div>
+                      {% endfor %}
                     </div>
 
                     <div class="mb-3">
@@ -670,26 +673,8 @@ endblock %} {% block body %}
                       <input
                         type="date"
                         name="date_hiked"
-                        class="form-control input-lg"
+                        class="form-control"
                         required
-                      />
-                    </div>
-
-                    <div class="mb-3">
-                      <label for="date_started" class="sr-only">Date Started</label>
-                      <input
-                        type="date"
-                        name="date_started"
-                        class="form-control input-lg"
-                      />
-                    </div>
-
-                    <div class="mb-3">
-                      <label for="date_completed" class="sr-only">Date Completed</label>
-                      <input
-                        type="date"
-                        name="date_completed"
-                        class="form-control input-lg"
                       />
                     </div>
 
@@ -702,7 +687,7 @@ endblock %} {% block body %}
                         step=".1"
                         min="0"
                         name="miles_completed"
-                        class="form-control input-lg"
+                        class="form-control"
                       />
                     </div>
 
@@ -713,7 +698,16 @@ endblock %} {% block body %}
                         step=".1"
                         min="0"
                         name="total_time"
-                        class="form-control input-lg"
+                        class="form-control"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="notes" class="sr-only">Notes</label>
+                      <input
+                          type="text"
+                          name="notes"
+                          class="form-control"
                       />
                     </div>
                   <div class="modal-footer">
@@ -731,19 +725,43 @@ endblock %} {% block body %}
           {% if check_ins != [] %}
           <div class="card card-body">
             <ul class="no-bullets">
-              {% for check_in in check_ins|sort(attribute='date_hiked',
-              reverse=True) %}
-              <li>
-                {{ check_in.pet.pet_name }} did this hike on {{
-                check_in.date_hiked.strftime('%b %d, %Y') }}! {% if
-                check_in.date_started != None %}
-                <br />Date started: {{ check_in.date_started.strftime('%b %d, %Y')
-                }} {% endif %} {% if check_in.date_completed != None %} <br />Date
-                completed: {{ check_in.date_completed.strftime('%b %d, %Y') }} {%
-                endif %} {% if check_in.miles_completed != None %} <br />Miles
-                completed: {{ check_in.miles_completed }} {% endif %} {% if
-                check_in.total_time != None %} <br />Total time: {{
-                check_in.total_time }} hours {% endif %}
+              {% for check_in in check_ins|sort(attribute='date_hiked', reverse=True) %}
+              <li> 🐾&nbsp;
+                {% if check_in.pets|length > 2 %}
+                  {% for pet in check_in.pets|sort(attribute='birthday', reverse=True) %}
+                    {% if not loop.last %}
+                    {{ pet.pet_name }}, 
+                    {% else %}
+                    and {{ pet.pet_name }}
+                    {% endif %}
+                  {% endfor %}
+                {% elif check_in.pets|length > 1 %}
+                  {% for pet in check_in.pets|sort(attribute='birthday', reverse=True) %}
+                    {% if not loop.last %}
+                    {{ pet.pet_name }} and 
+                    {% else %}
+                     {{ pet.pet_name }}
+                    {% endif %}
+                  {% endfor %}
+                {% else %}
+                  {% for pet in check_in.pets|sort(attribute='birthday', reverse=True) %}
+                    {{ pet.pet_name }}
+                  {% endfor %}
+                {% endif %}
+
+                did this hike on {{ check_in.date_hiked.strftime('%b %d, %Y') }}!
+
+                {% if check_in.miles_completed != None %}
+                <br />Miles completed: {{ check_in.miles_completed }}
+                {% endif %}
+                
+                {% if check_in.total_time != None %}
+                <br />Total time: {{ check_in.total_time }} hours
+                {% endif %}
+
+                {% if check_in.notes != None %}
+                <br />Notes: {{ check_in.notes }}
+                {% endif %}
 
                 <div class="input-group">
 
@@ -762,7 +780,7 @@ endblock %} {% block body %}
                     <div class="modal-dialog">
                       <div class="modal-content">
                         <div class="modal-header">
-                          <h5 class="modal-title" id="modal-edit-check-in-{{ check_in.check_in_id }}-label">Edit {{ check_in.pet.pet_name }}'s check in to this hike</h5>
+                          <h5 class="modal-title" id="modal-edit-check-in-{{ check_in.check_in_id }}-label">Edit check in to this hike</h5>
                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -771,6 +789,27 @@ endblock %} {% block body %}
                             action="/edit-check-in"
                             method="POST"
                           >
+
+                            <div class="mb-3">
+                              <label for="pet_id" class="sr-only">Add a Pet</label>
+                              {% for pet in pets|sort(attribute='birthday', reverse=True) %}
+                              {% if pet not in check_in.pets %}
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="pet_id" value="{{ pet.pet_id }}" id="check-in-{{ pet.pet_id }}">
+                                <label class="form-check-label" for="check-in-{{ pet.pet_id }}">
+                                  {{ pet.pet_name }}
+                                </label>
+                              </div>
+                              {% else %}
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="pet_id" value="{{ pet.pet_id }}" id="check-in-{{ pet.pet_id }}" disabled>
+                                <label class="form-check-label" for="check-in-{{ pet.pet_id }}">
+                                  {{ pet.pet_name }}
+                                </label>
+                              </div>
+                              {% endif %}
+                              {% endfor %}
+                            </div>
                             
                             <div class="mb-3">
                               <label for="date_hiked" class="sr-only">Date Hiked</label>
@@ -778,26 +817,6 @@ endblock %} {% block body %}
                                 type="date"
                                 name="date_hiked"
                                 value="{{ check_in.date_hiked }}"
-                                class="form-control input-lg"
-                              />
-                            </div>
-
-                            <div class="mb-3">
-                              <label for="date_started" class="sr-only">Date Started</label>
-                              <input
-                                type="date"
-                                name="date_started"
-                                value="{{ check_in.date_started }}"
-                                class="form-control input-lg"
-                              />
-                            </div>
-
-                            <div class="mb-3">
-                              <label for="date_completed" class="sr-only">Date Completed</label>
-                              <input
-                                type="date"
-                                name="date_completed"
-                                value="{{ check_in.date_completed }}"
                                 class="form-control input-lg"
                               />
                             </div>
@@ -825,6 +844,16 @@ endblock %} {% block body %}
                                 name="total_time"
                                 value="{{ check_in.total_time }}"
                                 class="form-control input-lg"
+                              />
+                            </div>
+
+                            <div class="mb-3">
+                              <label for="notes" class="sr-only">Notes</label>
+                              <input
+                                  type="text"
+                                  name="notes"
+                                  value="{{ check_in.notes }}"
+                                  class="form-control"
                               />
                             </div>
                           <div class="modal-footer">
