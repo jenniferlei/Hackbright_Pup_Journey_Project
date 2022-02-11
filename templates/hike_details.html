@@ -285,7 +285,7 @@ endblock %} {% block body %}
           role="tabpanel"
           aria-labelledby="nav-map-tab"
         >
-          <div class="mt-4">Map goes here</div>
+          <div class="mt-3">Map goes here</div>
         </div>
         <!-- End Map Panel content -->
 
@@ -298,7 +298,7 @@ endblock %} {% block body %}
         >
           <!-- Begin Add Comment Modal -->
           {% if "login" in session %}
-          <a class="btn btn-link btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-add-comment"><small>+ Comment</small></a>
+          <a class="btn btn-link btn-sm mt-2" href="" data-bs-toggle="modal" data-bs-target="#modal-add-comment"><small>+ Comment</small></a>
 
           <div class="modal fade" id="modal-add-comment" tabindex="-1" aria-labelledby="modal-add-comment-label" aria-hidden="true">
             <div class="modal-dialog">
@@ -331,25 +331,22 @@ endblock %} {% block body %}
               </div>
             </div>
           </div>
+          {% else %}
+          <div class="mt-3">Please log in to add a comment.</div>
           {% endif %}
           <!-- End of Add Comment Modal -->
           
           <!-- Begin View All Comments -->
           {% for comment in comments|sort(attribute='date_created',
           reverse=True) %}
-          <div class="card card-body">
-            {{ comment.user.full_name }} <small class="text-muted">posted on {{
-            comment.date_created.strftime('%b %d, %Y %I:%M %p') }}{% if
-            comment.edit == True %} (edited on {{
-            comment.date_edited.strftime('%b %d, %Y %I:%M %p') }}){% endif
-            %}</small>
-            {{ comment.body }} 
-            
-            {% if "login" in session and comment.user_id == user.user_id %}
-              <!-- Begin Edit Comment Modal -->
-              {% if "login" in session %}
-              
+          <div class="card mt-1">
+            <div class="card-header">
               <div class="input-group">
+                {{ comment.user.full_name }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                {% if "login" in session and comment.user_id == user.user_id %}
+                  <!-- Begin Edit Comment Modal -->
+                  
                 <a
                   href="" 
                   data-bs-toggle="modal"
@@ -375,8 +372,9 @@ endblock %} {% block body %}
                     <i data-bs-toggle="tooltip" data-bs-placement="right" title="delete comment" class="bi bi-x"></i>
                   </button>
                 </form>
-              </div>
                 <!-- End Delete Comment Form -->
+              </div>
+            
               
 
               <div class="modal fade" id="modal-edit-comment-{{ comment.comment_id }}" tabindex="-1" aria-labelledby="modal-edit-comment-{{ comment.comment_id }}-label" aria-hidden="true">
@@ -409,11 +407,23 @@ endblock %} {% block body %}
                     </div>
                   </div>
                 </div>
-              </div>
-              {% endif %}
+              
               <!-- End of Edit Comment Modal -->
 
+
             {% endif %}
+            </div>
+            
+              <small class="text-muted">posted on {{
+              comment.date_created.strftime('%b %d, %Y %I:%M %p') }}{% if
+              comment.edit == True %} (edited on {{
+              comment.date_edited.strftime('%b %d, %Y %I:%M %p') }}){% endif
+              %}</small>
+            </div>
+            <div class="card-body">
+              {{ comment.body }} 
+            </div>
+            
           </div>
 
           {% endfor %}
@@ -433,7 +443,7 @@ endblock %} {% block body %}
         >
           {% if "login" in session %}
           <!-- Begin Add Bookmark Modal -->
-          <a class="btn btn-link btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-add-bookmark"><small>+ Bookmark</small></a>
+          <a class="btn btn-link btn-sm mt-2" href="" data-bs-toggle="modal" data-bs-target="#modal-add-bookmark"><small>+ Bookmark</small></a>
 
           <div class="modal fade" id="modal-add-bookmark" tabindex="-1" aria-labelledby="modal-add-bookmark-label" aria-hidden="true">
             <div class="modal-dialog">
@@ -508,32 +518,24 @@ endblock %} {% block body %}
           <!-- End of Add Bookmark Modal -->
           
         {% if bookmarks_lists_by_user_hike != [] %}
-        <div class="card card-body">
-          You have this hike on these lists (click on list name to view all
-          hikes on the list):
-          <ul class="no-bullets">
+        
+          <div class="mt-1">You have this hike on the following lists (click on list name to view all
+          hikes on the list):</div>
+          
             {% for bookmarks_list in bookmarks_lists_by_user_hike %}
-            <li>
-              <div class="input-group">
-              <a
-                data-bs-toggle="collapse"
-                href="#collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
-                role="button"
-                aria-expanded="false"
-                aria-controls="collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
-              >
-                {{ bookmarks_list.bookmarks_list_name }}
-              </a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-              
-               <a 
+            <div class="card mt-1">
+              <div class="card-header">
+                <div class="input-group">
+                  <a 
                   href="" 
                   data-bs-toggle="modal" 
                   data-bs-target="#modal-rename-bookmark-{{ bookmarks_list.bookmarks_list_id }}"
                   style="color: rgb(44, 44, 44)"
                 >
                   <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="rename list" class="bi bi-pencil"></i></small>
-                </a>&nbsp;&nbsp;&nbsp;
+                </a>
+              
+                &nbsp;
 
                 <form
                   action="/delete-bookmarks-list"
@@ -550,6 +552,18 @@ endblock %} {% block body %}
                     <i data-bs-toggle="tooltip" data-bs-placement="right" title="delete list" class="bi bi-x"></i>
                   </button>
                 </form>
+                
+                &nbsp;&nbsp;&nbsp;
+                  <a
+                    data-bs-toggle="collapse"
+                    href="#collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
+                  >
+                    {{ bookmarks_list.bookmarks_list_name }}
+                  </a>
+                </div>
               </div>
               <!-- End Delete Bookmark Form -->
 
@@ -587,7 +601,7 @@ endblock %} {% block body %}
               <!-- End Rename Bookmark Modal -->
 
               <div
-                class="collapse card card-body"
+                class="collapse card-body"
                 id="collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
               >
                 <div>
@@ -595,9 +609,6 @@ endblock %} {% block body %}
                     {% for hike in bookmarks_list.hikes %}
                     <li>
                       <div class="input-group">
-                        <a href="/hikes/{{ hike.hike_id }}" target="_blank"
-                          >{{ hike.hike_name }}</a
-                        >&nbsp;&nbsp;&nbsp;
                         <form
                           action="/remove-hike"
                           method="POST"
@@ -613,21 +624,26 @@ endblock %} {% block body %}
                             <i data-bs-toggle="tooltip" data-bs-placement="right" title="remove from list" class="bi bi-x"></i>
                           </small></button>
                         </form>
+
+                        &nbsp;&nbsp;&nbsp;
+                        <a href="/hikes/{{ hike.hike_id }}" target="_blank"
+                          >{{ hike.hike_name }}</a
+                        >
                       </div>
                     </li>
                     {% endfor %}
                   </ul>
                 </div>
               </div>
-            </li>
+            </div>
             {% endfor %}
-          </ul>
-          </div>
+
+          
         {% endif %}
 
 
           {% else %}
-          <div class="mt-4">Please log in to add a bookmark.</div>
+          <div class="mt-3">Please log in to add a bookmark.</div>
           {% endif %}
         </div>
         <!-- End Bookmarks tab content -->
@@ -642,7 +658,7 @@ endblock %} {% block body %}
         >
           {% if "login" in session %}
           <!-- Begin Add Check In Modal -->
-          <a class="btn btn-link btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-add-check-in"><small>+ Check In</small></a>
+          <a class="btn btn-link btn-sm mt-2" href="" data-bs-toggle="modal" data-bs-target="#modal-add-check-in"><small>+ Check In</small></a>
 
           <div class="modal fade" id="modal-add-check-in" tabindex="-1" aria-labelledby="modal-add-check-in-label" aria-hidden="true">
             <div class="modal-dialog">
@@ -657,8 +673,8 @@ endblock %} {% block body %}
                     method="POST"
                   >
                     <div class="mb-3">
-                      <label for="pet_id" class="sr-only">Pets</label>
-                      {% for pet in pets|sort(attribute='birthday', reverse=True) %}
+                      <label for="pet_id" class="sr-only">Pets</label>&nbsp;<small class="text-muted">*</small>
+                      {% for pet in pets|sort(attribute='pet_name') %}
                       <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="pet_id" value="{{ pet.pet_id }}" id="check-in-{{ pet.pet_id }}">
                         <label class="form-check-label" for="check-in-{{ pet.pet_id }}">
@@ -669,7 +685,7 @@ endblock %} {% block body %}
                     </div>
 
                     <div class="mb-3">
-                      <label for="date_hiked" class="sr-only">Date Hiked</label>
+                      <label for="date_hiked" class="sr-only">Date Hiked</label>&nbsp;<small class="text-muted">*</small>
                       <input
                         type="date"
                         name="date_hiked"
@@ -681,7 +697,7 @@ endblock %} {% block body %}
                     <div class="mb-3">
                       <label for="miles_completed" class="sr-only"
                         >Miles Completed</label
-                      >
+                      >&nbsp;<small class="text-muted">*</small>
                       <input
                         type="number"
                         step=".1"
@@ -728,7 +744,7 @@ endblock %} {% block body %}
               {% for check_in in check_ins|sort(attribute='date_hiked', reverse=True) %}
               <li> 🐾&nbsp;
                 {% if check_in.pets|length > 2 %}
-                  {% for pet in check_in.pets|sort(attribute='birthday', reverse=True) %}
+                  {% for pet in check_in.pets|sort(attribute='pet_name') %}
                     {% if not loop.last %}
                     {{ pet.pet_name }}, 
                     {% else %}
@@ -736,7 +752,7 @@ endblock %} {% block body %}
                     {% endif %}
                   {% endfor %}
                 {% elif check_in.pets|length > 1 %}
-                  {% for pet in check_in.pets|sort(attribute='birthday', reverse=True) %}
+                  {% for pet in check_in.pets|sort(attribute='pet_name') %}
                     {% if not loop.last %}
                     {{ pet.pet_name }} and 
                     {% else %}
@@ -744,7 +760,7 @@ endblock %} {% block body %}
                     {% endif %}
                   {% endfor %}
                 {% else %}
-                  {% for pet in check_in.pets|sort(attribute='birthday', reverse=True) %}
+                  {% for pet in check_in.pets|sort(attribute='pet_name') %}
                     {{ pet.pet_name }}
                   {% endfor %}
                 {% endif %}
@@ -791,28 +807,39 @@ endblock %} {% block body %}
                           >
 
                             <div class="mb-3">
-                              <label for="pet_id" class="sr-only">Add a Pet</label>
-                              {% for pet in pets|sort(attribute='birthday', reverse=True) %}
-                              {% if pet not in check_in.pets %}
-                              <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="pet_id" value="{{ pet.pet_id }}" id="check-in-{{ pet.pet_id }}">
-                                <label class="form-check-label" for="check-in-{{ pet.pet_id }}">
-                                  {{ pet.pet_name }}
-                                </label>
+                              <div class="row">
+                                <div class="col">
+                                  <label for="pet_id" class="sr-only">Add a Pet</label>
+                                  {% for pet in pets|sort(attribute='pet_name') %}
+                                  {% if pet not in check_in.pets %}
+                                  <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="add_pet_id" value="{{ pet.pet_id }}" id="add-to-check-in-{{ pet.pet_id }}">
+                                    <label class="form-check-label" for="add-to-check-in-{{ pet.pet_id }}">
+                                      {{ pet.pet_name }}
+                                    </label>
+                                  </div>
+                                  {% endif %}
+                                  {% endfor %}
+                                </div>
+
+                                <div class="col">
+                                  <label for="pet_id" class="sr-only">Remove a Pet</label>
+                                  {% for pet in pets|sort(attribute='pet_name') %}
+                                  {% if pet in check_in.pets %}
+                                  <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="remove_pet_id" value="{{ pet.pet_id }}" id="remove-from-check-in-{{ pet.pet_id }}">
+                                    <label class="form-check-label" for="remove-from-check-in-{{ pet.pet_id }}">
+                                      {{ pet.pet_name }}
+                                    </label>
+                                  </div>
+                                  {% endif %}
+                                  {% endfor %}
+                                </div>
                               </div>
-                              {% else %}
-                              <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="pet_id" value="{{ pet.pet_id }}" id="check-in-{{ pet.pet_id }}" disabled>
-                                <label class="form-check-label" for="check-in-{{ pet.pet_id }}">
-                                  {{ pet.pet_name }}
-                                </label>
-                              </div>
-                              {% endif %}
-                              {% endfor %}
                             </div>
                             
                             <div class="mb-3">
-                              <label for="date_hiked" class="sr-only">Date Hiked</label>
+                              <label for="date_hiked" class="sr-only">Date Hiked</label>&nbsp;<small class="text-muted">*</small>
                               <input
                                 type="date"
                                 name="date_hiked"
@@ -824,7 +851,7 @@ endblock %} {% block body %}
                             <div class="mb-3">
                               <label for="miles_completed" class="sr-only"
                                 >Miles Completed</label
-                              >
+                              >&nbsp;<small class="text-muted">*</small>
                               <input
                                 type="number"
                                 step=".1"
@@ -895,7 +922,7 @@ endblock %} {% block body %}
           {% endif %}
           <!-- End check in details for the hike -->
           {% else %}
-          <div class="mt-4">Please log in to add a check in.</div>
+          <div class="mt-3">Please log in to add a check in.</div>
           {% endif %}
         </div>
 

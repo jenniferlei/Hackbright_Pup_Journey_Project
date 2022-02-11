@@ -35,10 +35,10 @@ Chart.js adapter #}
       <div class="modal-body">
         <form action="/add-pet" method="POST" enctype="multipart/form-data">
           <div class="mb-3">
-            <label for="pet_name" class="sr-only"> Name </label>
+            <label for="pet_name" class="sr-only"> Name </label>&nbsp;<small class="text-muted">*</small>
             <input
               type="text"
-              name="pet_name"
+              name="pet_name"s
               class="form-control"
               placeholder="Name"
               required
@@ -124,9 +124,10 @@ Chart.js adapter #}
           style="margin:1.5em"
           action="/check-in"
           method="POST"
+          onSubmit="validateCheckIn() || event.preventDefault();"
         >
           <div class="mb-3">
-            <label for="hike_id" class="sr-only">Hike</label>
+            <label for="hike_id" class="sr-only">Hike</label>&nbsp;<small class="text-muted">*</small>
             <select name="hike_id" class="form-control" required>
               {% for hike in hikes|sort(attribute='hike_name') %}
               <option value="{{ hike.hike_id }}">{{ hike.hike_name }}</option>
@@ -136,10 +137,10 @@ Chart.js adapter #}
 
 
           <div class="mb-3">
-            <label for="pet_id" class="sr-only">Pets</label>
-            {% for pet in pets|sort(attribute='birthday', reverse=True) %}
+            <label for="pet_id" class="sr-only">Pets</label>&nbsp;<small class="text-muted">*</small>
+            {% for pet in pets|sort(attribute='pet_name') %}
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="pet_id" value="{{ pet.pet_id }}" id="check-in-{{ pet.pet_id }}">
+              <input class="form-check-input" type="checkbox" name="add-check-in-pet_id" value="{{ pet.pet_id }}" id="check-in-{{ pet.pet_id }}">
               <label class="form-check-label" for="check-in-{{ pet.pet_id }}">
                 {{ pet.pet_name }}
               </label>
@@ -148,7 +149,7 @@ Chart.js adapter #}
           </div>
 
           <div class="mb-3">
-            <label for="date_hiked" class="sr-only">Date Hiked</label>
+            <label for="date_hiked" class="sr-only">Date Hiked</label>&nbsp;<small class="text-muted">*</small>
             <input
               type="date"
               name="date_hiked"
@@ -158,15 +159,14 @@ Chart.js adapter #}
           </div>
 
           <div class="mb-3">
-            <label for="miles_completed" class="sr-only"
-              >Miles Completed</label
-            >
+            <label for="miles_completed" class="sr-only">Miles Completed</label>&nbsp;<small class="text-muted">*</small>
             <input
               type="number"
               step=".1"
               min="0"
               name="miles_completed"
               class="form-control"
+              required
             />
           </div>
 
@@ -343,7 +343,7 @@ Chart.js adapter #}
             <div id="pet-profile-div">
               <table class="table" id="pet-profile-table"> <!-- start pet profile table -->
                 <tbody>
-                  {% for pet in pets|sort(attribute='birthday', reverse=True) %}
+                  {% for pet in pets|sort(attribute='pet_name') %}
                   <tr>
                     <td style="width:10em">
                       <div class="d-flex">
@@ -426,7 +426,7 @@ Chart.js adapter #}
                                 <div class="mb-3">
                                   <label htmlFor="pet_name" class="sr-only">
                                     Name
-                                  </label>
+                                  </label>&nbsp;<small class="text-muted">*</small>
                                   <input
                                     type="text"
                                     name="pet_name"
@@ -654,7 +654,7 @@ Chart.js adapter #}
             <div style="position: relative; width: 35vw">
             <table class="table">
               <tbody>
-                {% for pet in pets|sort(attribute='birthday', reverse=True) %}
+                {% for pet in pets|sort(attribute='pet_name') %}
                 <tr>
                   <td>
                     <h6
@@ -678,8 +678,20 @@ Chart.js adapter #}
                   {% if pet.check_ins != [] %}
                     <!-- START CHECK IN SCROLL -->
                     <div class="check-ins-scroll">
+                      <!-- Would be nice if the check ins could be limited based on view by selection (month/year) -->
                       {% for check_in in pet.check_ins|sort(attribute='date_hiked', reverse=True) %}
                       <div class="d-flex justify-content-start">
+
+                        <a
+                          href="" 
+                          data-bs-toggle="modal" 
+                          data-bs-target="#modal-edit-check-in-{{ check_in.check_in_id }}" 
+                          style="color: rgb(44, 44, 44)"
+                        >
+                          <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="edit check in" class="bi bi-pencil"></i></small>
+                        </a>
+
+                        &nbsp;
 
                         <form
                           action="/delete-pet-check-in"
@@ -699,16 +711,7 @@ Chart.js adapter #}
                           </button>
                         </form>
 
-                        &nbsp;
-
-                        <a
-                          href="" 
-                          data-bs-toggle="modal" 
-                          data-bs-target="#modal-edit-check-in-{{ check_in.check_in_id }}" 
-                          style="color: rgb(44, 44, 44)"
-                        >
-                          <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="edit check in" class="bi bi-pencil"></i></small>
-                        </a>&nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;&nbsp;
 
 
                         <small>
@@ -737,28 +740,39 @@ Chart.js adapter #}
                                 >
 
                                   <div class="mb-3">
-                                    <label for="pet_id" class="sr-only">Add a Pet</label>
-                                    {% for pet in pets|sort(attribute='birthday', reverse=True) %}
-                                    {% if pet not in check_in.pets %}
-                                    <div class="form-check">
-                                      <input class="form-check-input" type="checkbox" name="pet_id" value="{{ pet.pet_id }}" id="check-in-{{ pet.pet_id }}">
-                                      <label class="form-check-label" for="check-in-{{ pet.pet_id }}">
-                                        {{ pet.pet_name }}
-                                      </label>
+                                    <div class="row">
+                                      <div class="col">
+                                        <label for="pet_id" class="sr-only">Add a Pet</label>
+                                        {% for pet in pets|sort(attribute='pet_name') %}
+                                        {% if pet not in check_in.pets %}
+                                        <div class="form-check">
+                                          <input class="form-check-input" type="checkbox" name="add_pet_id" value="{{ pet.pet_id }}" id="add-to-check-in-{{ pet.pet_id }}">
+                                          <label class="form-check-label" for="add-to-check-in-{{ pet.pet_id }}">
+                                            {{ pet.pet_name }}
+                                          </label>
+                                        </div>
+                                        {% endif %}
+                                        {% endfor %}
+                                      </div>
+
+                                      <div class="col">
+                                        <label for="pet_id" class="sr-only">Remove a Pet</label>
+                                        {% for pet in pets|sort(attribute='pet_name') %}
+                                        {% if pet in check_in.pets %}
+                                        <div class="form-check">
+                                          <input class="form-check-input" type="checkbox" name="remove_pet_id" value="{{ pet.pet_id }}" id="remove-from-check-in-{{ pet.pet_id }}">
+                                          <label class="form-check-label" for="remove-from-check-in-{{ pet.pet_id }}">
+                                            {{ pet.pet_name }}
+                                          </label>
+                                        </div>
+                                        {% endif %}
+                                        {% endfor %}
+                                      </div>
                                     </div>
-                                    {% else %}
-                                    <div class="form-check">
-                                      <input class="form-check-input" type="checkbox" name="pet_id" value="{{ pet.pet_id }}" id="check-in-{{ pet.pet_id }}" disabled>
-                                      <label class="form-check-label" for="check-in-{{ pet.pet_id }}">
-                                        {{ pet.pet_name }}
-                                      </label>
-                                    </div>
-                                    {% endif %}
-                                    {% endfor %}
                                   </div>
                                   
                                   <div class="mb-3">
-                                    <label for="date_hiked" class="sr-only">Date Hiked</label>
+                                    <label for="date_hiked" class="sr-only">Date Hiked</label>&nbsp;<small class="text-muted">*</small>
                                     <input
                                         type="date"
                                         name="date_hiked"
@@ -770,7 +784,7 @@ Chart.js adapter #}
                                   <div class="mb-3">
                                     <label for="miles_completed" class="sr-only"
                                         >Miles Completed</label
-                                    >
+                                    >&nbsp;<small class="text-muted">*</small>
                                     <input
                                         type="number"
                                         step=".1"
@@ -867,6 +881,17 @@ Chart.js adapter #}
             <li>
               <div class="input-group">
                 
+                <a 
+                  href="" 
+                  data-bs-toggle="modal" 
+                  data-bs-target="#modal-rename-bookmark-{{ bookmarks_list.bookmarks_list_id }}"
+                  style="color: rgb(44, 44, 44)"
+                >
+                  <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="rename list" class="bi bi-pencil"></i></small>
+                </a>
+              
+                &nbsp;
+
                 <form
                   action="/delete-bookmarks-list"
                   method="POST"
@@ -882,17 +907,6 @@ Chart.js adapter #}
                     <i data-bs-toggle="tooltip" data-bs-placement="right" title="delete list" class="bi bi-x"></i>
                   </button>
                 </form>
-              
-                &nbsp;
-
-                <a 
-                  href="" 
-                  data-bs-toggle="modal" 
-                  data-bs-target="#modal-rename-bookmark-{{ bookmarks_list.bookmarks_list_id }}"
-                  style="color: rgb(44, 44, 44)"
-                >
-                  <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="rename list" class="bi bi-pencil"></i></small>
-                </a>
                 
                 &nbsp;&nbsp;&nbsp;
                 <a

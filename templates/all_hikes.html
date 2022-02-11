@@ -186,7 +186,7 @@
       <div class="card-body">
         <div class="all-hikes-container">
           <ul class="no-bullets">
-            {% for hike in search_hikes %}
+            {% for hike in search_hikes|sort(attribute='hike_name') %}
               <li>
                 <a href="/hikes/{{ hike.hike_id }}">{{ hike.hike_name }}</a>
                 <br><small>{{ hike.difficulty }} | {{ hike.miles }} miles | {{ hike.city }}, {{ hike.state }} | {{ hike.area }} | {{ hike.leash_rule }} | {{ hike.parking }}</small>

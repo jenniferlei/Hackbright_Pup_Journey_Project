@@ -1,6 +1,26 @@
 "use strict";
 
-//////////// SHOW DIFF FORM BASED ON SELECTION ////////////
+//////////// MAKE SURE AT LEAST ONE CHECKBOX IS CHECKED WHEN ADDING A PET ////////////
+function validateCheckIn(evt) {
+  const petCheckBoxes = document.querySelectorAll(
+    "input[name=add-check-in-pet_id]"
+  );
+  const atLeastOneChecked = false;
+  for (let i = 0; i < petCheckBoxes.length; i++) {
+    if (petCheckBoxes[i].checked) {
+      atLeastOneChecked = true;
+      break;
+    }
+  }
+  if (atLeastOneChecked === false) {
+    alert("Please add a pet to the check in");
+    return false;
+  }
+
+  return true;
+}
+
+//////////// SHOW DIFF FORM FOR CHART BASED ON SELECTION ////////////
 $("div.chart-form").hide();
 
 $(document).ready(function () {

@@ -345,7 +345,11 @@ def add_check_in():
         hike_id = request.form.get("hike_id")
         hike = crud_hikes.get_hike_by_id(hike_id)
 
-        pet_ids = request.form.getlist("pet_id") # this should be a list
+        pet_ids = request.form.getlist("add-check-in-pet_id") # this should be a list
+
+        # if pet_ids == []:
+        #     flash(f"Please try again.")
+        #     return redirect(request.referrer)
 
         pets = []
 
@@ -396,13 +400,19 @@ def edit_check_in():
     if logged_in_email is None:
         flash("You must log in to edit a check in.")
     else:
-        pet_ids = request.form.getlist("pet_id")
+        add_pet_ids = request.form.getlist("add_pet_id")
+        remove_pet_ids = request.form.getlist("remove_pet_id")
         check_in_id = request.form.get("check_in_id")
         
         # Add pets to check in
-        for pet_id in pet_ids:
-            pet_check_in = crud_pets_check_ins.create_pet_check_in(pet_id, check_in_id)
+        for add_pet_id in add_pet_ids:
+            pet_check_in = crud_pets_check_ins.create_pet_check_in(add_pet_id, check_in_id)
             db.session.add(pet_check_in)
+
+        # Remove pets from check in
+        for remove_pet_id in remove_pet_ids:
+            pet_check_in = crud_pets_check_ins.get_pet_check_in_by_pet_id_check_in_id(remove_pet_id, check_in_id)
+            db.session.delete(pet_check_in)
         
         check_in = crud_check_ins.get_check_ins_by_check_in_id(check_in_id)
 
@@ -427,6 +437,9 @@ def edit_check_in():
         check_in.miles_completed = miles_completed
         check_in.total_time = total_time
         check_in.notes = notes
+
+        if check_in.pets == []:
+            db.session.delete(check_in)
 
         flash(f"Success! Your check in has been updated.")
 
