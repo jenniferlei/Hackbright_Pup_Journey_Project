@@ -1,7 +1,7 @@
 "use strict";
 
 //////////// MAKE SURE AT LEAST ONE CHECKBOX IS CHECKED WHEN ADDING A PET ////////////
-function validateCheckIn(evt) {
+function validateCheckIn() {
   const petCheckBoxes = document.querySelectorAll(
     "input[name=add-check-in-pet_id]"
   );
@@ -44,6 +44,71 @@ $(document).ready(function () {
     $('#v-pills-tab a[href="' + activeTab + '"]').tab("show");
   }
 });
+
+//////////// MAP ////////////
+// We use a function declaration for initMap because we actually *do* need
+// to rely on value-hoisting in this circumstance.
+function initMap() {
+  // need to fetch latitude and longitude instead
+  fetch("/dashboard_map_coordinates.json")
+    .then((response) => response.json())
+    .then((jsonResponse) => {
+      const basicMap = new google.maps.Map(
+        document.querySelector("#dashboard-map"),
+        {
+          center: {
+            lat: 34.0201598,
+            lng: -118.6926047,
+          },
+          zoom: 8,
+        }
+      );
+
+      const { checkInCoordinates } = jsonResponse;
+      const markers = [];
+
+      for (const checkInCoordinate of checkInCoordinates) {
+        const { hike_name, latitude, longitude } = checkInCoordinate;
+        markers.push(
+          new google.maps.Marker({
+            position: {
+              lat: Number(latitude),
+              lng: Number(longitude),
+            },
+            title: hike_name,
+            map: basicMap,
+            icon: {
+              // custom icon
+              url: "/static/img/marker.svg",
+              scaledSize: {
+                width: 30,
+                height: 30,
+              },
+            },
+          })
+        );
+      }
+
+      for (const marker of markers) {
+        const markerInfo = `
+          <h1>${marker.title}</h1>
+          <p>
+            Located at: <code>${marker.position.lat()}</code>,
+            <code>${marker.position.lng()}</code>
+          </p>
+        `;
+
+        const infoWindow = new google.maps.InfoWindow({
+          content: markerInfo,
+          maxWidth: 200,
+        });
+
+        marker.addListener("click", () => {
+          infoWindow.open(basicMap, marker);
+        });
+      }
+    });
+}
 
 //////////// CHART ////////////
 // modify chart min and max when dropdown is changed
@@ -168,52 +233,3 @@ fetch("/check-ins-by-pets.json")
       viewUpdateButton.addEventListener("click", UpdateChartView);
     }
   });
-
-//     function UpdateChartView(evt) {
-//     evt.preventDefault();
-
-//     const month = document.querySelector()
-//     const year = jsonResponse.year;
-//     const view = jsonResponse.view;
-
-//     fetch("/chart-view.json", {
-//       method: "GET",
-//       headers: {
-//         Accept: "application/json",
-//         "Content-Type": "application/json",
-//       },
-//     })
-//       .then((response) => response.json())
-//       .then((jsonResponse) => {
-//         const month = parseInt(jsonResponse.month);
-//         const year = parseInt(jsonResponse.year);
-//         const view = jsonResponse.view;
-
-//         console.log(jsonResponse);
-//         console.log(month, year, view);
-
-//         if (view === "month") {
-//           myLineChart.options.scales.x.min = new Date(
-//             year,
-//             month - 1,
-//             1,
-//             0,
-//             0
-//           );
-//           myLineChart.options.scales.x.max =
-//             new Date(year, month + 1, 1, 0, 0) - 1;
-//         } else {
-//           myLineChart.options.scales.x.min = new Date(year, 1, 1, 0, 0);
-//           myLineChart.options.scales.x.max = new Date(year, 12, 31, 0, 0);
-//         }
-
-//         myLineChart.update();
-//       });
-//   }
-
-//   const viewUpdateButtons = document.querySelectorAll(".chart-view-submit");
-
-//   for (const viewUpdateButton of viewUpdateButtons) {
-//     viewUpdateButton.addEventListener("click", UpdateChartView);
-//   }
-// });

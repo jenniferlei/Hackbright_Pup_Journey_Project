@@ -4,12 +4,10 @@ body {
   height: 100%;
 }
 
+/* HOMEPAGE */
+
 body > .welcome-page {
   background-color: rgb(134, 134, 134);
-}
-
-.pet-profile-img {
-  height: 10em;
 }
 
 .imageContainer {
@@ -44,6 +42,8 @@ body > .welcome-page {
   font-size: 5em;
 }
 
+/* DASHBOARD - NAV */
+
 .nav-pills .nav-link.active {
   background-color: rgb(44, 44, 44);
 }
@@ -52,8 +52,83 @@ body > .welcome-page {
   color: rgb(44, 44, 44);
 }
 
+/* DASHBOARD - PET PROFILE */
+
+.pet-profile-container {
+  width: 33%;
+  display: inline-block;
+  vertical-align: top;
+  padding: 0.5em;
+}
+
+div.pet-profile {
+  vertical-align: top;
+  display: inline-block;
+  padding: 0.5em;
+}
+
+.check-in-map-container {
+  width: 66%;
+  display: inline-block;
+  vertical-align: top;
+  padding: 0.5em;
+}
+
+div.pet-profile.profile-image {
+  width: 42%;
+}
+
+div.pet-profile.profile-info {
+  width: 56%;
+}
+
+.pet-profile-img {
+  width: 7em;
+}
+
+/* DASHBOARD - CHECK INS */
+
+.pet-check-in-container {
+  width: 51%;
+  display: inline-block;
+  vertical-align: top;
+  padding: 0.5em;
+}
+
+.check-in-chart-container {
+  width: 48%;
+  display: inline-block;
+  vertical-align: top;
+  padding: 0.5em;
+}
+
+div.pet-profile.check-in-profile-image {
+  width: 20%;
+}
+
+div.pet-profile.check-in-info {
+  width: 79%;
+}
+
+/* 
 .check-ins-scroll {
   height: 10em;
+  overflow-y: scroll;
+} */
+
+/* HIKE DETAILS - TABS */
+
+.nav-tabs .nav-link.active {
+  background-color: rgb(44, 44, 44);
+  color: rgb(255, 255, 255);
+}
+
+.nav-tabs .nav-link {
+  color: rgb(44, 44, 44);
+}
+
+.hike-details-bottom-container {
+  height: 35vh;
   overflow-y: scroll;
 }
 
@@ -78,10 +153,24 @@ body > .welcome-page {
   overflow-y: scroll;
 }
 
-.search-category-scroll {
+/* .fixed-side {
+  top: 3em;
+  left: 2em;
+  width: 7em;
+  position: fixed;
+} */
+
+/* @media (min-width: 768px) {
+  .main {
+    padding-right: 2em;
+    padding-left: 9em; 
+  }
+} */
+
+/* .search-category-scroll {
   height: 11em;
   overflow-y: scroll;
-}
+} */
 
 ul.no-bullets {
   list-style-type: none; /* Remove bullets */
@@ -89,12 +178,15 @@ ul.no-bullets {
   margin-left: 1em; /* Remove margins */
 }
 
-table#pet-profile-table {
-  width: 20em;
-}
-
 .clearfix::after {
   content: "";
   clear: both;
   display: table;
+}
+
+#dashboard-map {
+  height: 400px;
+  /* The height is 400 pixels */
+  width: 100%;
+  /* The width is the width of the web page */
 }

@@ -24,6 +24,7 @@ app.jinja_env.undefined = StrictUndefined
 CLOUDINARY_KEY = os.environ["CLOUDINARY_KEY"]
 CLOUDINARY_SECRET = os.environ["CLOUDINARY_SECRET"]
 CLOUD_NAME = "hbpupjourney"
+GOOGLE_KEY = os.environ["GOOGLE_KEY"]
 
 
 @app.route("/")
@@ -43,6 +44,14 @@ def all_hikes():
     areas = crud_hikes.get_hike_areas()
     parking = crud_hikes.get_hike_parking()
 
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email != None:
+        user = crud_users.get_user_by_email(session["user_email"])
+        bookmarks_list_by_user = crud_bookmarks_lists.get_bookmarks_lists_by_user_id(user.user_id)
+    else:
+        bookmarks_list_by_user = None
+
     return render_template(
         "all_hikes.html",
         search_hikes=search_hikes,
@@ -51,7 +60,7 @@ def all_hikes():
         cities=cities,
         areas=areas,
         parking=parking,
-    )
+        bookmarks_list_by_user=bookmarks_list_by_user)
 
 
 @app.route("/dashboard")
@@ -78,7 +87,14 @@ def dashboard():
             user.user_id
         )
 
-        return render_template("dashboard.html", pets=pets, hikes=hikes, check_ins=check_ins, months=months, years=years, bookmarks_lists=bookmarks_lists)
+        return render_template("dashboard.html",
+                                pets=pets,
+                                hikes=hikes,
+                                check_ins=check_ins,
+                                months=months,
+                                years=years,
+                                bookmarks_lists=bookmarks_lists,
+                                GOOGLE_KEY=GOOGLE_KEY)
     else:
         flash("You must log in to view your dashboard.")
 
@@ -144,6 +160,7 @@ def show_hike(hike_id):
             cities=cities,
             areas=areas,
             parking=parking,
+            GOOGLE_KEY=GOOGLE_KEY
         )
     else:
         user = crud_users.get_user_by_email(logged_in_email)
@@ -177,6 +194,7 @@ def show_hike(hike_id):
             cities=cities,
             areas=areas,
             parking=parking,
+            GOOGLE_KEY=GOOGLE_KEY
         )
 
 
@@ -648,9 +666,7 @@ def add_comment(hike_id):
         db.session.add(comment)
         db.session.commit()
 
-        flash("Your comment has been added.")
-
-    return redirect(f"/hikes/{hike_id}")
+    return redirect(request.referrer)
 
 
 @app.route("/edit-comment", methods=["POST"])
@@ -769,10 +785,7 @@ def get_check_ins_by_pets_json():
     logged_in_email = session.get("user_email")
     user = crud_users.get_user_by_email(logged_in_email)
 
-    # Get unique check in objects for the user
-    check_ins_by_user = crud_check_ins.get_check_ins_by_user_id(user.user_id)
-
-    # Get all pet objects for the user
+    # Get list of pet objects for the user
     pets = crud_pets.get_pets_by_user_id(user.user_id)
 
     # For each pet:
@@ -793,6 +806,36 @@ def get_check_ins_by_pets_json():
         check_in_data.append(pet_data)
 
     return jsonify({"petCheckIns": check_in_data})
+
+
+@app.route("/dashboard_map_coordinates.json")
+def get_user_check_in_coordinates():
+    """Return a JSON response with all coordinates for a user."""
+
+    logged_in_email = session.get("user_email")
+    user = crud_users.get_user_by_email(logged_in_email)
+
+    # Get list of unique check in objects for the user
+    check_ins_by_user = crud_check_ins.get_check_ins_by_user_id(user.user_id)
+
+    # For each check in
+    # Get unique hikes
+    # For each hike
+    # Create a new object with hike_name, latitude, and longitude
+
+    hikes = set()
+
+    for check_in in check_ins_by_user:
+        hikes.add(check_in.hike)
+    
+    user_hike_data = []
+
+    for hike in hikes:
+        hike_data = {"hike_name": hike.hike_name, "latitude": hike.latitude, "longitude": hike.longitude}
+ 
+        user_hike_data.append(hike_data)
+
+    return jsonify({"checkInCoordinates": user_hike_data})
 
 
 if __name__ == "__main__":

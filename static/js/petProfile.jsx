@@ -159,8 +159,14 @@ function EditPetProfile(props) {
     }).then((response) => {
       response.json().then((jsonResponse) => {
         const { petUpdated } = jsonResponse; // same as petUpdated = jsonResponse.petUpdated
-        const { pet_id, pet_name, gender, birthday, breed, pet_imgURL } =
-          petUpdated;
+        const {
+          pet_id: pet_id,
+          pet_name: pet_name,
+          gender: gender,
+          birthday: birthday,
+          breed: breed,
+          pet_imgURL: pet_imgURL,
+        } = petUpdated;
         props.editProfile(
           pet_id,
           pet_name,

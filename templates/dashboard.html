@@ -256,18 +256,18 @@ Chart.js adapter #}
 <!-- END ADD BOOKMARK MODAL -->
 <!-- END MODALS -->
 
-<div class="container">
+<div class="container-fluid">
 
   <!-- start tabs and panels -->
   <div class="d-flex justify-content-start">
 
     <!-- start tabs -->
     <nav
-      class="nav flex-column nav-pills mt-4"
+      class="sidenav nav flex-column nav-pills mt-4"
       id="v-pills-tab"
       role="tablist"
       aria-orientation="vertical"
-      style="margin-right:1em"
+      style="margin-right:1em; top: 3em"
     >
       <a
         class="nav-link"
@@ -338,219 +338,210 @@ Chart.js adapter #}
         </div>  <!-- end pet profile header -->
         
         <div class="card-body">  <!-- start pet profile card body -->
-          <div class="d-flex justify-content-start">
-            {% if pets != [] %}
-            <div id="pet-profile-div">
-              <table class="table" id="pet-profile-table"> <!-- start pet profile table -->
-                <tbody>
-                  {% for pet in pets|sort(attribute='pet_name') %}
-                  <tr>
-                    <td style="width:10em">
-                      <div class="d-flex">
-                        <h6
-                          class="card-title pet-profile-header"
-                          id="pet-header-{{ pet.pet_id }}"
-                        >
-                          {{ pet.pet_name }}
-                        </h6>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <div class="input-group">
-                          <a
-                            href="" 
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-edit-{{ pet.pet_id }}"
-                            style="color: rgb(44, 44, 44)"
-                          >
-                            <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="edit pet profile" class="bi bi-pencil"></i></small>
-                          </a>&nbsp;&nbsp;&nbsp;
+          {% if pets == [] %}
+          You have no pet profiles 🐕
+          {% else %}  
+          <div class="pet-profile-container">
+            {% for pet in pets|sort(attribute='pet_name') %}
+            <!-- div for pet name and delete/edit options -->
+            <div class="row" style="display: block">
+              <div class="clearfix">
+                <div style="float:left">
+                  <h6
+                    class="card-title pet-profile-header"
+                    id="pet-header-{{ pet.pet_id }}"
+                  >
+                    {{ pet.pet_name }}
+                  </h6>
+                </div>
+                <div class="d-flex" style="float:right">
+                  <a
+                    href="" 
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-edit-{{ pet.pet_id }}"
+                    style="color: rgb(44, 44, 44)"
+                  >
+                    <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="edit pet profile" class="bi bi-pencil"></i></small>
+                  </a>&nbsp;&nbsp;&nbsp;
 
-                          <form
-                            action="/delete-pet"
-                            method="POST"
-                          >
-                            <button
-                              class="btn btn-sm"
-                              style="padding:0"
-                              type="submit"
-                              name="delete"
-                              value="{{ pet.pet_id }}"
-                              onclick="return confirm('Do you want to delete this pet profile?');"
-                            >
-                              <i data-bs-toggle="tooltip" data-bs-placement="right" title="delete pet profile" class="bi bi-x"></i>
-                            </button>
-                          </form>
-                        </div>
-                      </div>
-                      <!-- pet image -->
-                      <div class="row">
-                        <div class="col">
-                          {% if pet.pet_imgURL != None %}
-                          <img
-                            src="{{ pet.pet_imgURL }}"
-                            alt="profile"
-                            class="pet-profile-img"
-                            id="pet-img-{{ pet.pet_id }}"
-                          />
-                          {% endif %}
-                          
-                        </div>
-                      </div>
-                    </td>
-                      <!-- START EDIT PET MODAL -->
-                      <div
-                        class="modal fade"
-                        id="modal-edit-{{ pet.pet_id }}"
-                        tabindex="-1"
-                        aria-labelledby="modal-edit-pet-label"
-                        aria-hidden="true"
-                      >
-                        <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h5 class="modal-title" id="modal-edit-pet-label">
-                                Edit Pet Info
-                              </h5>
-                              <button
-                                type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal"
-                                aria-label="Close"
-                              ></button>
-                            </div>
-                            <div class="modal-body">
-                              <form
-                                action="/edit-pet"
-                                method="POST"
-                                enctype="multipart/form-data"
-                              >
-                                <div class="mb-3">
-                                  <label htmlFor="pet_name" class="sr-only">
-                                    Name
-                                  </label>&nbsp;<small class="text-muted">*</small>
-                                  <input
-                                    type="text"
-                                    name="pet_name"
-                                    value="{{ pet.pet_name }}"
-                                    class="form-control"
-                                    required
-                                  />
-                                </div>
+                  <form
+                    action="/delete-pet"
+                    method="POST"
+                  >
+                    <button
+                      class="btn btn-sm"
+                      style="padding:0"
+                      type="submit"
+                      name="delete"
+                      value="{{ pet.pet_id }}"
+                      onclick="return confirm('Do you want to delete this pet profile?');"
+                    >
+                      <i data-bs-toggle="tooltip" data-bs-placement="right" title="delete pet profile" class="bi bi-x"></i>
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <div class="mb-1" style="display: block">
+              <div class="col pet-profile profile-image">
+                {% if pet.pet_imgURL != None %}
+                <div><img
+                  src="{{ pet.pet_imgURL }}"
+                  alt="profile"
+                  class="pet-profile-img"
+                  id="pet-img-{{ pet.pet_id }}"
+                /></div>
+                {% endif %}
+              </div>
+              <div class="col pet-profile profile-info">
+                  {% if pet.breed != None and pet.breed != "" and pet.breed != "None" %}
+                  <div><small>{{ pet.breed }}</small></div>
+                  {% else %}
+                  {% endif %}
 
-                                <div class="mb-3">
-                                  <label for="gender" class="sr-only">
-                                    Gender
-                                  </label>
-                                  <select
-                                    name="gender"
-                                    value="{{ pet.gender }}"
-                                    class="form-control"
-                                  >
-                                    <option value=""></option>
-                                    <option value="female">female</option>
-                                    <option value="male">male</option>
-                                  </select>
-                                </div>
+                  {% if pet.gender != None and pet.gender != "" %}
+                  <div><small>{{ pet.gender }}</small></div>
+                  {% endif %}
 
-                                <div class="mb-3">
-                                  <label htmlFor="birthday" class="sr-only">
-                                    Birthday
-                                  </label>
-                                  <input
-                                    type="date"
-                                    name="birthday"
-                                    value="{{ pet.birthday }}"
-                                    class="form-control"
-                                  />
-                                </div>
+                  {% if pet.birthday != None and pet.birthday != "" %}
+                  <div>
+                    🎂&nbsp;&nbsp;<small>{{ pet.birthday.strftime('%b %d, %Y') }}
+                  </small></div>
+                  {% endif %}
 
-                                <div class="mb-3">
-                                  <label htmlFor="breed" class="sr-only">
-                                    Breed
-                                  </label>
-                                  <input
-                                    type="text"
-                                    name="breed"
-                                    value="{{ pet.breed }}"
-                                    class="form-control"
-                                    placeholder="Breed"
-                                  />
-                                </div>
 
-                                <div class="mb-3">
-                                  <label htmlFor="my_file" class="sr-only">
-                                    Image
-                                  </label>
-                                  <input
-                                    type="file"
-                                    name="my_file"
-                                    class="form-control"
-                                    accept="image/png, image/jpeg"
-                                  />
-                                </div>
-                                <div class="modal-footer">
-                                  <button
-                                    class="btn btn-sm btn-outline-dark btn-block mt-4"
-                                    type="submit"
-                                    name="edit"
-                                    value="{{ pet.pet_id }}"
-                                  >
-                                    Save
-                                  </button>
-                                  <button
-                                    type="button"
-                                    class="btn btn-sm btn-secondary btn-block mt-4"
-                                    data-bs-dismiss="modal"
-                                  >
-                                    Close
-                                  </button>
-                                </div>
-                              </form>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <!-- END EDIT PET MODAL -->
-                    <td style="width:10em">
-                      <small>
-                        {% if pet.breed != None and pet.breed != "" and pet.breed != "None" %}
-                        <div class="row">{{ pet.breed }}</div>
-                        {% else %}
-                        {% endif %}
-
-                        {% if pet.gender != None and pet.gender != "" %}
-                        <div class="row">{{ pet.gender }}</div>
-                        {% endif %}
-
-                        {% if pet.birthday != None and pet.birthday != "" %}
-                        <div class="row">
-                          🎂&nbsp;&nbsp;{{ pet.birthday.strftime('%b %d, %Y') }}
-                        </div>
-                        {% endif %}
-
-                        <br>
-                        {% if pet.check_ins != [] %}
-                        <div class="row">I've done {{ pet.check_ins|length }} {% if pet.check_ins|length > 1 %} hikes{% else %} hike{% endif %}</div>
-                        <div class="row">and walked {{ pet.check_ins|sum(attribute="miles_completed") }} {% if pet.check_ins|sum(attribute="miles_completed") > 1 %} miles{% else %} mile{% endif %}!</div>
-                        {% endif %}
-                        
-                      </small>
-                    </td>
-                  </tr>
-                {% endfor %}
-                </tbody>
-              </table> 
-            </div>  <!-- start pet profile table -->
-
-            <div>
-              <h5>Where We've Been 🗺</h5>
-              Map here
+                  {% if pet.check_ins != [] %}
+                  <div><small>I've done {{ pet.check_ins|length }} {% if pet.check_ins|length > 1 %} hikes{% else %} hike{% endif %}</small></div>
+                  <div><small>and walked {{ pet.check_ins|sum(attribute="miles_completed") }} {% if pet.check_ins|sum(attribute="miles_completed") > 1 %} miles{% else %} mile{% endif %}!</small></div>
+                  {% endif %}
+              </div>
             </div>
 
-          
-          {% else %} You have no pet profiles 🐕 {% endif %}
+              <!-- START EDIT PET MODAL -->
+              <div
+                class="modal fade"
+                id="modal-edit-{{ pet.pet_id }}"
+                tabindex="-1"
+                aria-labelledby="modal-edit-pet-label"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="modal-edit-pet-label">
+                        Edit Pet Info
+                      </h5>
+                      <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <div class="modal-body">
+                      <form
+                        action="/edit-pet"
+                        method="POST"
+                        enctype="multipart/form-data"
+                      >
+                        <div class="mb-3">
+                          <label htmlFor="pet_name" class="sr-only">
+                            Name
+                          </label>&nbsp;<small class="text-muted">*</small>
+                          <input
+                            type="text"
+                            name="pet_name"
+                            value="{{ pet.pet_name }}"
+                            class="form-control"
+                            required
+                          />
+                        </div>
+
+                        <div class="mb-3">
+                          <label for="gender" class="sr-only">
+                            Gender
+                          </label>
+                          <select
+                            name="gender"
+                            value="{% if pet.gender != None %} {{ pet.gender }} {% endif %}"
+                            class="form-control"
+                          >
+                            <option value=""></option>
+                            <option value="female">female</option>
+                            <option value="male">male</option>
+                          </select>
+                        </div>
+
+                        <div class="mb-3">
+                          <label htmlFor="birthday" class="sr-only">
+                            Birthday
+                          </label>
+                          <input
+                            type="date"
+                            name="birthday"
+                            value="{% if pet.birthday != None %}{{ pet.birthday }}{% endif %}"
+                            class="form-control"
+                          />
+                        </div>
+
+                        <div class="mb-3">
+                          <label htmlFor="breed" class="sr-only">
+                            Breed
+                          </label>
+                          <input
+                            type="text"
+                            name="breed"
+                            value="{% if pet.breed != None %} {{ pet.breed }} {% endif %}"
+                            class="form-control"
+                            placeholder="Breed"
+                          />
+                        </div>
+
+                        <div class="mb-3">
+                          <label htmlFor="my_file" class="sr-only">
+                            Image
+                          </label>
+                          <input
+                            type="file"
+                            name="my_file"
+                            class="form-control"
+                            accept="image/png, image/jpeg"
+                          />
+                        </div>
+                        <div class="modal-footer">
+                          <button
+                            class="btn btn-sm btn-outline-dark btn-block mt-4"
+                            type="submit"
+                            name="edit"
+                            value="{{ pet.pet_id }}"
+                          >
+                            Save
+                          </button>
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-secondary btn-block mt-4"
+                            data-bs-dismiss="modal"
+                          >
+                            Close
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- END EDIT PET MODAL -->
+            {% endfor %}
           </div>
-        </div>   <!-- end pet profile card body -->
-      </div> <!-- end profile (pet profile and check ins) panel -->
+          <div class="check-in-map-container">
+            <h5>Where We've Been 🗺</h5>
+            <div id="dashboard-map"></div>
+          </div>
+          {% endif %}
+        </div>
+
+      </div>   <!-- end pet profile card body -->
+
 
       <!-- start activity (check ins, graph and map) panel -->
       <div
@@ -574,51 +565,54 @@ Chart.js adapter #}
           </div>
         </div>
         <div class="card-body">
-          <!-- Dropdown here for chart -->
-          {% if check_ins != [] %}
-          <div><h5>How Far We've Come! 🐾</h5></div>
-          <div class="d-flex">
-            View by&nbsp;&nbsp;
-            
-            <input type="radio" class="btn-check" name="chart-view" value="month-view" id="month-view" autocomplete="off" checked>
-            <label class="btn btn-outline-dark btn-sm" for="month-view">month</label>&nbsp;
 
-            <input type="radio" class="btn-check" name="chart-view" value="year-view" id="year-view" autocomplete="off">
-            <label class="btn btn-outline-dark btn-sm" for="year-view">year</label>&nbsp;&nbsp;
+          {% if check_ins == [] %}
+          There hasn't been any activity yet! Please add a check in.
+          {% else %}
+          <div class="check-in-chart-container">
+            <h5>How Far We've Come! 🐾</h5>
+            <div class="d-flex">
+              View by&nbsp;&nbsp;
+              
+              <input type="radio" class="btn-check" name="chart-view" value="month-view" id="month-view" autocomplete="off" checked>
+              <label class="btn btn-outline-dark btn-sm" for="month-view">month</label>&nbsp;
 
-            <div id="show-month-view" class="chart-form">
-                <div class="d-flex">
+              <input type="radio" class="btn-check" name="chart-view" value="year-view" id="year-view" autocomplete="off">
+              <label class="btn btn-outline-dark btn-sm" for="year-view">year</label>&nbsp;&nbsp;
 
-                  <select class="form-select btn-sm" name="month-view-month" aria-label="month-view-select-month">
-                      {% for month_num, month_abbrev in months %}
-                      <option value="{{ month_num }}"><small>{{ month_abbrev }}</small></option>
-                      {% endfor %}
-                  </select>
+              <div id="show-month-view" class="chart-form">
+                  <div class="d-flex">
 
-                  &nbsp;
+                    <select class="form-select btn-sm" name="month-view-month" aria-label="month-view-select-month">
+                        {% for month_num, month_abbrev in months %}
+                        <option value="{{ month_num }}"><small>{{ month_abbrev }}</small></option>
+                        {% endfor %}
+                    </select>
 
-                  <select class="form-select btn-sm" name="month-view-year" aria-label="month-view-select-year">
-                      {% for year in years|sort(reverse=True) %}
-                      <option value="{{ year }}">{{ year }}</option>
-                      {% endfor %}
-                  </select>
+                    &nbsp;
 
-                  &nbsp;
+                    <select class="form-select btn-sm" name="month-view-year" aria-label="month-view-select-year">
+                        {% for year in years|sort(reverse=True) %}
+                        <option value="{{ year }}">{{ year }}</option>
+                        {% endfor %}
+                    </select>
 
-                  <button
-                    class="chart-view-submit btn btn-sm btn-outline-dark"
-                    type="submit"
-                    name="view"
-                    value="month"
-                  >
-                    Submit
-                  </button>
+                    &nbsp;
 
-                </div>
+                    <button
+                      class="chart-view-submit btn btn-sm btn-outline-dark"
+                      type="submit"
+                      name="view"
+                      value="month"
+                    >
+                      Submit
+                    </button>
 
-            </div>
+                  </div>
 
-            <div id="show-year-view" class="chart-form">
+              </div>
+
+              <div id="show-year-view" class="chart-form">
 
                 <div class="d-flex">
                   <select class="form-select btn-sm" name="year-view-year" aria-label="year-view-select-year">
@@ -629,224 +623,214 @@ Chart.js adapter #}
 
                     &nbsp;
 
-                    <button
-                      class="chart-view-submit btn btn-sm btn-outline-dark"
-                      type="submit"
-                      name="view"
-                      value="year"
+                  <button
+                    class="chart-view-submit btn btn-sm btn-outline-dark"
+                    type="submit"
+                    name="view"
+                    value="year"
+                  >
+                    Submit
+                  </button>
+                </div>
+
+              </div>
+            </div>
+            {% endif %}
+            <div class="d-flex justify-content-start">
+              {% if check_ins != [] %}
+              <div style="position: relative; width: 40vw">
+                <canvas id="check-in-graph"></canvas>
+              </div>
+            </div>
+          </div>
+            
+          <div class="pet-check-in-container">
+            {% for pet in pets|sort(attribute='pet_name') %}
+            <div class="mb-1" style="display: block">
+              <div class="col pet-profile check-in-profile-image">
+                <h6
+                  class="card-title pet-profile-header"
+                  id="pet-header-{{ pet.pet_id }}"
+                >
+                  {{ pet.pet_name }}
+                </h6>
+                {% if pet.pet_imgURL != None %}
+                <div><img
+                  src="{{ pet.pet_imgURL }}"
+                  alt="profile"
+                  class="pet-profile-img"
+                  id="pet-img-{{ pet.pet_id }}"
+                /></div>
+                {% endif %}
+              </div>
+              <div class="col pet-profile check-in-info">
+                {% if pet.check_ins == [] %}
+                    
+                <small>{{ pet.pet_name }} has no check ins yet!</small>
+
+                {% else %}
+
+                <!-- START CHECK IN SCROLL -->
+                <!-- Would be nice if the check ins could be limited based on view by selection (month/year) -->
+                {% for check_in in pet.check_ins|sort(attribute='date_hiked', reverse=True) %}
+                <div class="check-ins-scroll">
+
+                  <div class="d-flex justify-content-start">
+
+                    <a
+                      href="" 
+                      data-bs-toggle="modal" 
+                      data-bs-target="#modal-edit-check-in-{{ check_in.check_in_id }}" 
+                      style="color: rgb(44, 44, 44)"
                     >
-                      Submit
-                    </button>
+                      <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="edit check in" class="bi bi-pencil"></i></small>
+                    </a>
+
+                    &nbsp;
+
+                    <form
+                      action="/delete-pet-check-in"
+                      method="POST"
+                    >
+                      <button
+                        class="btn btn-sm"
+                        style="padding:0"
+                        type="submit"
+                        name="delete"
+                        value="{{ pet.pet_id }},{{ check_in.check_in_id }}"
+                        onclick="return confirm('Do you want to delete this check in for this pet? ');"
+                      >
+                        <small>
+                          <i data-bs-toggle="tooltip" data-bs-placement="right" title="delete check in" class="bi bi-x"></i>
+                        </small>
+                      </button>
+                    </form>
+
+                    &nbsp;&nbsp;&nbsp;
+
+                    <small>
+                      {{check_in.date_hiked.strftime('%b %d, %Y') }} hiked {% if check_in.miles_completed != None %} {{ check_in.miles_completed }} miles {% endif %}
+                    at <a href="/hikes/{{ check_in.hike_id }}">{{ check_in.hike.hike_name }}</a>
+                    </small>
+                    
                   </div>
 
-            </div>
-          </div>
-          {% endif %}
-          <div class="d-flex justify-content-start">
-            {% if check_ins != [] %}
-            
-            <div style="position: relative; width: 40vw">
-              
-              <canvas id="check-in-graph"></canvas>
-            </div>
-            
+                    <!-- Begin Edit Check In Modal -->
+                    <div class="modal fade" id="modal-edit-check-in-{{ check_in.check_in_id }}" tabindex="-1" aria-labelledby="modal-edit-check-in-{{ check_in.check_in_id }}-label" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="modal-edit-check-in-{{ check_in.check_in_id }}-label">Edit Check In</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
 
-            <div style="position: relative; width: 35vw">
-            <table class="table">
-              <tbody>
-                {% for pet in pets|sort(attribute='pet_name') %}
-                <tr>
-                  <td>
-                    <h6
-                        class="card-title pet-profile-header"
-                        id="pet-header-{{ pet.pet_id }}"
-                    >
-                        {{ pet.pet_name }}
-                    </h6>
-                    <!-- pet image -->
-                    {% if pet.pet_imgURL != None %}
-                    <img
-                      src="{{ pet.pet_imgURL }}"
-                      alt="profile"
-                      class="pet-profile-img"
-                      id="pet-img-{{ pet.pet_id }}"
-                    />
-                    {% endif %}
-                  </td>
+                            <form
+                              action="/edit-check-in"
+                              method="POST"
+                            >
 
-                  <td>
-                  {% if pet.check_ins != [] %}
-                    <!-- START CHECK IN SCROLL -->
-                    <div class="check-ins-scroll">
-                      <!-- Would be nice if the check ins could be limited based on view by selection (month/year) -->
-                      {% for check_in in pet.check_ins|sort(attribute='date_hiked', reverse=True) %}
-                      <div class="d-flex justify-content-start">
-
-                        <a
-                          href="" 
-                          data-bs-toggle="modal" 
-                          data-bs-target="#modal-edit-check-in-{{ check_in.check_in_id }}" 
-                          style="color: rgb(44, 44, 44)"
-                        >
-                          <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="edit check in" class="bi bi-pencil"></i></small>
-                        </a>
-
-                        &nbsp;
-
-                        <form
-                          action="/delete-pet-check-in"
-                          method="POST"
-                        >
-                          <button
-                            class="btn btn-sm"
-                            style="padding:0"
-                            type="submit"
-                            name="delete"
-                            value="{{ pet.pet_id }},{{ check_in.check_in_id }}"
-                            onclick="return confirm('Do you want to delete this check in for this pet? ');"
-                          >
-                            <small>
-                              <i data-bs-toggle="tooltip" data-bs-placement="right" title="delete check in" class="bi bi-x"></i>
-                            </small>
-                          </button>
-                        </form>
-
-                        &nbsp;&nbsp;&nbsp;
-
-
-                        <small>
-                          {{check_in.date_hiked.strftime('%b %d, %Y') }} hiked {% if check_in.miles_completed != None %} {{ check_in.miles_completed }} miles {% endif %}
-                        at <a href="/hikes/{{ check_in.hike_id }}">{{ check_in.hike.hike_name }}</a>
-                        </small>
-
-                        
-                        
-                        
-                      </div>
-
-                        <!-- Begin Edit Check In Modal -->
-                        <div class="modal fade" id="modal-edit-check-in-{{ check_in.check_in_id }}" tabindex="-1" aria-labelledby="modal-edit-check-in-{{ check_in.check_in_id }}-label" aria-hidden="true">
-                          <div class="modal-dialog">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <h5 class="modal-title" id="modal-edit-check-in-{{ check_in.check_in_id }}-label">Edit Check In</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                              </div>
-                              <div class="modal-body">
-
-                                <form
-                                  action="/edit-check-in"
-                                  method="POST"
-                                >
-
-                                  <div class="mb-3">
-                                    <div class="row">
-                                      <div class="col">
-                                        <label for="pet_id" class="sr-only">Add a Pet</label>
-                                        {% for pet in pets|sort(attribute='pet_name') %}
-                                        {% if pet not in check_in.pets %}
-                                        <div class="form-check">
-                                          <input class="form-check-input" type="checkbox" name="add_pet_id" value="{{ pet.pet_id }}" id="add-to-check-in-{{ pet.pet_id }}">
-                                          <label class="form-check-label" for="add-to-check-in-{{ pet.pet_id }}">
-                                            {{ pet.pet_name }}
-                                          </label>
-                                        </div>
-                                        {% endif %}
-                                        {% endfor %}
-                                      </div>
-
-                                      <div class="col">
-                                        <label for="pet_id" class="sr-only">Remove a Pet</label>
-                                        {% for pet in pets|sort(attribute='pet_name') %}
-                                        {% if pet in check_in.pets %}
-                                        <div class="form-check">
-                                          <input class="form-check-input" type="checkbox" name="remove_pet_id" value="{{ pet.pet_id }}" id="remove-from-check-in-{{ pet.pet_id }}">
-                                          <label class="form-check-label" for="remove-from-check-in-{{ pet.pet_id }}">
-                                            {{ pet.pet_name }}
-                                          </label>
-                                        </div>
-                                        {% endif %}
-                                        {% endfor %}
-                                      </div>
+                              <div class="mb-3">
+                                <div class="row">
+                                  <div class="col">
+                                    <label for="pet_id" class="sr-only">Add a Pet</label>
+                                    {% for pet in pets|sort(attribute='pet_name') %}
+                                    {% if pet not in check_in.pets %}
+                                    <div class="form-check">
+                                      <input class="form-check-input" type="checkbox" name="add_pet_id" value="{{ pet.pet_id }}" id="add-to-check-in-{{ pet.pet_id }}-{{ check_in.check_in_id }}">
+                                      <label class="form-check-label" for="add-to-check-in-{{ pet.pet_id }}-{{ check_in.check_in_id }}">
+                                        {{ pet.pet_name }}
+                                      </label>
                                     </div>
-                                  </div>
-                                  
-                                  <div class="mb-3">
-                                    <label for="date_hiked" class="sr-only">Date Hiked</label>&nbsp;<small class="text-muted">*</small>
-                                    <input
-                                        type="date"
-                                        name="date_hiked"
-                                        value="{{ check_in.date_hiked }}"
-                                        class="form-control"
-                                    />
+                                    {% endif %}
+                                    {% endfor %}
                                   </div>
 
-                                  <div class="mb-3">
-                                    <label for="miles_completed" class="sr-only"
-                                        >Miles Completed</label
-                                    >&nbsp;<small class="text-muted">*</small>
-                                    <input
-                                        type="number"
-                                        step=".1"
-                                        min="0"
-                                        name="miles_completed"
-                                        value="{{ check_in.miles_completed }}"
-                                        class="form-control"
-                                        required
-                                    />
+                                  <div class="col">
+                                    <label for="pet_id" class="sr-only">Remove a Pet</label>
+                                    {% for pet in pets|sort(attribute='pet_name') %}
+                                    {% if pet in check_in.pets %}
+                                    <div class="form-check">
+                                      <input class="form-check-input" type="checkbox" name="remove_pet_id" value="{{ pet.pet_id }}" id="dashboard-page-remove-from-check-in-{{ pet.pet_id }}-{{ check_in.check_in_id }}">
+                                      <label class="form-check-label" for="dashboard-page-remove-from-check-in-{{ pet.pet_id }}-{{ check_in.check_in_id }}">
+                                        {{ pet.pet_name }}
+                                      </label>
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
                                   </div>
-
-                                  <div class="mb-3">
-                                    <label for="total_time" class="sr-only">Total Time (Hours)</label>
-                                    <input
-                                        type="number"
-                                        step=".1"
-                                        min="0"
-                                        name="total_time"
-                                        value="{{ check_in.total_time }}"
-                                        class="form-control"
-                                    />
-                                  </div>
-
-                                  <div class="mb-3">
-                                    <label for="notes" class="sr-only">Notes</label>
-                                    <input
-                                        type="text"
-                                        name="notes"
-                                        value="{{ check_in.notes }}"
-                                        class="form-control"
-                                    />
-                                  </div>
-                                <div class="modal-footer">
-                                  <button class="btn btn-sm btn-outline-dark btn-block" type="submit" name="check_in_id" value="{{ check_in.check_in_id }}">Submit</button>
-                                  <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
                                 </div>
-                                </form>
                               </div>
+                              
+                              <div class="mb-3">
+                                <label for="date_hiked" class="sr-only">Date Hiked</label>&nbsp;<small class="text-muted">*</small>
+                                <input
+                                    type="date"
+                                    name="date_hiked"
+                                    value="{{ check_in.date_hiked }}"
+                                    class="form-control"
+                                />
+                              </div>
+
+                              <div class="mb-3">
+                                <label for="miles_completed" class="sr-only"
+                                    >Miles Completed</label
+                                >&nbsp;<small class="text-muted">*</small>
+                                <input
+                                    type="number"
+                                    step=".1"
+                                    min="0"
+                                    name="miles_completed"
+                                    value="{{ check_in.miles_completed }}"
+                                    class="form-control"
+                                    required
+                                />
+                              </div>
+
+                              <div class="mb-3">
+                                <label for="total_time" class="sr-only">Total Time (Hours)</label>
+                                <input
+                                    type="number"
+                                    step=".1"
+                                    min="0"
+                                    name="total_time"
+                                    value="{% if check_in.total_time != None %} {{ check_in.total_time }} {% endif %}"
+                                    class="form-control"
+                                />
+                              </div>
+
+                              <div class="mb-3">
+                                <label for="notes" class="sr-only">Notes</label>
+                                <input
+                                    type="text"
+                                    name="notes"
+                                    value="{% if check_in.notes != None %} {{ check_in.notes }} {% endif %}"
+                                    class="form-control"
+                                />
+                              </div>
+                            <div class="modal-footer">
+                              <button class="btn btn-sm btn-outline-dark btn-block" type="submit" name="check_in_id" value="{{ check_in.check_in_id }}">Submit</button>
+                              <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
                             </div>
+                            </form>
                           </div>
                         </div>
-                        <!-- End Edit Check In Modal -->
-                      {% endfor %}
+                      </div>
                     </div>
-                    <!-- END CHECK IN SCROLL -->
-                
-                  {% else %}
-                  <small>{{ pet.pet_name }} has no check ins yet!</small>
+                    <!-- End Edit Check In Modal -->
+                  </div>
+                  <!-- END CHECK IN SCROLL -->
+                  {% endfor %}
 
-                  {% endif %}
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-            
-          
-          {% else %}There hasn't been any activity yet! Please add a check in.{% endif %}
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
           </div>
         </div>
+      {% endif %}
       </div>
+
       <!-- end activity (check ins, graph and map) panel -->
       <!-- start bookmarks panel -->
       <div
@@ -1088,16 +1072,16 @@ Chart.js adapter #}
           {% else %}
           You have no lists
           {% endif %}
-
-
         </div>
-      </div>
-      <!-- end bookmarks panel -->
-    </div>
-    <!-- end panels -->
-  </div>
-  <!-- end tabs and panels -->
-</div>
+      </div> <!-- end bookmarks panel -->
+    </div> <!-- end panels -->
+  </div> <!-- end d-flex tabs and panels -->
+</div> <!-- container fluid div -->
 {% endblock %} {% block js %}
+<!-- Google Maps API -->
+<!-- <script
+  async
+  src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_KEY }}&callback=initMap">
+</script> -->
 <script src="/static/js/dashboard.js"></script>
 {% endblock %}

@@ -10,6 +10,8 @@ def create_hike(
     leash_rule,
     description,
     address,
+    latitude,
+    longitude,
     city,
     state,
     miles,
@@ -27,6 +29,8 @@ def create_hike(
         leash_rule=leash_rule,
         description=description,
         address=address,
+        latitude=latitude,
+        longitude=longitude,
         city=city,
         state=state,
         miles=miles,
@@ -82,7 +86,7 @@ def get_hikes_by_search(
 def get_hike_by_keyword(keyword):
     """Return hikes by keyword."""
 
-    return db.session.query(Hike).filter(Hike.hike_name.like(f"%{keyword}%")).all()
+    return db.session.query(Hike).filter(Hike.hike_name.ilike(f"%{keyword}%")).all()
 
 
 def get_hike_by_difficulty(difficulty):
