@@ -157,9 +157,9 @@
 
 
     {% for msg in get_flashed_messages() %}
-      <p class="flash-msg">
+      <div class="flash-msg sticky-top">
         {{ msg }}
-      </p>
+      </div>
     {% endfor %}
 
     <!-- Include the page's content with this block. -->

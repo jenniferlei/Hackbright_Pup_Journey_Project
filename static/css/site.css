@@ -110,11 +110,10 @@ div.pet-profile.check-in-info {
   width: 79%;
 }
 
-/* 
 .check-ins-scroll {
-  height: 10em;
-  overflow-y: scroll;
-} */
+  height: 12em;
+  overflow-y: auto;
+}
 
 /* HIKE DETAILS - TABS */
 
@@ -129,7 +128,7 @@ div.pet-profile.check-in-info {
 
 .hike-details-bottom-container {
   height: 35vh;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .square-button {
@@ -145,12 +144,12 @@ div.pet-profile.check-in-info {
 
 .all-hikes-container {
   height: 80vh;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
-.all-bookmarks-container {
+.dashboard-content-container {
   height: 80vh;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 /* .fixed-side {
@@ -167,10 +166,10 @@ div.pet-profile.check-in-info {
   }
 } */
 
-/* .search-category-scroll {
+.search-category-scroll {
   height: 11em;
-  overflow-y: scroll;
-} */
+  overflow-y: auto;
+}
 
 ul.no-bullets {
   list-style-type: none; /* Remove bullets */

@@ -1,6 +1,201 @@
 {% extends 'base.html' %} {% block title %}{{ hike.hike_name }} - Details{%
 endblock %} {% block body %}
 
+<!-- MODALS -->
+
+<!-- START ADD COMMENT MODAL -->
+<div class="modal fade" id="modal-add-comment" tabindex="-1" aria-labelledby="modal-add-comment-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal-add-comment-label">Add a Comment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form
+          action="/hikes/{{ hike.hike_id }}/comments"
+          id="form-add-comment"
+          method="POST"
+        >
+          <div class="mb-3">
+            <input
+              type="text"
+              name="body"
+              class="form-control"
+              placeholder="Enter your comment here"
+              required
+            />
+          </div>
+        <div class="modal-footer">
+          <button class="btn btn-sm btn-outline-dark btn-block" type="submit">Submit</button>
+          <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  </div>
+<!-- END ADD COMMENT MODAL -->
+
+<!-- START ADD BOOKMARK MODAL -->
+{% if "login" in session %}
+<div class="modal fade" id="modal-add-bookmark" tabindex="-1" aria-labelledby="modal-add-bookmark-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal-add-bookmark-label">Bookmark this hike</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form
+          action="/add-hike"
+          method="POST"
+        >
+          <h4>Add to New Bookmark List</h4>
+
+          <div class="mb-3">
+            <input
+              type="text"
+              name="bookmarks_list_name"
+              class="form-control input-lg"
+              placeholder="Hikes I Want To Visit"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <button
+              class="btn btn-sm btn-outline-dark btn-block"
+              type="submit"
+              name="hike_id"
+              value="{{ hike.hike_id }}"
+            >
+              Save
+            </button>
+          </div>
+        </form>
+
+        <form
+          action="/add-hike"
+          method="POST"
+        >
+          <h4>Add to Existing Bookmark List</h4>
+
+          <div class="mb-3">
+            <select name="bookmarks_list_id" class="form-control input-lg">
+              {% for bookmarks_list in bookmarks_list_by_user %}
+              <option value="{{ bookmarks_list.bookmarks_list_id }}">
+                {{ bookmarks_list.bookmarks_list_name }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <button
+              class="btn btn-sm btn-outline-dark btn-block"
+              type="submit"
+              name="hike_id"
+              value="{{ hike.hike_id }}"
+            >
+              Save
+            </button>
+          </div>
+        </form>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+<!-- END ADD BOOKMARK MODAL -->
+
+<!-- START ADD CHECK IN MODAL -->
+{% if "login" in session %}
+<div class="modal fade" id="modal-add-check-in" tabindex="-1" aria-labelledby="modal-add-check-in-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal-add-check-in-label">Check in to this hike</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form
+          action="/check-in"
+          method="POST"
+          onSubmit="validateCheckIn() || event.preventDefault();"
+        >
+          <div class="mb-3">
+            <label for="pet_id" class="sr-only">Pets</label>&nbsp;<small class="text-muted">*</small>
+            {% for pet in pets|sort(attribute='pet_name') %}
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="add-check-in-pet_id" value="{{ pet.pet_id }}" id="check-in-{{ pet.pet_id }}">
+              <label class="form-check-label" for="check-in-{{ pet.pet_id }}">
+                {{ pet.pet_name }}
+              </label>
+            </div>
+            {% endfor %}
+          </div>
+
+          <div class="mb-3">
+            <label for="date_hiked" class="sr-only">Date Hiked</label>&nbsp;<small class="text-muted">*</small>
+            <input
+              type="date"
+              name="date_hiked"
+              class="form-control"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="miles_completed" class="sr-only"
+              >Miles Completed</label
+            >&nbsp;<small class="text-muted">*</small>
+            <input
+              type="number"
+              step=".1"
+              min="0"
+              name="miles_completed"
+              class="form-control"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="total_time" class="sr-only">Total Time (Hours)</label>
+            <input
+              type="number"
+              step=".1"
+              min="0"
+              name="total_time"
+              class="form-control"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="notes" class="sr-only">Notes</label>
+            <input
+                type="text"
+                name="notes"
+                class="form-control"
+            />
+          </div>
+        <div class="modal-footer">
+          <button class="btn btn-sm btn-outline-dark btn-block" type="submit" name="hike_id" value="{{ hike.hike_id }}">Submit</button>
+          <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+<!-- END ADD CHECK IN MODAL -->
+
+
+
+
 <div class="container-fluid">
   <div class="d-flex justify-content-start">
 
@@ -27,41 +222,25 @@ endblock %} {% block body %}
         <div class="row mt-3"><label class="form-label">Difficulty</label></div>
         <div class="row">
 
+          {% for difficulty in ['easy', 'moderate', 'hard'] %}
           <div class="col">
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="difficulty" value="easy" id="search-difficulty-easy">
-              <label class="form-check-label" for="search-difficulty-easy">
-                easy
+              <input class="form-check-input" type="checkbox" name="difficulty" value="{{ difficulty }}" id="search-difficulty-{{ difficulty }}">
+              <label class="form-check-label" for="search-difficulty-{{ difficulty }}">
+                {{ difficulty }}
               </label>
             </div>
           </div>
-
-          <div class="col">
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="difficulty" value="moderate" id="search-difficulty-moderate">
-              <label class="form-check-label" for="search-difficulty-moderate">
-                moderate
-              </label>
-            </div>
-          </div>
-
-          <div class="col">
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="difficulty" value="hard" id="search-difficulty-hard">
-              <label class="form-check-label" for="search-difficulty-hard">
-                hard
-              </label>
-            </div>
-          </div>
+          {% endfor %}
 
         </div>
 
         <div class="row mt-3"><label class="form-label">Leash Rule</label></div>
         <div class="row">
-
+          
           <div class="col">
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="leash_rule" value="easy" id="search-on-leash">
+              <input class="form-check-input" type="checkbox" name="leash_rule" value="On leash" id="search-on-leash">
               <label class="form-check-label" for="search-on-leash">
                 on leash
               </label>
@@ -70,7 +249,7 @@ endblock %} {% block body %}
 
           <div class="col">
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="leash_rule" value="moderate" id="search-off-leash">
+              <input class="form-check-input" type="checkbox" name="leash_rule" value="Off leash" id="search-off-leash">
               <label class="form-check-label" for="search-off-leash">
                 off leash
               </label>
@@ -80,7 +259,6 @@ endblock %} {% block body %}
         </div>
 
         <div class="form-label mt-3">Location</div>
-
         <div class="form-floating row mt-2">
           <select id="search-state"
                   class="form-select"
@@ -95,31 +273,22 @@ endblock %} {% block body %}
         </div>
 
         <div class="row g-2 mt-2">
-
-          <div class="form-floating col">
-            <select id="search-city"
-                    class="form-select"
-                    name="city"
-                    aria-label="search-city">
-              <option value=""></option>
+          <div class="col">
+            <label class="form-label" for="search-city">City</label>
+            <select class="form-control choices-multiple" name="city" multiple>
               {% for city in cities|sort() %}
               <option value="{{ city }}">{{ city }}</option>
               {% endfor %}
             </select>
-            <label class="form-label" for="search-city">City</label>
           </div>
-          
-          <div class="form-floating col">
-            <select id="search-area"
-                    class="form-select"
-                    name="area"
-                    aria-label="search-area">
-              <option value=""></option>
+
+          <div class="col">
+            <label class="form-label" for="search-area">Area</label>
+            <select class="form-control choices-multiple" name="area" multiple>
               {% for area in areas|sort() %}
               <option value="{{ area }}">{{ area }}</option>
               {% endfor %}
             </select>
-            <label class="form-label" for="search-area">Area</label>
           </div>
 
         </div>
@@ -151,18 +320,11 @@ endblock %} {% block body %}
         </div>
 
         <div class="mt-3"><label class="form-label" for="search-parking">Parking</label></div>
-        <div class="form-floating row">
-          <select id="search-parking"
-                  class="form-select"
-                  name="parking"
-                  aria-label="search-parking">
-            <option value=""></option>
-            {% for park in parking|sort() %}
-            <option value="{{ park }}">{{ park }}</option>
-            {% endfor %}
-          </select>
-          <label class="form-label" for="search-parking">Parking</label>
-        </div>
+        <select class="form-control choices-multiple" name="parking" multiple>
+          {% for park in parking|sort() %}
+          <option value="{{ park }}">{{ park }}</option>
+          {% endfor %}
+        </select>
 
         <div class="row">
           <button class="btn btn-sm btn-outline-dark btn-block mt-4" type="submit">Submit</button>
@@ -179,7 +341,26 @@ endblock %} {% block body %}
 
     <div class="card col mt-4" style="width:100vw">
 
-      <div class="card-header" id="hike_name"><h3>{{ hike.hike_name }}</h3></div>
+      <div class="card-header">
+        <div class="clearfix">
+          <div style="float:left">
+            <h3>{{ hike.hike_name }}</h3>
+          </div>
+          {% if "login" in session %}
+          <div class="d-flex" style="float:right">
+            <a class="btn btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-add-comment">
+              <i data-bs-toggle="tooltip" data-bs-placement="right" title="add a comment" class="bi bi-chat-text"></i>
+            </a>
+            <a class="btn btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-add-bookmark">
+              <i data-bs-toggle="tooltip" data-bs-placement="right" title="bookmark this hike" class="bi bi-bookmark-star"></i>
+            </a>
+            <a class="btn btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-add-check-in">
+              <i data-bs-toggle="tooltip" data-bs-placement="right" title="add a check in" class="bi bi-check-circle"></i>
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
 
       <div class="card-body">
 
@@ -315,45 +496,13 @@ endblock %} {% block body %}
           role="tabpanel"
           aria-labelledby="nav-comments-tab"
         >
-          <!-- Begin Add Comment Modal -->
+          <!-- Begin Link to Add Comment Modal -->
           {% if "login" in session %}
-          <a class="btn btn-link btn-sm mt-2" href="" data-bs-toggle="modal" data-bs-target="#modal-add-comment"><small>+ Comment</small></a>
-
-          <div class="modal fade" id="modal-add-comment" tabindex="-1" aria-labelledby="modal-add-comment-label" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="modal-add-comment-label">Add a Comment</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <form
-                    action="/hikes/{{ hike.hike_id }}/comments"
-                    id="form-add-comment"
-                    method="POST"
-                  >
-                    <div class="mb-3">
-                      <input
-                        type="text"
-                        name="body"
-                        class="form-control"
-                        placeholder="Enter your comment here"
-                        required
-                      />
-                    </div>
-                  <div class="modal-footer">
-                    <button class="btn btn-sm btn-outline-dark btn-block" type="submit">Submit</button>
-                    <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
-                  </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
+          <a class="btn btn-sm mt-2" href="" data-bs-toggle="modal" data-bs-target="#modal-add-comment"><i data-bs-toggle="tooltip" data-bs-placement="right" title="add a comment" class="bi bi-chat-text"></i>&nbsp;add a comment</a>
           {% else %}
           <div class="mt-3">Please log in to add a comment.</div>
           {% endif %}
-          <!-- End of Add Comment Modal -->
+          <!-- End of Link to Add Comment Modal -->
           
           <!-- Begin View All Comments -->
           <div class="hike-details-bottom-container">
@@ -468,101 +617,34 @@ endblock %} {% block body %}
           aria-labelledby="nav-bookmarks-tab"
         >
           {% if "login" in session %}
-          <!-- Begin Add Bookmark Modal -->
-          <a class="btn btn-link btn-sm mt-2" href="" data-bs-toggle="modal" data-bs-target="#modal-add-bookmark"><small>+ Bookmark</small></a>
+          <!-- Begin Link to Add Bookmark Modal -->
+          <a class="btn btn-sm mt-2" href="" data-bs-toggle="modal" data-bs-target="#modal-add-bookmark">
+            <i data-bs-toggle="tooltip" data-bs-placement="right" title="bookmark this hike" class="bi bi-bookmark-star"></i> add a bookmark
+          </a>
 
-          <div class="modal fade" id="modal-add-bookmark" tabindex="-1" aria-labelledby="modal-add-bookmark-label" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="modal-add-bookmark-label">Bookmark this hike</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <form
-                    action="/add-hike"
-                    method="POST"
-                  >
-                    <h4>Add to New Bookmark List</h4>
-
-                    <div class="mb-3">
-                      <input
-                        type="text"
-                        name="bookmarks_list_name"
-                        class="form-control input-lg"
-                        placeholder="Hikes I Want To Visit"
-                        required
-                      />
-                    </div>
-
-                    <div class="mb-3">
-                      <button
-                        class="btn btn-sm btn-outline-dark btn-block"
-                        type="submit"
-                        name="hike_id"
-                        value="{{ hike.hike_id }}"
-                      >
-                        Save
-                      </button>
-                    </div>
-                  </form>
-
-                  <form
-                    action="/add-hike"
-                    method="POST"
-                  >
-                    <h4>Add to Existing Bookmark List</h4>
-
-                    <div class="mb-3">
-                      <select name="bookmarks_list_id" class="form-control input-lg">
-                        {% for bookmarks_list in bookmarks_list_by_user %}
-                        <option value="{{ bookmarks_list.bookmarks_list_id }}">
-                          {{ bookmarks_list.bookmarks_list_name }}
-                        </option>
-                        {% endfor %}
-                      </select>
-                    </div>
-
-                    <div class="mb-3">
-                      <button
-                        class="btn btn-sm btn-outline-dark btn-block"
-                        type="submit"
-                        name="hike_id"
-                        value="{{ hike.hike_id }}"
-                      >
-                        Save
-                      </button>
-                    </div>
-                  </form>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- End of Add Bookmark Modal -->
+          
           
         {% if bookmarks_lists_by_user_hike != [] %}
         
-          <div class="mt-1">You have this hike on the following lists (click on list name to view all
+          <div class="mt-1">You have this hike on the following lists (click on a list name to view all
           hikes on the list):</div>
 
           <div class="hike-details-bottom-container">
           
-            {% for bookmarks_list in bookmarks_lists_by_user_hike %}
+            {% for bookmarks_list in bookmarks_lists_by_user_hike|sort(attribute='bookmarks_list_name') %}
             <div class="card mt-1">
               <div class="card-header">
                 <div class="clearfix">
                   <div style="float:left">
                     <a
+                      class="btn btn-md"
                       data-bs-toggle="collapse"
                       href="#collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
                       role="button"
                       aria-expanded="false"
                       aria-controls="collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
                     >
-                      {{ bookmarks_list.bookmarks_list_name }}
+                      {{ bookmarks_list.bookmarks_list_name }} <i data-bs-toggle="tooltip" data-bs-placement="right" title="view all hikes in list" class="bi bi-caret-down"></i>
                     </a>
                   </div>
 
@@ -600,6 +682,7 @@ endblock %} {% block body %}
               </div>
               <!-- End Delete Bookmark Form -->
 
+              <!-- Start Rename Bookmark Modal -->
               <div class="modal fade" id="modal-rename-bookmark-{{ bookmarks_list.bookmarks_list_id }}" tabindex="-1" aria-labelledby="modal-rename-bookmark-{{ bookmarks_list.bookmarks_list_id }}-label" aria-hidden="true">
                 <div class="modal-dialog">
                   <div class="modal-content">
@@ -635,35 +718,34 @@ endblock %} {% block body %}
 
               <div
                 class="collapse card-body"
-                id="collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}"
-              >
+                id="collapse-bookmarks-{{ bookmarks_list.bookmarks_list_id }}">
                 <div>
-                    {% for hike in bookmarks_list.hikes %}
-                      <div class="row">
-                        <div class="d-flex">
-                        <form
-                          action="/remove-hike"
-                          method="POST"
-                        >
-                          <button
-                            class="btn btn-sm"
-                            style="padding:0"
-                            type="submit"
-                            name="delete"
-                            value="{{ hike.hike_id }},{{ bookmarks_list.bookmarks_list_id }}"
-                            onclick="return confirm('Do you want to remove this hike?');"
-                          ><small>
-                            <i data-bs-toggle="tooltip" data-bs-placement="right" title="remove from list" class="bi bi-x"></i>
-                          </small></button>
-                        </form>
+                  {% for hike in bookmarks_list.hikes|sort(attribute='hike_name') %}
+                  <div class="row">
+                    <div class="d-flex">
+                      <form
+                        action="/remove-hike"
+                        method="POST">
+                        <button
+                          class="btn btn-sm"
+                          style="padding:0"
+                          type="submit"
+                          name="delete"
+                          value="{{ hike.hike_id }},{{ bookmarks_list.bookmarks_list_id }}"
+                          onclick="return confirm('Do you want to remove this hike?');"
+                        ><small>
+                          <i data-bs-toggle="tooltip" data-bs-placement="right" title="remove from list" class="bi bi-x"></i>
+                        </small></button>
+                      </form>
 
-                        &nbsp;&nbsp;&nbsp;
-                        <a href="/hikes/{{ hike.hike_id }}" target="_blank"
-                          >{{ hike.hike_name }}</a
-                        >
-                        </div>
-                      </div>
-                    {% endfor %}
+                      &nbsp;&nbsp;&nbsp;
+
+                      <a href="/hikes/{{ hike.hike_id }}" target="_blank">
+                        {{ hike.hike_name }}
+                      </a>
+                    </div>
+                  </div>
+                  {% endfor %}
                 </div>
               </div>
             </div>
@@ -671,12 +753,12 @@ endblock %} {% block body %}
           </div>
 
           
-        {% endif %}
-
-
-          {% else %}
-          <div class="mt-3">Please log in to add a bookmark.</div>
           {% endif %}
+
+
+        {% else %}
+        <div class="mt-3">Please log in to add a bookmark.</div>
+        {% endif %}
         </div>
         <!-- End Bookmarks tab content -->
 
@@ -689,86 +771,10 @@ endblock %} {% block body %}
           aria-labelledby="nav-checkins-tab"
         >
           {% if "login" in session %}
-          <!-- Begin Add Check In Modal -->
-          <a class="btn btn-link btn-sm mt-2" href="" data-bs-toggle="modal" data-bs-target="#modal-add-check-in"><small>+ Check In</small></a>
+          <!-- Link to Add Check In Modal -->
+          <a class="btn btn-sm mt-2" href="" data-bs-toggle="modal" data-bs-target="#modal-add-check-in"><i data-bs-toggle="tooltip" data-bs-placement="right" title="add a check in" class="bi bi-check-circle"></i> add a check in</a>
 
-          <div class="modal fade" id="modal-add-check-in" tabindex="-1" aria-labelledby="modal-add-check-in-label" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="modal-add-check-in-label">Check in to this hike</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <form
-                    action="/check-in"
-                    method="POST"
-                    onSubmit="validateCheckIn() || event.preventDefault();"
-                  >
-                    <div class="mb-3">
-                      <label for="pet_id" class="sr-only">Pets</label>&nbsp;<small class="text-muted">*</small>
-                      {% for pet in pets|sort(attribute='pet_name') %}
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="add-check-in-pet_id" value="{{ pet.pet_id }}" id="check-in-{{ pet.pet_id }}">
-                        <label class="form-check-label" for="check-in-{{ pet.pet_id }}">
-                          {{ pet.pet_name }}
-                        </label>
-                      </div>
-                      {% endfor %}
-                    </div>
-
-                    <div class="mb-3">
-                      <label for="date_hiked" class="sr-only">Date Hiked</label>&nbsp;<small class="text-muted">*</small>
-                      <input
-                        type="date"
-                        name="date_hiked"
-                        class="form-control"
-                        required
-                      />
-                    </div>
-
-                    <div class="mb-3">
-                      <label for="miles_completed" class="sr-only"
-                        >Miles Completed</label
-                      >&nbsp;<small class="text-muted">*</small>
-                      <input
-                        type="number"
-                        step=".1"
-                        min="0"
-                        name="miles_completed"
-                        class="form-control"
-                      />
-                    </div>
-
-                    <div class="mb-3">
-                      <label for="total_time" class="sr-only">Total Time (Hours)</label>
-                      <input
-                        type="number"
-                        step=".1"
-                        min="0"
-                        name="total_time"
-                        class="form-control"
-                      />
-                    </div>
-
-                    <div class="mb-3">
-                      <label for="notes" class="sr-only">Notes</label>
-                      <input
-                          type="text"
-                          name="notes"
-                          class="form-control"
-                      />
-                    </div>
-                  <div class="modal-footer">
-                    <button class="btn btn-sm btn-outline-dark btn-block" type="submit" name="hike_id" value="{{ hike.hike_id }}">Submit</button>
-                    <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
-                  </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- End of Add Check In Modal -->
+          
 
           <!-- Begin check in details for the hike -->
           {% if check_ins != [] %}
@@ -835,7 +841,6 @@ endblock %} {% block body %}
 
                 </div>
                   
-                
 
                 {% if check_in.miles_completed != None %}
                 <div class="row">Miles completed: {{ check_in.miles_completed }}</div>
@@ -955,9 +960,6 @@ endblock %} {% block body %}
                   </div>
                   <!-- End Edit Check In Modal -->
 
-
-
-                  
               </div>
               {% endfor %}
 

@@ -34,35 +34,6 @@ def homepage():
     return render_template("homepage.html")
 
 
-@app.route("/hikes")
-def all_hikes():
-    """View all hikes."""
-
-    search_hikes = hikes = crud_hikes.get_hikes()
-    states = crud_hikes.get_hike_states()
-    cities = crud_hikes.get_hike_cities()
-    areas = crud_hikes.get_hike_areas()
-    parking = crud_hikes.get_hike_parking()
-
-    logged_in_email = session.get("user_email")
-
-    if logged_in_email != None:
-        user = crud_users.get_user_by_email(session["user_email"])
-        bookmarks_list_by_user = crud_bookmarks_lists.get_bookmarks_lists_by_user_id(user.user_id)
-    else:
-        bookmarks_list_by_user = None
-
-    return render_template(
-        "all_hikes.html",
-        search_hikes=search_hikes,
-        hikes=hikes,
-        states=states,
-        cities=cities,
-        areas=areas,
-        parking=parking,
-        bookmarks_list_by_user=bookmarks_list_by_user)
-
-
 @app.route("/dashboard")
 def dashboard():
     """View dashboard."""
@@ -101,28 +72,24 @@ def dashboard():
         return redirect("/")
 
 
-@app.route("/hikes/search")
-def find_hikes():
-    """Search for hikes"""
+@app.route("/hikes")
+def all_hikes():
+    """View all hikes."""
 
-    keyword = request.args.get("keyword", "")
-    difficulty = request.args.get("difficulty", "")
-    leash_rule = request.args.get("leash_rule", "")
-    area = request.args.get("area", "")
-    city = request.args.get("city", "")
-    state = request.args.get("state", "")
-    length_min = request.args.get("length_min", "")
-    length_max = request.args.get("length_max", "")
-    park = request.args.get("parking", "")
-
-    search_hikes = crud_hikes.get_hikes_by_search(
-        keyword, difficulty, leash_rule, area, city, state, length_min, length_max, park
-    )
-    hikes = crud_hikes.get_hikes()
+    # Populate options for the search bar
+    search_hikes = hikes = crud_hikes.get_hikes()
     states = crud_hikes.get_hike_states()
     cities = crud_hikes.get_hike_cities()
     areas = crud_hikes.get_hike_areas()
     parking = crud_hikes.get_hike_parking()
+
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email != None:
+        user = crud_users.get_user_by_email(session["user_email"])
+        bookmarks_list_by_user = crud_bookmarks_lists.get_bookmarks_lists_by_user_id(user.user_id)
+    else:
+        bookmarks_list_by_user = None
 
     return render_template(
         "all_hikes.html",
@@ -132,6 +99,49 @@ def find_hikes():
         cities=cities,
         areas=areas,
         parking=parking,
+        bookmarks_list_by_user=bookmarks_list_by_user)
+
+
+@app.route("/hikes/search")
+def find_hikes():
+    """Search for hikes"""
+
+    keyword = request.args.get("keyword", "")
+    difficulties = request.args.getlist("difficulty")
+    leash_rules = request.args.getlist("leash_rule")
+    areas = request.args.getlist("area")
+    cities = request.args.getlist("city")
+    state = request.args.get("state", "")
+    length_min = request.args.get("length_min", "")
+    length_max = request.args.get("length_max", "")
+    park = request.args.getlist("parking")
+
+    # Populate the list of hikes
+    search_hikes = crud_hikes.get_hikes_by_search(keyword, difficulties, leash_rules, areas, cities, state, length_min, length_max, park)
+    # Populate options for the search bar
+    hikes = crud_hikes.get_hikes()
+    states = crud_hikes.get_hike_states()
+    cities = crud_hikes.get_hike_cities()
+    areas = crud_hikes.get_hike_areas()
+    parking = crud_hikes.get_hike_parking()
+
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email != None:
+        user = crud_users.get_user_by_email(session["user_email"])
+        bookmarks_list_by_user = crud_bookmarks_lists.get_bookmarks_lists_by_user_id(user.user_id)
+    else:
+        bookmarks_list_by_user = None
+
+    return render_template(
+        "all_hikes.html",
+        search_hikes=search_hikes,
+        hikes=hikes,
+        states=states,
+        cities=cities,
+        areas=areas,
+        parking=parking,
+        bookmarks_list_by_user=bookmarks_list_by_user
     )
 
 
@@ -591,27 +601,35 @@ def add_hike_to_bookmark():
     if logged_in_email is None:
         flash("You must log in to bookmark a hike.")
     else:
-        hike_id = request.form.get("hike_id")
         user = crud_users.get_user_by_email(logged_in_email)
-        hike = crud_hikes.get_hike_by_id(hike_id)
+
+        bookmarks_list_name = request.form.get("bookmarks_list_name", "")
         bookmarks_list_id = request.form.get("bookmarks_list_id")
-        bookmarks_list_name = request.form.get("bookmarks_list_name")
+        hike_ids = request.form.getlist("hike_id")
+
+        
 
         # if there is an existing bookmarks list, create a new association object between hike and bookmarks list
         if bookmarks_list_id != None and bookmarks_list_id != "":
-            hike_bookmark = crud_hikes_bookmarks_lists.create_hike_bookmarks_list(hike_id, bookmarks_list_id)
+            for hike_id in hike_ids:
+                hike_bookmark = crud_hikes_bookmarks_lists.create_hike_bookmarks_list(hike_id, bookmarks_list_id)
+                db.session.add(hike_bookmark)
         # otherwise, create a new bookmarks with hike as a list of hike objects
         else:
-            hikes = [hike]
+            hikes = []
+
+            for hike_id in hike_ids:
+                hikes.append(crud_hikes.get_hike_by_id(hike_id))
+                
             hike_bookmark = crud_bookmarks_lists.create_bookmarks_list(
                 bookmarks_list_name, user.user_id, hikes
             )
+            db.session.add(hike_bookmark)
 
-        db.session.add(hike_bookmark)
         db.session.commit()
 
         flash(
-            f"A bookmark to {hike.hike_name} has been added to your list."
+            f"Success!"
         )
 
     return redirect(request.referrer)
