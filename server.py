@@ -856,6 +856,60 @@ def get_user_check_in_coordinates():
     return jsonify({"checkInCoordinates": user_hike_data})
 
 
+@app.route("/user_bookmarks.json")
+def get_user_bookmarks():
+    """Return a JSON response with all bookmarks for a user."""
+
+    logged_in_email = session.get("user_email")
+    user = crud_users.get_user_by_email(logged_in_email)
+
+    # Get list of bookmark objects for the user
+    bookmarks_by_user = crud_bookmarks_lists.get_bookmarks_lists_by_user_id(user.user_id)
+
+    # {"bookmark_list_id": "1",
+    #  "bookmark_name": "...",
+    #  "hikes": [{"hike_id": "1",
+    #             "hike_name": "...",
+    #             "area":
+    #             "difficulty":
+    #             "leash_rule":
+    #             "latitude":
+    #             "longitude":
+    #             "city":
+    #             "state":
+    #             "miles"
+    #             "parking"}
+    #            , {"..."}, {"..."}]}
+
+    bookmarks_schema = BookmarksListSchema(many=True)
+    bookmarks_json = bookmarks_schema.dump(bookmarks_by_user)
+
+    return jsonify({"bookmarks": bookmarks_by_user})
+
+
+@app.route("/search_results.json")
+def search_results():
+    """Search for hikes"""
+
+    keyword = request.args.get("keyword", "")
+    difficulties = request.args.getlist("difficulty")
+    leash_rules = request.args.getlist("leash_rule")
+    areas = request.args.getlist("area")
+    cities = request.args.getlist("city")
+    state = request.args.get("state", "")
+    length_min = request.args.get("length_min", "")
+    length_max = request.args.get("length_max", "")
+    park = request.args.getlist("parking")
+
+    # Populate the list of hike objects that fulfill the search criteria
+    search_hikes = crud_hikes.get_hikes_by_search(keyword, difficulties, leash_rules, areas, cities, state, length_min, length_max, park)
+ 
+    hikes_schema = HikeSchema(many=True)
+    hikes_json = hikes_schema.dump(hikes)
+
+    return jsonify({"hikes": hikes_json})
+
+
 if __name__ == "__main__":
     # DebugToolbarExtension(app)
     connect_to_db(app)

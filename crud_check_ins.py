@@ -25,14 +25,19 @@ def get_check_ins_by_user_id(user_id):
     # Find check ins for each pet and add to a list
     # Convert to a set to remove duplicate Check In objects
 
-    pets = crud_pets.get_pets_by_user_id(user_id)
+    user = (db.session.query(User).filter_by(user_id = user_id)
+                                .options(db.joinedload('pets'))
+                                .one())
 
     all_check_ins = []
 
-    for pet in pets:
+    for pet in user.pets:
+        check_ins = get_check_ins_by_pet_id(pet.pet_id)
         all_check_ins.extend(pet.check_ins)
+
+    all_check_ins = set(all_check_ins)
     
-    return set(all_check_ins)
+    return list(all_check_ins)
 
 
 def get_check_ins_by_user_id_hike_id(user_id, hike_id):
@@ -69,7 +74,10 @@ def get_check_ins_by_user_id_hike_id(user_id, hike_id):
 def get_check_ins_by_pet_id(pet_id):
     """Return all check ins for a given pet id"""
 
-    pet = crud_pets.get_pet_by_id(pet_id)
+    pet = (db.session.query(Pet).filter_by(pet_id = pet_id)
+                                .options(db.joinedload('check_ins'))
+                                .one())
+
     check_ins = pet.check_ins
 
     return check_ins

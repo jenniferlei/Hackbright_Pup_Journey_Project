@@ -535,7 +535,8 @@ Chart.js adapter #}
           {% endif %}
         </div>
 
-      </div>   <!-- end pet profile card body -->
+      </div>
+      <!-- end pet profile card body -->
 
 
       <!-- start activity (check ins, graph and map) panel -->
@@ -543,8 +544,7 @@ Chart.js adapter #}
         class="tab-pane fade card dashboard-content-container"
         id="v-pills-check-ins"
         role="tabpanel"
-        aria-labelledby="v-pills-check-ins-tab"
-      >
+        aria-labelledby="v-pills-check-ins-tab">
         <div class="card-header">
           <div class="clearfix">
             <h3 style="float: left">Check Ins</h3>
@@ -555,7 +555,7 @@ Chart.js adapter #}
         </div>
         <div class="card-body">
 
-          {% if check_ins == [] %}
+          {% if check_ins == []%}
           There hasn't been any activity yet! Please add a check in.
           {% else %}
           <div class="check-in-chart-container">
@@ -570,86 +570,74 @@ Chart.js adapter #}
               <label class="btn btn-outline-dark btn-sm" for="year-view">year</label>&nbsp;&nbsp;
 
               <div id="show-month-view" class="chart-form">
-                  <div class="d-flex">
-
-                    <select class="form-select btn-sm" name="month-view-month" aria-label="month-view-select-month">
-                        {% for month_num, month_abbrev in months %}
-                        <option value="{{ month_num }}"><small>{{ month_abbrev }}</small></option>
-                        {% endfor %}
-                    </select>
-
-                    &nbsp;
-
-                    <select class="form-select btn-sm" name="month-view-year" aria-label="month-view-select-year">
-                        {% for year in years|sort(reverse=True) %}
-                        <option value="{{ year }}">{{ year }}</option>
-                        {% endfor %}
-                    </select>
-
-                    &nbsp;
-
-                    <button
-                      class="chart-view-submit btn btn-sm btn-outline-dark"
-                      type="submit"
-                      name="view"
-                      value="month"
-                    >
-                      Submit
-                    </button>
-
-                  </div>
-
-              </div>
-
-              <div id="show-year-view" class="chart-form">
-
                 <div class="d-flex">
-                  <select class="form-select btn-sm" name="year-view-year" aria-label="year-view-select-year">
-                      {% for year in years|sort(reverse=True) %}
-                      <option value="{{ year }}">{{ year }}</option>
-                      {% endfor %}
+
+                  <select class="form-select btn-sm" name="month-view-month" aria-label="month-view-select-month">
+                    {% for month_num, month_abbrev in months %}
+                    <option value="{{ month_num }}"><small>{{ month_abbrev }}</small></option>
+                    {% endfor %}
                   </select>
-
-                    &nbsp;
-
+                  &nbsp;
+                  <select class="form-select btn-sm" name="month-view-year" aria-label="month-view-select-year">
+                    {% for year in years|sort(reverse=True) %}
+                    <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                  </select>
+                  &nbsp;
                   <button
                     class="chart-view-submit btn btn-sm btn-outline-dark"
                     type="submit"
                     name="view"
-                    value="year"
-                  >
+                    value="month">
                     Submit
                   </button>
                 </div>
+              </div>
 
+              <div id="show-year-view" class="chart-form">
+                <div class="d-flex">
+                  <select class="form-select btn-sm" name="year-view-year" aria-label="year-view-select-year">
+                    {% for year in years|sort(reverse=True) %}
+                    <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                  </select>
+                    &nbsp;
+                  <button
+                    class="chart-view-submit btn btn-sm btn-outline-dark"
+                    type="submit"
+                    name="view"
+                    value="year">
+                    Submit
+                  </button>
+                </div>
               </div>
             </div>
-            {% endif %}
             <div class="d-flex justify-content-start">
-              {% if check_ins != [] %}
               <div style="position: relative; width: 40vw">
                 <canvas id="check-in-graph"></canvas>
               </div>
             </div>
           </div>
+          {% endif %}
             
+          {% if check_ins != []%}
           <div class="pet-check-in-container">
             {% for pet in pets|sort(attribute='pet_name') %}
             <div class="mb-1" style="display: block">
               <div class="col pet-profile check-in-profile-image">
                 <h6
                   class="card-title pet-profile-header"
-                  id="pet-header-{{ pet.pet_id }}"
-                >
+                  id="pet-header-{{ pet.pet_id }}">
                   {{ pet.pet_name }}
                 </h6>
                 {% if pet.pet_imgURL != None %}
-                <div><img
+                <div>
+                  <img
                   src="{{ pet.pet_imgURL }}"
                   alt="profile"
                   class="pet-profile-img"
-                  id="pet-img-{{ pet.pet_id }}"
-                /></div>
+                  id="pet-img-{{ pet.pet_id }}"/>
+                </div>
                 {% endif %}
               </div>
               <div class="col pet-profile check-in-info">
@@ -659,50 +647,38 @@ Chart.js adapter #}
 
                 {% else %}
 
-                <!-- START CHECK IN SCROLL -->
-                <!-- Would be nice if the check ins could be limited based on view by selection (month/year) -->
-                <div class="check-ins-scroll">
-                {% for check_in in pet.check_ins|sort(attribute='date_hiked', reverse=True) %}
+                <div class="check-ins-scroll"> <!-- START CHECK IN SCROLL -->
+                  {% for check_in in pet.check_ins|sort(attribute='date_hiked', reverse=True) %}
                 
-
                   <div class="d-flex justify-content-start">
-
                     <a
                       href="" 
                       data-bs-toggle="modal" 
                       data-bs-target="#modal-edit-check-in-{{ check_in.check_in_id }}" 
-                      style="color: rgb(44, 44, 44)"
-                    >
+                      style="color: rgb(44, 44, 44)">
                       <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="edit check in" class="bi bi-pencil"></i></small>
                     </a>
-
                     &nbsp;
-
                     <form
                       action="/delete-pet-check-in"
-                      method="POST"
-                    >
+                      method="POST">
                       <button
                         class="btn btn-sm"
                         style="padding:0"
                         type="submit"
                         name="delete"
                         value="{{ pet.pet_id }},{{ check_in.check_in_id }}"
-                        onclick="return confirm('Do you want to delete this check in for this pet? ');"
-                      >
+                        onclick="return confirm('Do you want to delete this check in for this pet? ');">
                         <small>
                           <i data-bs-toggle="tooltip" data-bs-placement="right" title="delete check in" class="bi bi-x"></i>
                         </small>
                       </button>
                     </form>
-
                     &nbsp;&nbsp;&nbsp;
-
                     <small>
-                      {{check_in.date_hiked.strftime('%b %d, %Y') }} hiked {% if check_in.miles_completed != None %} {{ check_in.miles_completed }} miles {% endif %}
-                    at <a href="/hikes/{{ check_in.hike_id }}">{{ check_in.hike.hike_name }}</a>
+                      {{check_in.date_hiked.strftime('%m/%d/%y') }} | {% if check_in.miles_completed != None %} {{ check_in.miles_completed }} miles {% endif %} |
+                     <a href="/hikes/{{ check_in.hike_id }}">{{ check_in.hike.hike_name }}</a>
                     </small>
-                    
                   </div>
 
                     <!-- Begin Edit Check In Modal -->
@@ -717,8 +693,7 @@ Chart.js adapter #}
 
                             <form
                               action="/edit-check-in"
-                              method="POST"
-                            >
+                              method="POST">
 
                               <div class="mb-3">
                                 <div class="row">
@@ -758,14 +733,11 @@ Chart.js adapter #}
                                     type="date"
                                     name="date_hiked"
                                     value="{{ check_in.date_hiked }}"
-                                    class="form-control"
-                                />
+                                    class="form-control"/>
                               </div>
 
                               <div class="mb-3">
-                                <label for="miles_completed" class="sr-only"
-                                    >Miles Completed</label
-                                >&nbsp;<small class="text-muted">*</small>
+                                <label for="miles_completed" class="sr-only">Miles Completed</label>&nbsp;<small class="text-muted">*</small>
                                 <input
                                     type="number"
                                     step=".1"
@@ -773,8 +745,7 @@ Chart.js adapter #}
                                     name="miles_completed"
                                     value="{{ check_in.miles_completed }}"
                                     class="form-control"
-                                    required
-                                />
+                                    required/>
                               </div>
 
                               <div class="mb-3">
@@ -785,8 +756,7 @@ Chart.js adapter #}
                                     min="0"
                                     name="total_time"
                                     value="{% if check_in.total_time != None %} {{ check_in.total_time }} {% endif %}"
-                                    class="form-control"
-                                />
+                                    class="form-control"/>
                               </div>
 
                               <div class="mb-3">
@@ -795,33 +765,31 @@ Chart.js adapter #}
                                     type="text"
                                     name="notes"
                                     value="{% if check_in.notes != None %} {{ check_in.notes }} {% endif %}"
-                                    class="form-control"
-                                />
+                                    class="form-control"/>
                               </div>
-                            <div class="modal-footer">
-                              <button class="btn btn-sm btn-outline-dark btn-block" type="submit" name="check_in_id" value="{{ check_in.check_in_id }}">Submit</button>
-                              <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
-                            </div>
+                              <div class="modal-footer">
+                                <button class="btn btn-sm btn-outline-dark btn-block" type="submit" name="check_in_id" value="{{ check_in.check_in_id }}">Submit</button>
+                                <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
+                              </div>
                             </form>
                           </div>
                         </div>
                       </div>
                     </div>
                     <!-- End Edit Check In Modal -->
-                  
-                  <!-- END CHECK IN SCROLL -->
                   {% endfor %}
-                  </div>
+                </div> <!-- END CHECK IN SCROLL -->
+                
                 {% endif %}
               </div>
-            </div>
+            </div> <!-- 6 each pet check in container div -->
             {% endfor %}
           </div>
+          {% endif %}
         </div>
-      {% endif %}
       </div>
-
       <!-- end activity (check ins, graph and map) panel -->
+
       <!-- start bookmarks panel -->
       <div
         class="tab-pane fade card dashboard-content-container"
@@ -1033,15 +1001,17 @@ Chart.js adapter #}
           </div>
           {% endif %}
         </div>
-      </div> <!-- end bookmarks panel -->
+      </div>
+      <!-- end bookmarks panel -->
+
     </div> <!-- end panels -->
   </div> <!-- end d-flex tabs and panels -->
 </div> <!-- container fluid div -->
 {% endblock %} {% block js %}
 <!-- Google Maps API -->
-<script
+<!-- <script
   async
   src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_KEY }}&callback=initMap">
-</script>
+</script> -->
 <script src="/static/js/dashboard.js"></script>
 {% endblock %}

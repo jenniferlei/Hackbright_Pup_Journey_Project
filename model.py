@@ -250,7 +250,7 @@ class BookmarksListSchema(ma.SQLAlchemyAutoSchema):
         include_fk = True
         load_instance = True
 
-    hike = fields.Nested(HikeSchema(only=("hike_name", "hike_id")))
+    hike = fields.Nested(HikeSchema(exclude=("bookmarks_lists",)))
 
 
 class HikeBookmarksListSchema(ma.SQLAlchemyAutoSchema):
