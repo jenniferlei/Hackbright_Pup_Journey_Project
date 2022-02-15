@@ -191,6 +191,9 @@ class HikeBookmarksList(db.Model):
         db.Integer, db.ForeignKey("bookmarks_lists.bookmarks_list_id"), nullable=False
     )
 
+    # hike
+    # bookmarks_list
+
     def __repr__(self):
         return f"<Hike on Bookmarks List hike_bookmarks_list_id={self.hike_bookmarks_list_id} hike_id={self.hike_id} bookmarks_list_id={self.bookmarks_list_id}>"
 
@@ -212,7 +215,8 @@ class PetSchema(ma.SQLAlchemyAutoSchema):
         model = Pet
         include_fk = True
         load_instance = True
-    check_ins = fields.List(fields.Nested("CheckInSchema", exclude=("pet",)))
+        
+    check_ins = fields.List(fields.Nested("CheckInSchema", exclude=("pets",)))
 
 
 class HikeSchema(ma.SQLAlchemyAutoSchema):
@@ -220,9 +224,9 @@ class HikeSchema(ma.SQLAlchemyAutoSchema):
         model = Hike
         load_instance = True
 
-    comments = fields.List(fields.Nested("CommentSchema", exclude=("hike",)))
-    check_ins = fields.List(fields.Nested("CheckInSchema", exclude=("hike",)))
-    bookmarks_lists = fields.List(fields.Nested("BookmarksListSchema", exclude=("hike",)))
+    comments = fields.List(fields.Nested("CommentSchema", exclude=("hike", "user")))
+    check_ins = fields.List(fields.Nested("CheckInSchema", exclude=("hike", "pets")))
+    bookmarks_lists = fields.List(fields.Nested("BookmarksListSchema", exclude=("hikes",)))
 
 
 class CommentSchema(ma.SQLAlchemyAutoSchema):
@@ -231,8 +235,8 @@ class CommentSchema(ma.SQLAlchemyAutoSchema):
         include_fk = True
         load_instance = True
 
-    hike = fields.Nested(HikeSchema)
-    user = fields.Nested(UserSchema)
+    hike = fields.Nested(HikeSchema(exclude=("check_ins", "comments", "bookmarks_lists",)))
+    user = fields.Nested(UserSchema(exclude=("pets", "comments", "bookmarks_lists",)))
 
 class CheckInSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -244,20 +248,22 @@ class CheckInSchema(ma.SQLAlchemyAutoSchema):
     pets = fields.Nested(PetSchema(only=("pet_name",)))
 
 
+class HikeBookmarksListSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = HikeBookmarksList
+        include_fk = True
+        load_instance = True
+
+    hike = fields.Nested(HikeSchema(exclude=("check_ins", "comments", "bookmarks_lists",)))
+
+
 class BookmarksListSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = BookmarksList
         include_fk = True
         load_instance = True
 
-    hike = fields.Nested(HikeSchema(exclude=("bookmarks_lists",)))
-
-
-class HikeBookmarksListSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = HikeBookmarksList
-        include_fk = True
-        load_instance = True
+    hikes = fields.List(fields.Nested(HikeBookmarksListSchema))
 
 
 def connect_to_db(flask_app):

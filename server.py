@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 from calendar import month_abbr
 
-from model import connect_to_db, db, ma, app, PetSchema, CheckInSchema
+from model import connect_to_db, db, ma, app, PetSchema, CheckInSchema, BookmarksListSchema, HikeBookmarksListSchema, HikeSchema, CommentSchema
 import crud_bookmarks_lists
 import crud_check_ins
 import crud_comments
@@ -663,70 +663,51 @@ def remove_hike():
     return redirect(request.referrer)
 
 
-@app.route("/hikes/<hike_id>/comments", methods=["POST"])
+@app.route("/hikes/<hike_id>/add-comment", methods=["POST"])
 def add_comment(hike_id):
     """Add a comment for a hike"""
     logged_in_email = session.get("user_email")
 
-    if logged_in_email is None:
-        flash("You must log in to add a comment.")
-    else:
-        user = crud_users.get_user_by_email(logged_in_email)
-        hike = crud_hikes.get_hike_by_id(hike_id)
-        body = request.form.get("body")
-        date_created = datetime.now()
-        edit = False
-        date_edited = None
+    user = crud_users.get_user_by_email(logged_in_email)
+    hike = crud_hikes.get_hike_by_id(hike_id)
+    comment_body = request.get_json().get("comment_body")
 
-        comment = crud_comments.create_comment(
-            user, hike, body, date_created, edit, date_edited
-        )
-        db.session.add(comment)
-        db.session.commit()
+    comment = crud_comments.create_comment(
+        user, hike, comment_body, date_created=datetime.now(), edit=False, date_edited=None
+    )
+    db.session.add(comment)
+    db.session.commit()
 
-    return redirect(request.referrer)
+    comment_schema = CommentSchema()
+    comment_json = comment_schema.dump(comment)
+
+    return jsonify({"commentAdded": comment_json, "login": True})
 
 
-@app.route("/edit-comment", methods=["POST"])
-def edit_comment():
+@app.route("/edit-comment/<comment_id>", methods=["POST"])
+def edit_comment(comment_id):
     """Edit a comment"""
 
-    logged_in_email = session.get("user_email")
+    comment = crud_comments.get_comment_by_comment_id(comment_id)
+    comment.body = request.get_json().get("comment_body")
+    comment.edit = True
+    comment.date_edited = datetime.now()
 
-    if logged_in_email is None:
-        flash("You must log in to edit a bookmarks list.")
-    else:
-        comment_id = request.form.get("edit")
-        comment = crud_comments.get_comment_by_comment_id(comment_id)
-        comment.body = request.form.get("body")
-        comment.edit = True
-        comment.date_edited = datetime.now()
+    db.session.commit()
 
-        flash(f"Success! Your comment has been updated.")
-
-        db.session.commit()
-
-    return redirect(request.referrer)
+    return jsonify({"success": True})
 
 
-@app.route("/delete-comment", methods=["POST"])
-def delete_comment():
+@app.route("/delete-comment/<comment_id>", methods=["DELETE"])
+def delete_comment(comment_id):
     """Delete a comment"""
 
-    logged_in_email = session.get("user_email")
+    comment = crud_comments.get_comment_by_comment_id(comment_id)
 
-    if logged_in_email is None:
-        flash("You must log in to delete a comment.")
-    else:
-        comment_id = request.form.get("delete")
-        comment = crud_comments.get_comment_by_comment_id(comment_id)
+    db.session.delete(comment)
+    db.session.commit()
 
-        flash(f"Success! Your comment has been deleted.")
-
-        db.session.delete(comment)
-        db.session.commit()
-
-    return redirect(request.referrer)
+    return jsonify({"success": True})
 
 
 @app.route("/users", methods=["POST"])
@@ -779,6 +760,49 @@ def process_logout():
     del session["user_email"]
     flash("Successfully logged out!")
     return redirect("/")
+
+
+@app.route("/login_session.json")
+def login_session_json():
+    """Return a JSON response for a login."""
+
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email is None:
+        login = "False"
+        user_id = "None"
+    else:
+        user = crud_users.get_user_by_email(logged_in_email)
+        login = "True"
+        user_id = user.user_id
+
+    return jsonify({"login": login, "user_id": user_id})
+
+
+@app.route("/hikes/<hike_id>/comments.json")
+def get_comments_json(hike_id):
+    """Return a JSON response for a hike's comments."""
+    
+    comments = crud_comments.get_comment_by_hike_id(hike_id)
+
+    sorted_comments = sorted(comments, key=lambda x: x.date_created, reverse=True)
+
+    comments_schema = CommentSchema(many=True)
+    comments_json = comments_schema.dump(sorted_comments)
+
+    return jsonify({"comments": comments_json})
+
+
+@app.route("/hikes/<hike_id>/hike.json")
+def get_hike_json(hike_id):
+    """Return a JSON response for a hike."""
+
+    hike = crud_hikes.get_hike_by_id(hike_id)
+
+    hike_schema = HikeSchema()
+    hike_json = hike_schema.dump(hike)
+
+    return jsonify({"hike": hike_json})
 
 
 @app.route("/pets.json")
@@ -879,12 +903,12 @@ def get_user_bookmarks():
     #             "state":
     #             "miles"
     #             "parking"}
-    #            , {"..."}, {"..."}]}
+    #            , {"..."}, {"..."}]},
 
     bookmarks_schema = BookmarksListSchema(many=True)
     bookmarks_json = bookmarks_schema.dump(bookmarks_by_user)
 
-    return jsonify({"bookmarks": bookmarks_by_user})
+    return jsonify({"bookmarks": bookmarks_json})
 
 
 @app.route("/search_results.json")
