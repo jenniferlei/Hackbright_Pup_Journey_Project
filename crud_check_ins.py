@@ -40,43 +40,57 @@ def get_check_ins_by_user_id(user_id):
     return list(all_check_ins)
 
 
-def get_check_ins_by_user_id_hike_id(user_id, hike_id):
-    """Return all check ins for a given user id and hike id"""
+def get_check_ins_by_hike_id(hike_id):
+    """Return all check ins for a given hike id"""
 
     # get list of user's check in objects
-    user_check_ins = get_check_ins_by_user_id(user_id)
+    check_ins = db.session.query(CheckIn).filter_by(hike_id=hike_id).all()
+    sorted_check_ins = sorted(check_ins, key=lambda x: x.date_hiked, reverse=True)
+
+    return sorted_check_ins
+
+
+def get_check_ins_by_user_id_hike_id(user_id, hike_id):
+    """Return all unique check ins for a given user id and hike id"""
+
+    # get list of user's check in objects
+    check_ins = (db.session.query(CheckIn).filter_by(hike_id=hike_id)
+                                          .options(db.joinedload('pets'))
+                                          .all())
+
+    check_in_data = []
+
+    for check_in in check_ins:
+        for pet in check_in.pets:
+            if pet.user_id == user_id:
+                check_in_data.append(check_in)
+            
+    check_in_data = list(set(check_in_data))
+    sorted_check_ins = sorted(check_in_data, key=lambda x: x.date_hiked, reverse=True)
+    
+    return sorted_check_ins
+
+
+def get_check_ins_by_pet_id_hike_id(pet_id, hike_id):
+    """Return all check ins for a given pet id and hike id"""
+
+    # get list of pet check in objects
+    pet_check_ins = crud_pets_check_ins.get_pet_check_in_by_pet_id(pet_id)
 
     # loop through pet check in objects to get each check in object
     check_ins = []
 
-    for user_check_in in user_check_ins:
-        if user_check_in.hike_id == hike_id:
-            check_ins.append(user_check_in)
+    for pet_check_in in pet_check_ins:
+        check_ins.append(db.session.query(CheckIn).get(pet_check_in.check_in_id))
 
     return check_ins
-
-
-# def get_check_ins_by_pet_id_hike_id(pet_id, hike_id):
-#     """Return all check ins for a given pet id and hike id"""
-
-#     # get list of pet check in objects
-#     pet_check_ins = crud_pets_check_ins.get_pet_check_in_by_pet_id(pet_id)
-
-#     # loop through pet check in objects to get each check in object
-#     check_ins = []
-
-#     for pet_check_in in pet_check_ins:
-#         check_ins.append(db.session.query(CheckIn).get(pet_check_in.check_in_id))
-
-#     return check_ins
 
 
 def get_check_ins_by_pet_id(pet_id):
     """Return all check ins for a given pet id"""
 
-    pet = (db.session.query(Pet).filter_by(pet_id = pet_id)
-                                .options(db.joinedload('check_ins'))
-                                .one())
+    pet = (db.session.query(Pet).options(db.joinedload('check_ins'))
+                                .get(pet_id))
 
     check_ins = pet.check_ins
 

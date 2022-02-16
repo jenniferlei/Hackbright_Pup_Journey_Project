@@ -50,23 +50,22 @@ function Comment(props) {
     });
   }
 
-  const dataBsTarget = `#modal-edit-comment-${props.comment_id}`;
-  const modalID = `modal-edit-comment-${props.comment_id}`;
-  const ariaLabelledby = `modal-edit-comment-${props.comment_id}-label`;
-
   return (
     <React.Fragment>
       <div
         className="modal fade"
-        id={modalID}
+        id={`modal-edit-comment-${props.comment_id}`}
         tabIndex="-1"
-        aria-labelledby={ariaLabelledby}
+        aria-labelledby={`modal-edit-comment-${props.comment_id}-label`}
         aria-hidden="true"
       >
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title" id={ariaLabelledby}>
+              <h5
+                className="modal-title"
+                id={`modal-edit-comment-${props.comment_id}-label`}
+              >
                 Edit Comment
               </h5>
               <button
@@ -129,7 +128,7 @@ function Comment(props) {
                 <a
                   href=""
                   data-bs-toggle="modal"
-                  data-bs-target={dataBsTarget}
+                  data-bs-target={`#modal-edit-comment-${props.comment_id}`}
                   style={{ color: "rgb(44, 44, 44)" }}
                 >
                   <small>

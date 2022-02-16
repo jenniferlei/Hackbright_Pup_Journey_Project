@@ -216,7 +216,7 @@ class PetSchema(ma.SQLAlchemyAutoSchema):
         include_fk = True
         load_instance = True
         
-    check_ins = fields.List(fields.Nested("CheckInSchema", exclude=("pets",)))
+    check_ins = fields.List(fields.Nested("PetCheckInSchema"))
 
 
 class HikeSchema(ma.SQLAlchemyAutoSchema):
@@ -238,14 +238,24 @@ class CommentSchema(ma.SQLAlchemyAutoSchema):
     hike = fields.Nested(HikeSchema(exclude=("check_ins", "comments", "bookmarks_lists",)))
     user = fields.Nested(UserSchema(exclude=("pets", "comments", "bookmarks_lists",)))
 
+
 class CheckInSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = CheckIn
         include_fk = True
         load_instance = True
 
-    hike = fields.Nested(HikeSchema(only=("hike_name",)))
-    pets = fields.Nested(PetSchema(only=("pet_name",)))
+    hike = fields.Nested(HikeSchema(exclude=("check_ins", "comments", "bookmarks_lists")))
+    pets = fields.Nested("PetCheckInSchema", many=True)
+
+
+class PetCheckInSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = PetCheckIn
+        include_fk = True
+        load_instance = True
+
+    check_in = fields.Nested(CheckInSchema)
 
 
 class HikeBookmarksListSchema(ma.SQLAlchemyAutoSchema):

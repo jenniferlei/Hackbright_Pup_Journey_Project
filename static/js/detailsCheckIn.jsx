@@ -1,47 +1,58 @@
 "use strict";
 
 // comment body component with if session condition for edit and delete component
-function Comment(props) {
+function CheckIn(props) {
   // Process edit
-  const comment = `${props.comment_body}`;
 
-  const [comment_body, setCommentBody] = React.useState(comment);
-  // Check if user wants to delete or not
+  const [addPet, setAddPet] = React.useState([]);
+  const [removePet, setRemovePet] = React.useState([]);
+  const [dateHiked, setDateHiked] = React.useState("");
+  const [milesCompleted, setMilesCompleted] = React.useState("");
+  const [totalTime, setTotalTime] = React.useState("");
+  const [notes, setNotes] = React.useState("");
+
   function someFunction() {
-    editExistingComment(props.comment_id);
+    editExistingCheckIn(props.check_in_id);
   }
 
-  function editExistingComment(comment_id) {
-    fetch(`/edit-comment/${comment_id}`, {
+  function editExistingCheckIn(check_in_id) {
+    fetch(`/edit-check-in/${check_in_id}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-      body: JSON.stringify({ comment_body }),
+      body: JSON.stringify({
+        addPet,
+        removePet,
+        dateHiked,
+        milesCompleted,
+        totalTime,
+        notes,
+      }),
     })
       .then((response) => {
         response.json();
       })
       .then((jsonResponse) => {
         console.log(jsonResponse);
-        props.editComment();
+        props.editCheckIn();
       });
   }
 
   // Check if user wants to delete or not
   function deleteConfirm(event) {
-    const validate = confirm("Do you want to delete this comment?");
+    const validate = confirm("Do you want to delete this check in?");
     if (!validate) {
       event.preventDefault();
     } else {
-      deleteExistingComment(props.comment_id);
+      deleteExistingCheckIn(props.check_in_id);
     }
   }
 
   // Process deletion
-  function deleteExistingComment(comment_id) {
-    fetch(`/delete-comment/${comment_id}`, {
+  function deleteExistingCheckIn(check_in_id) {
+    fetch(`/delete-check-in/${check_in_id}`, {
       method: "DELETE",
     }).then((response) => {
       response.json().then((jsonResponse) => {
@@ -51,165 +62,167 @@ function Comment(props) {
     });
   }
 
-  const dataBsTarget = `#modal-edit-comment-${props.comment_id}`;
-  const modalID = `modal-edit-comment-${props.comment_id}`;
-  const ariaLabelledby = `modal-edit-comment-${props.comment_id}-label`;
+  // function getPetString(petArray, petArrayLength) {
+  //   const petString = []
+  //   if (petArrayLength > 2) {
+  //     petArray.map((pet, index) => (
+
+  //       if (index < (petArray.length-1)) {
+  //         petString.push(`${pet.pet_name}, `)
+  //       } else {
+  //         petString.push(`and ${pet.pet_name} `)
+  //       }));
+  //   } else if (petArrayLength > 1) {
+
+  //   } else {
+
+  //   }
+  //   return petString.join
+  // }
 
   return (
     <React.Fragment>
-      <div
-        className="modal fade"
-        id={modalID}
-        tabIndex="-1"
-        aria-labelledby={ariaLabelledby}
-        aria-hidden="true"
-      >
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id={ariaLabelledby}>
-                Edit Comment
-              </h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div className="modal-body">
-              <div className="mb-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  name="body"
-                  value={comment_body}
-                  onChange={(event) => setCommentBody(event.target.value)}
-                  required
-                />
-              </div>
+      {/* edit checkin modal */}
 
-              <div className="modal-footer">
-                <button
-                  className="btn btn-sm btn-outline-dark btn-block"
-                  type="submit"
-                  data-bs-dismiss="modal"
-                  onClick={someFunction}
-                >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-secondary btn-block"
-                  data-bs-dismiss="modal"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
+      <div className="card card-body mt-1">
+        <div className="clearfix">
+          <div className="left">
+            🐾&nbsp;&nbsp; names here did this hike on {props.date_hiked}!
           </div>
-        </div>
-      </div>
 
-      <div className="card mt-1">
-        <div className="card-header">
-          <div className="clearfix">
-            <div className="left">
-              {props.full_name}&nbsp;
-              <small className="text-muted">
-                posted {props.date_created}
-                {props.edit == true ? (
-                  <span>&nbsp;(edited {props.date_edited})</span>
-                ) : null}
+          <div className="d-flex right">
+            <a
+              href=""
+              data-bs-toggle="modal"
+              data-bs-target={`#modal-edit-check-in-${props.check_in_id}`}
+              style={{ color: "rgb(44, 44, 44)" }}
+            >
+              <small>
+                <i
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="right"
+                  title="edit check in"
+                  className="bi bi-pencil"
+                ></i>
               </small>
-            </div>
-
-            {props.session_login === "True" &&
-            Number(props.session_user_id) === Number(props.user_id) ? (
-              <div className="d-flex right">
-                <a
-                  href=""
-                  data-bs-toggle="modal"
-                  data-bs-target={dataBsTarget}
-                  style={{ color: "rgb(44, 44, 44)" }}
-                >
-                  <small>
-                    <i
-                      data-bs-toggle="tooltip"
-                      data-bs-placement="right"
-                      title="edit comment"
-                      className="bi bi-pencil"
-                    ></i>
-                  </small>
-                </a>
-                &nbsp;&nbsp;&nbsp;
-                <button
-                  className="btn btn-sm"
-                  style={{ padding: 0 }}
-                  type="submit"
-                  onClick={deleteConfirm}
-                >
-                  <i
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="right"
-                    title="delete comment"
-                    className="bi bi-x"
-                  ></i>
-                </button>
-              </div>
-            ) : null}
+            </a>
+            &nbsp;&nbsp;&nbsp;
+            <button
+              className="btn btn-sm"
+              style={{ padding: 0 }}
+              type="submit"
+              onClick={deleteConfirm}
+            >
+              <small>
+                <i
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="right"
+                  title="delete check in"
+                  className="bi bi-x"
+                ></i>
+              </small>
+            </button>
           </div>
         </div>
-
-        <div className="card-body">{props.comment_body}</div>
+        {props.miles_completed !== null ? (
+          <div className="row">Miles completed: {props.miles_completed}</div>
+        ) : null}
+        {props.total_time !== null ? (
+          <div className="row">Total time: {props.total_time}</div>
+        ) : null}
+        {props.notes !== null ? (
+          <div className="row">Notes: {props.notes}</div>
+        ) : null}
       </div>
     </React.Fragment>
   );
 }
 
-function AddComment(props) {
-  // You’ll need an AJAX POST request to submit data to the server.
-  // In order to access the user’s form data, you’ll access the component’s state.
-  // To get what is currently typed in the name field, you can use the state value name.
-  // To get what is currently typed in the skill field, you can use the state value skill.
-  // Remember, the back-end of this feature is already implemented for you. There is a route called /add-card.
-  // Review it if you need help configuring your form data correctly.
-  const hike_id = document.querySelector("#hike_id").innerText;
-  const add_comment_url = `/hikes/${hike_id}/add-comment`;
-  const [comment_body, setCommentBody] = React.useState("");
+function AddCheckIn(props) {
+  const [addPet, setAddPet] = React.useState([]);
+  const [dateHiked, setDateHiked] = React.useState("");
+  const [milesCompleted, setMilesCompleted] = React.useState("");
+  const [totalTime, setTotalTime] = React.useState("");
+  const [notes, setNotes] = React.useState("");
 
+  function getPets() {
+    fetch("/pets.json").then((response) =>
+      response.json().then((jsonResponse) => {
+        const pets = jsonResponse.pets;
+
+        const allPets = [];
+        pets.map((pet) => {
+          allPets.push({
+            select: false,
+            pet_name: pet.pet_name,
+            pet_id: pet.pet_id,
+          });
+        });
+
+        setAddPet(allPets);
+      })
+    );
+  }
+
+  React.useEffect(() => {
+    getPets();
+  }, []);
+
+  // Validate form - need to make sure to validate each required item
+  function validateCheckIn(evt) {
+    const petCheckBoxes = document.querySelectorAll(
+      "input[name=add-check-in-pet_id]"
+    );
+    let atLeastOneChecked = false;
+    for (let i = 0; i < petCheckBoxes.length; i++) {
+      if (petCheckBoxes[i].checked) {
+        atLeastOneChecked = true;
+        break;
+      }
+    }
+    if (atLeastOneChecked === false) {
+      alert("Please add a pet to the check in");
+      evt.preventDefault();
+    }
+
+    addNewCheckIn();
+  }
   // Add a POST request to hit the server /add-card endpoint and add a new card.
   // Make sure you pass in the data it is expecting. When this request finishes,
   // show an alert letting the user know they successfully added the card.
-  function addNewComment() {
-    fetch(add_comment_url, {
+  const hike_id = document.querySelector("#hike_id").innerText;
+  const add_check_in_url = `/hikes/${hike_id}/add-check-in`;
+
+  function addNewCheckIn() {
+    fetch(add_check_in_url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-      body: JSON.stringify({ comment_body }),
+      body: JSON.stringify({
+        addPet, // need to stringify all pet_ids
+        dateHiked,
+        milesCompleted,
+        totalTime,
+        notes,
+      }),
     }).then((response) => {
       response.json().then((jsonResponse) => {
-        const commentAdded = jsonResponse.commentAdded; // same as commentAdded = jsonResponse.commentAdded
-        const comment_id = commentAdded.comment_id;
-        const full_name = commentAdded.user.full_name;
-        const user_id = commentAdded.user_id;
-        const date_created = commentAdded.date_created;
-        const date_edited = commentAdded.date_edited;
-        const edit = commentAdded.edit;
-        const session_login = jsonResponse.login;
-        const session_user_id = commentAdded.user_id;
-        props.addComment(
-          comment_id,
-          comment_body,
-          full_name,
-          user_id,
-          date_created,
-          date_edited,
-          edit,
-          session_login,
-          session_user_id
+        const { checkInAdded } = jsonResponse; // same as commentAdded = jsonResponse.commentAdded
+        const hike_id = checkInAdded.hike_id;
+        const check_in_id = checkInAdded.check_in_id;
+        const date_hiked = checkInAdded.date_hiked;
+        const miles_completed = checkInAdded.miles_completed;
+        const total_time = checkInAdded.total_time;
+        const notes = checkInAdded.notes;
+        props.addCheckIn(
+          hike_id,
+          check_in_id,
+          date_hiked,
+          miles_completed,
+          total_time,
+          notes
         );
         console.log(jsonResponse);
       });
@@ -220,16 +233,16 @@ function AddComment(props) {
     <React.Fragment>
       <div
         className="modal fade"
-        id="modal-add-comment"
+        id="modal-add-check-in"
         tabIndex="-1"
-        aria-labelledby="modal-add-comment-label"
+        aria-labelledby="modal-add-check-in-label"
         aria-hidden="true"
       >
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title" id="modal-add-comment-label">
-                Add a Comment
+              <h5 className="modal-title" id="modal-add-check-in-label">
+                Check in to this hike
               </h5>
               <button
                 type="button"
@@ -240,22 +253,99 @@ function AddComment(props) {
             </div>
             <div className="modal-body">
               <div className="mb-3">
+                <label className="sr-only">Pets</label>&nbsp;
+                <small className="text-muted">*</small>
+                {addPet.map((pet, index) => (
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      name="add-check-in-pet_id"
+                      value={pet.pet_id}
+                      id={`check-in-${pet.pet_id}`}
+                      checked={pet.select}
+                      onChange={(event) => {
+                        let checked = event.target.checked;
+                        setAddPet(
+                          addPet.map((data) => {
+                            if (pet.pet_id === data.pet_id) {
+                              data.select = checked;
+                            }
+                            return data;
+                          })
+                        );
+                      }}
+                    />
+                    <label
+                      className="form-check-label"
+                      htmlFor={`check-in-${pet.pet_id}`}
+                    >
+                      {pet.pet_name}
+                    </label>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="date_hiked" className="sr-only">
+                  Date Hiked
+                </label>
+                &nbsp;<small className="text-muted">*</small>
                 <input
-                  type="text"
-                  name="body"
+                  type="date"
+                  value={dateHiked}
+                  onChange={(event) => setDateHiked(event.target.value)}
                   className="form-control"
-                  placeholder="Enter your comment here"
-                  value={comment_body}
-                  onChange={(event) => setCommentBody(event.target.value)}
                   required
+                />
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="miles_completed" className="sr-only">
+                  Miles Completed
+                </label>
+                &nbsp;<small className="text-muted">*</small>
+                <input
+                  type="number"
+                  step=".1"
+                  min="0"
+                  value={milesCompleted}
+                  onChange={(event) => setMilesCompleted(event.target.value)}
+                  className="form-control"
+                />
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="total_time" className="sr-only">
+                  Total Time (Hours)
+                </label>
+                <input
+                  type="number"
+                  step=".1"
+                  min="0"
+                  value={totalTime}
+                  onChange={(event) => setTotalTime(event.target.value)}
+                  className="form-control"
+                />
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="notesInput" className="sr-only">
+                  Notes
+                </label>
+                <input
+                  id="notesInput"
+                  type="text"
+                  value={notes}
+                  onChange={(event) => setNotes(event.target.value)}
+                  className="form-control"
                 />
               </div>
               <div className="modal-footer">
                 <button
                   className="btn btn-sm btn-outline-dark btn-block"
                   type="submit"
-                  data-bs-dismiss="modal"
-                  onClick={addNewComment}
+                  onClick={validateCheckIn}
                 >
                   Submit
                 </button>
@@ -276,8 +366,8 @@ function AddComment(props) {
 }
 
 // comment container component
-function CommentContainer() {
-  const [comments, setComments] = React.useState([]);
+function CheckInContainer() {
+  const [checkIns, setCheckIns] = React.useState([]);
 
   // Now, we want to actually display the new card on the page.
   // However, displaying cards is handled by the parent component TradingCardContainer.
@@ -285,41 +375,34 @@ function CommentContainer() {
   // to AddTradingCard. This function should update the state of the TradingCardContainer component.
   // Passing a function may seem a little strange but this is a pretty common practice in React
   // when one component needs to update the state of another. It is known as “lifting state.”
-  function addComment(
-    comment_id,
-    comment_body,
-    full_name,
-    user_id,
-    date_created,
-    date_edited,
-    edit,
-    session_login,
-    session_user_id
+  function addCheckIn(
+    hike_id,
+    check_in_id,
+    date_hiked,
+    miles_completed,
+    total_time,
+    notes
   ) {
-    const newComment = {
-      comment_id: comment_id,
-      body: comment_body,
-      user: { full_name: full_name },
-      user_id: user_id,
-      date_created: date_created,
-      date_edited: date_edited,
-      edit: edit,
-      session_login: session_login,
-      session_user_id: session_user_id,
+    const newCheckIn = {
+      hike_id: hike_id,
+      check_in_id: check_in_id,
+      date_hiked: date_hiked,
+      miles_completed: miles_completed,
+      total_time: total_time,
     }; // equivalent to { cardId: cardId, skill: skill, name: name, imgUrl: imgUrl }
-    const currentComments = [...comments]; // makes a copy of cards. similar to doing currentCards = cards[:] in Python
+    const currentCheckIns = [...checkIns]; // makes a copy of cards. similar to doing currentCards = cards[:] in Python
     // [...currentCards, newCard] is an array containing all elements in currentCards followed by newCard
-    setComments([newComment, ...currentComments]);
+    setCheckIns([newCheckIn, ...currentCheckIns]);
   }
 
   // Use getComments() to set comments to all current comments
-  function editComment() {
-    getComments();
+  function editCheckIn() {
+    getCheckIns();
   }
 
   // Use getComments() to set comments to all current comments
-  function deleteComment() {
-    getComments();
+  function deleteCheckIn() {
+    getCheckIns();
   }
 
   // We’re going to use a GET request to get our card data,
@@ -329,58 +412,56 @@ function CommentContainer() {
   // This hook takes a function (a callback) as an argument, and it runs that function every time the component renders,
   // though we also have the ability to control when it happens if we want it to happen less often than that.
   const hike_id = document.querySelector("#hike_id").innerText;
-  const hike_json_url = `/hikes/${hike_id}/comments.json`;
+  const hike_json_url = `/hikes/${hike_id}/user_check_ins.json`;
 
-  function getComments() {
+  function getCheckIns() {
     fetch(hike_json_url)
       .then((response) => response.json())
-      .then((data) => setComments(data.comments));
+      .then((data) => {
+        setCheckIns(data.checkIns);
+      });
   }
 
   React.useEffect(() => {
-    getComments();
+    getCheckIns();
   }, []);
 
-  const allComments = [];
+  const allCheckIns = [];
 
   // the following line will print out the value of cards
   // pay attention to what it is initially and what it is when the component re-renders
-  console.log(`comments: `, comments);
+  console.log(`checkIns: `, checkIns);
 
-  for (const currentComment of comments) {
-    const date_edited = new Date(currentComment.date_edited);
-    const date_edited_formatted = `${date_edited.toLocaleDateString()} ${date_edited.toLocaleTimeString()}`;
-    const date_created = new Date(currentComment.date_created);
-    const date_created_formatted = `${date_created.toLocaleDateString()} ${date_created.toLocaleTimeString()}`;
+  for (const currentCheckIn of checkIns) {
+    const date_hiked = new Date(currentCheckIn.date_hiked);
+    const date_hiked_formatted = date_hiked.toLocaleDateString();
 
-    allComments.push(
-      <Comment
-        key={currentComment.comment_id}
-        hike_id={currentComment.hike_id}
-        comment_id={currentComment.comment_id}
-        full_name={currentComment.user.full_name}
-        user_id={currentComment.user_id}
-        date_created={date_created_formatted}
-        date_edited={date_edited_formatted}
-        edit={currentComment.edit}
-        comment_body={currentComment.body}
-        session_login={document.querySelector("#login").innerText}
-        session_user_id={Number(document.querySelector("#user_id").innerText)}
-        deleteComment={deleteComment}
-        editComment={editComment}
+    allCheckIns.push(
+      <CheckIn
+        key={currentCheckIn.check_in_id}
+        hike_id={currentCheckIn.hike_id}
+        check_in_id={currentCheckIn.check_in_id}
+        date_hiked={date_hiked_formatted}
+        miles_completed={currentCheckIn.miles_completed}
+        total_time={currentCheckIn.total_time}
+        notes={currentCheckIn.notes}
+        pets_on_hike={currentCheckIn.pets}
+        pets_not_on_hike={currentCheckIn.pets_not_on_hike}
+        deleteCheckIn={deleteCheckIn}
+        editCheckIn={editCheckIn}
       />
     );
   }
 
   return (
     <React.Fragment>
-      <AddComment addComment={addComment} />
-      {allComments}
+      <AddCheckIn addCheckIn={addCheckIn} />
+      {allCheckIns}
     </React.Fragment>
   );
 }
 
 ReactDOM.render(
-  <CommentContainer />,
-  document.getElementById("react-comment-container")
+  <CheckInContainer />,
+  document.getElementById("react-check-in-container")
 );
