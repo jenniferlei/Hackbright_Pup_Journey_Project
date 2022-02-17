@@ -3,15 +3,12 @@
 // comment body component with if session condition for edit and delete component
 function Comment(props) {
   // Process edit
-  const comment = `${props.comment_body}`;
-  const [comment_body, setCommentBody] = React.useState(comment);
+  const [comment_body, setCommentBody] = React.useState(
+    `${props.comment_body}`
+  );
 
-  function someFunction() {
-    editExistingComment(props.comment_id);
-  }
-
-  function editExistingComment(comment_id) {
-    fetch(`/edit-comment/${comment_id}`, {
+  function editExistingComment() {
+    fetch(`/edit-comment/${props.comment_id}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -92,7 +89,7 @@ function Comment(props) {
                   className="btn btn-sm btn-outline-dark btn-block"
                   type="submit"
                   data-bs-dismiss="modal"
-                  onClick={someFunction}
+                  onClick={editExistingComment}
                 >
                   Save
                 </button>
