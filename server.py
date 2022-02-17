@@ -374,7 +374,8 @@ def add_hike_check_in(hike_id):
     total_time = request.get_json().get("totalTime")
     notes = request.get_json().get("notes")
 
-    
+    if total_time == "":
+        total_time = None
 
     pets_to_check_in = []
     pets_not_checked_in = []
@@ -432,16 +433,18 @@ def edit_check_in(check_in_id):
     notes = request.get_json().get("notes")
 
     for pet in pets_to_add: # Add pets to check in
-        select, pet_name, pet_id = pet
+        select, _, pet_id = pet
         if pet[select] is True:
             pet_check_in = crud_pets_check_ins.create_pet_check_in(pet[pet_id], check_in_id)
             db.session.add(pet_check_in)
 
     for pet in pets_to_remove: # Remove pets from check in
-        select, pet_name, pet_id = pet
+        select, _, pet_id = pet
         if pet[select] is True:
             pet_check_in = crud_pets_check_ins.get_pet_check_in_by_pet_id_check_in_id(pet[pet_id], check_in_id)
-        db.session.delete(pet_check_in)
+            db.session.delete(pet_check_in)
+
+    check_in = crud_check_ins.get_check_ins_by_check_in_id(check_in_id)
 
     if date_hiked == "": # if date_hiked is left blank, use previous date_hiked
         date_hiked = check_in.date_hiked
@@ -457,7 +460,6 @@ def edit_check_in(check_in_id):
     check_in.total_time = total_time
     check_in.notes = notes
 
-    check_in = crud_check_ins.get_check_ins_by_check_in_id(check_in_id)
     if check_in.pets == []: # if there are no pets after pets have been updated, delete check in
         db.session.delete(check_in)
 
