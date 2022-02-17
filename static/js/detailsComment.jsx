@@ -18,7 +18,7 @@ function Comment(props) {
         response.json();
       })
       .then((jsonResponse) => {
-        console.log(jsonResponse);
+        // console.log(jsonResponse);
         props.editComment();
       });
   }
@@ -39,7 +39,7 @@ function Comment(props) {
       method: "DELETE",
     }).then((response) => {
       response.json().then((jsonResponse) => {
-        console.log(jsonResponse);
+        // console.log(jsonResponse);
         props.deleteComment();
       });
     });
@@ -204,7 +204,7 @@ function AddComment(props) {
           session_login,
           session_user_id
         );
-        console.log(jsonResponse);
+        // console.log(jsonResponse);
       });
     });
   }
@@ -338,7 +338,7 @@ function CommentContainer() {
 
   // the following line will print out the value of cards
   // pay attention to what it is initially and what it is when the component re-renders
-  console.log(`comments: `, comments);
+  // console.log(`comments: `, comments);
 
   for (const currentComment of comments) {
     const date_edited = new Date(currentComment.date_edited);

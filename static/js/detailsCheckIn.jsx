@@ -48,8 +48,8 @@ function CheckIn(props) {
     setPetStates();
   }, []);
 
-  console.log(addPet);
-  console.log(removePet);
+  // console.log(addPet);
+  // console.log(removePet);
 
   function editExistingCheckIn() {
     fetch(`/edit-check-in/${props.check_in_id}`, {
@@ -71,7 +71,7 @@ function CheckIn(props) {
         response.json();
       })
       .then((jsonResponse) => {
-        console.log(jsonResponse);
+        // console.log(jsonResponse);
         props.editCheckIn();
       });
   }
@@ -92,7 +92,7 @@ function CheckIn(props) {
       method: "DELETE",
     }).then((response) => {
       response.json().then((jsonResponse) => {
-        console.log(jsonResponse);
+        // console.log(jsonResponse);
         props.deleteCheckIn();
       });
     });
@@ -414,12 +414,12 @@ function AddCheckIn(props) {
           // pets_on_hike,
           // pets_not_on_hike
           ();
-        console.log(jsonResponse);
+        // console.log(jsonResponse);
       });
     });
   }
 
-  console.log(allPetOptions);
+  // console.log(allPetOptions);
 
   return (
     <React.Fragment>
@@ -606,7 +606,7 @@ function CheckInContainer() {
 
   // the following line will print out the value of cards
   // pay attention to what it is initially and what it is when the component re-renders
-  console.log(`checkIns: `, checkIns);
+  // console.log(`checkIns: `, checkIns);
 
   for (const currentCheckIn of checkIns) {
     const date_hiked = new Date(currentCheckIn.date_hiked);

@@ -543,18 +543,7 @@ def edit_bookmarks_list(bookmarks_list_id):
 
     db.session.commit()
 
-    bookmark_schema = BookmarksListSchema()
-    bookmark_json = bookmark_schema.dump(bookmarks_list)
-
-
-    # for each hike on the bookmarks list, serialize the o
-
-    hikes_schema = HikeSchema(many=True, only=["area","city","state","difficulty","hike_id","hike_name","miles", "parking"])
-
-    hikes_json = hikes_schema.dump(sorted(bookmarks_list.hikes, key=lambda x: x.hike_name))
-    bookmark_json["hikes"] = hikes_json
-
-    return jsonify({"bookmarksLists": bookmark_json})
+    return jsonify({"success": True})
 
 
 @app.route("/delete-bookmarks-list/<bookmarks_list_id>", methods=["DELETE"])
@@ -578,7 +567,7 @@ def add_hike_to_existing_bookmarks_list(hike_id):
 
     logged_in_email = session.get("user_email")
     user = crud_users.get_user_by_email(logged_in_email)
-    bookmarks_list_id = request.get_json().get("bookmarksListId")
+    bookmarks_list_id = request.get_json().get("allBookmarksListIdOptions") # this will get a list of objects
 
     hike_bookmark = crud_hikes_bookmarks_lists.create_hike_bookmarks_list(hike_id, bookmarks_list_id)
     db.session.add(hike_bookmark)
@@ -606,32 +595,26 @@ def add_hike_to_new_bookmarks_list(hike_id):
     return jsonify({"success": True})
 
 
-@app.route("/remove-hike", methods=["POST"])
-def remove_hike():
+@app.route("/<bookmarks_list_id>/<hike_id>/remove-hike", methods=["DELETE"])
+def remove_hike(bookmarks_list_id, hike_id):
     """Delete a hike from a bookmarks list"""
 
-    logged_in_email = session.get("user_email")
+    hike = crud_hikes.get_hike_by_id(hike_id)
+    bookmarks_list = crud_bookmarks_lists.get_bookmarks_list_by_bookmarks_list_id(
+        bookmarks_list_id
+    )
+    hikes_bookmarks_list = crud_hikes_bookmarks_lists.get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(
+        hike_id, bookmarks_list_id
+    )
 
-    if logged_in_email is None:
-        flash("You must log in to remove a hike from your bookmarks.")
-    else:
-        hike_id, bookmarks_list_id = request.form.get("delete").split(",")
-        hike = crud_hikes.get_hike_by_id(hike_id)
-        bookmarks_list = crud_bookmarks_lists.get_bookmarks_list_by_bookmarks_list_id(
-            bookmarks_list_id
-        )
-        hikes_bookmarks_list = crud_hikes_bookmarks_lists.get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(
-            hike_id, bookmarks_list_id
-        )
+    flash(
+        f"Success! {hike.hike_name} has been removed from {bookmarks_list.bookmarks_list_name}."
+    )
 
-        flash(
-            f"Success! {hike.hike_name} has been removed from {bookmarks_list.bookmarks_list_name}."
-        )
+    db.session.delete(hikes_bookmarks_list)
+    db.session.commit()
 
-        db.session.delete(hikes_bookmarks_list)
-        db.session.commit()
-
-    return redirect(request.referrer)
+    return jsonify({"success": True})
 
 
 @app.route("/hikes/<hike_id>/add-comment", methods=["POST"])
@@ -920,6 +903,28 @@ def get_user_check_in_coordinates():
     return jsonify({"checkInCoordinates": user_hike_data})
 
 
+@app.route("/<bookmarks_list_id>/hikes.json")
+def get_bookmarks_hikes_json(bookmarks_list_id):
+    """Return a JSON response for a bookmarks list's hikes."""
+
+    # get one bookmarks object with list of hikes
+    # convert to JSON
+    hikes_by_bookmark = crud_bookmarks_lists.get_bookmarks_list_by_bookmarks_list_id(bookmarks_list_id)
+    bookmark_schema = BookmarksListSchema()
+    bookmark_json = bookmark_schema.dump(hikes_by_bookmark)
+
+    # sort hikes in alphabetical order
+    # convert to JSON
+    # add to bookmark object
+    sorted_hikes_by_bookmark = sorted(hikes_by_bookmark.hikes, key=lambda x: x.hike_name)
+    hikes_schema = HikeSchema(many=True, only=["area", "city", "state", "difficulty", "hike_id", "hike_name", "leash_rule", "miles", "parking"])
+    hikes_json = hikes_schema.dump(sorted_hikes_by_bookmark)
+
+    bookmark_json["hikes"] = hikes_json
+
+    return jsonify({"bookmarksLists": bookmark_json})
+
+
 @app.route("/hikes/<hike_id>/bookmarks.json")
 def get_hike_bookmarks_json(hike_id):
     """Return a JSON response for a hike's bookmarks."""
@@ -937,7 +942,7 @@ def get_hike_bookmarks_json(hike_id):
 
     # for each hike on the bookmarks list, serialize the o
 
-    hikes_schema = HikeSchema(many=True, only=["area","city","state","difficulty","hike_id","hike_name","miles", "parking"])
+    hikes_schema = HikeSchema(many=True, only=["area", "city", "state", "difficulty", "hike_id", "hike_name", "leash_rule", "miles", "parking"])
 
     for bookmark_json in bookmarks_json:
         for bookmarks_list in sorted_bookmarks_by_hike:
@@ -947,9 +952,9 @@ def get_hike_bookmarks_json(hike_id):
     return jsonify({"bookmarksLists": bookmarks_json})
 
 
-@app.route("/user_bookmarks.json")
-def get_user_bookmarks():
-    """Return a JSON response with all bookmarks for a user."""
+@app.route("/user_bookmarks_lists.json")
+def get_user_bookmarks_lists():
+    """Return a JSON response with all bookmarks lists for a user."""
 
     logged_in_email = session.get("user_email")
     user = crud_users.get_user_by_email(logged_in_email)
@@ -958,32 +963,17 @@ def get_user_bookmarks():
     bookmarks_by_user = crud_bookmarks_lists.get_bookmarks_lists_by_user_id(user.user_id)
     sorted_bookmarks_by_user = sorted(bookmarks_by_user, key=lambda x: x.bookmarks_list_name)
 
-    # {"bookmark_list_id": "1",
-    #  "bookmark_name": "...",
-    #  "hikes": [{"hike_id": "1",
-    #             "hike_name": "...",
-    #             "area":
-    #             "difficulty":
-    #             "leash_rule":
-    #             "latitude":
-    #             "longitude":
-    #             "city":
-    #             "state":
-    #             "miles"
-    #             "parking"}
-    #            , {"..."}, {"..."}]},
-
     bookmarks_schema = BookmarksListSchema(many=True)
     bookmarks_json = bookmarks_schema.dump(bookmarks_by_user)
 
-    hikes_schema = HikeSchema(many=True, only=["area","city","state","difficulty","hike_id","hike_name","miles", "parking"])
+    hikes_schema = HikeSchema(many=True, only=["area", "city", "state", "difficulty", "hike_id", "hike_name", "leash_rule", "miles", "parking"])
 
-    for bookmark_json in bookmarks_json:
-        for bookmarks_list in sorted_bookmarks_by_user:
-            hikes_json = hikes_schema.dump(sorted(bookmarks_list.hikes, key=lambda x: x.hike_name))
-            bookmark_json["hikes"] = hikes_json
+    # for bookmark in bookmarks_json:
+    #     for bookmarks_list in sorted_bookmarks_by_user:
+    #         hikes_json = hikes_schema.dump(sorted(bookmarks_list.hikes, key=lambda x: x.hike_name))
+    #         bookmark_json["hikes"] = hikes_json
 
-    return jsonify({"bookmarks": bookmarks_json})
+    return jsonify({"bookmarksLists": bookmarks_json})
 
 
 @app.route("/search_results.json")

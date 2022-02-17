@@ -16,7 +16,8 @@ def create_bookmarks_list(bookmarks_list_name, user_id, hikes):
 def get_bookmarks_list_by_bookmarks_list_id(bookmarks_list_id):
     """Get a bookmarks list by bookmarks_list_id."""
     
-    return db.session.query(BookmarksList).filter_by(bookmarks_list_id=bookmarks_list_id).one()
+    return (db.session.query(BookmarksList).options(db.joinedload('hikes'))
+                                           .get(bookmarks_list_id))
 
 
 def get_bookmarks_lists_by_user_id(user_id):

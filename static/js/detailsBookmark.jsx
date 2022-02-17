@@ -1,18 +1,123 @@
 "use strict";
 
-// Add hike bookmark to existing bookmarks list OR new bookmarks list
-// Delete or rename a bookmarks list
-// Remove a hike from a bookmarks list
-
+// Hikes in a Bookmarks List Component
 function HikeBookmark(props) {
-  return <React.Fragment></React.Fragment>;
+  // Check if user wants to delete or not
+  function deleteConfirm(event) {
+    const validate = confirm("Do you want to remove this hike from this list?");
+    if (!validate) {
+      event.preventDefault();
+    } else {
+      removeExistingHikeFromList();
+    }
+  }
+
+  // Process deletion
+  function removeExistingHikeFromList() {
+    fetch(`/${props.bookmarks_list_id}/${props.hike_id}/remove-hike`, {
+      method: "DELETE",
+    }).then((response) => {
+      response.json().then((jsonResponse) => {
+        console.log(jsonResponse);
+        props.removeHike();
+      });
+    });
+  }
+
+  return (
+    <React.Fragment>
+      <div className="row">
+        <div className="d-flex">
+          <button
+            className="btn btn-sm"
+            style={{ padding: 0 }}
+            type="submit"
+            onClick={deleteConfirm}
+          >
+            <small>
+              <i
+                data-bs-toggle="tooltip"
+                data-bs-placement="right"
+                title="remove from list"
+                className="bi bi-x"
+              ></i>
+            </small>
+          </button>
+          &nbsp;&nbsp;&nbsp;
+          <a href={`/hikes/${props.hike_id}`} target="_blank">
+            {props.hike_name}
+          </a>
+        </div>
+      </div>
+      <div class="row">
+        <small>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          {props.difficulty} | {props.miles} miles | {props.city}, {props.state}{" "}
+          | {props.area} | {props.leash_rule} | {props.parking}
+        </small>
+      </div>
+    </React.Fragment>
+  );
 }
 
-// comment body component with if session condition for edit and delete component
-function BookmarkList(props) {
+// Bookmarks List Component
+function BookmarksList(props) {
+  const [hikes, setHikes] = React.useState([]);
+
+  // Get all hikes for the bookmarks list
+  function getHikes() {
+    fetch(`/${props.bookmarks_list_id}/hikes.json`)
+      .then((response) => response.json())
+      .then((data) => {
+        setHikes(data.bookmarksLists.hikes);
+      });
+  }
+
+  // Initial render of all hikes in the bookmarks list
+  React.useEffect(() => {
+    getHikes();
+  }, []);
+
+  // When all hikes are set, make an array of HikeBookmark Components
+  const allHikeBookmarks = [];
+
+  // the following line will print out the hikes
+  // pay attention to what it is initially and what it is when the component re-renders
+  console.log(`hikes: `, hikes);
+
+  for (const currentHike of hikes) {
+    allHikeBookmarks.push(
+      <HikeBookmark
+        key={currentHike.hike_id}
+        area={currentHike.area}
+        city={currentHike.city}
+        difficulty={currentHike.difficulty}
+        hike_id={currentHike.hike_id}
+        bookmarks_list_id={props.bookmarks_list_id}
+        hike_name={currentHike.hike_name}
+        leash_rule={currentHike.leash_rule}
+        miles={currentHike.miles}
+        parking={currentHike.parking}
+        state={currentHike.state}
+        removeHike={removeHike}
+        // addHikeExistingList={addHikeExistingList}
+      />
+    );
+  }
+
+  // Use getHikes() to set hikes when a hike is removed
+  function removeHike() {
+    getHikes();
+  }
+
+  // // Use getHikes() to set hikes when a hike is added to the list
+  // function addHikeExistingList() {
+  //   getHikes();
+  // }
+
   // Process renaming bookmarks list name
   const [bookmarksListName, setBookmarksListName] = React.useState(
-    props.bookmarks_list_name
+    `${props.bookmarks_list_name}`
   );
 
   function editExistingBookmarksList() {
@@ -59,12 +164,68 @@ function BookmarkList(props) {
 
   return (
     <React.Fragment>
+      <div
+        className="modal fade"
+        id={`modal-rename-bookmark-${props.bookmarks_list_id}`}
+        tabIndex="-1"
+        aria-labelledby={`modal-rename-bookmark-${props.bookmarks_list_id}-label`}
+        aria-hidden="true"
+      >
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5
+                className="modal-title"
+                id={`modal-rename-bookmark-${props.bookmarks_list_id}-label`}
+              >
+                Rename Bookmark
+              </h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              <div className="mb-3">
+                <input
+                  type="text"
+                  name="bookmarks_list_name"
+                  className="form-control input-lg"
+                  value={bookmarksListName}
+                  onChange={(event) => setBookmarksListName(event.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="modal-footer">
+                <button
+                  className="btn btn-sm btn-outline-dark btn-block"
+                  type="submit"
+                  data-bs-dismiss="modal"
+                  onClick={editExistingBookmarksList}
+                >
+                  Save
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-secondary btn-block"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="card mt-1">
         <div className="card-header">
           <div className="clearfix">
             <div className="left">
               <a
-                className="btn btn-md accordion-button"
+                className="btn btn-md"
                 data-bs-toggle="collapse"
                 href={`#collapse-bookmarks-${props.bookmarks_list_id}`}
                 role="button"
@@ -119,247 +280,16 @@ function BookmarkList(props) {
           className="collapse card-body"
           id={`collapse-bookmarks-${props.bookmarks_list_id}`}
         >
-          <div>
-            {allHikeBookmarks}
-            {/* {% for hike in bookmarks_list.hikes|sort(attribute='hike_name') %}
-                    <div className="row">
-                        <div className="d-flex">
-                        <form
-                            action="/remove-hike"
-                            method="POST">
-                            <button
-                            className="btn btn-sm"
-                            style="padding:0"
-                            type="submit"
-                            name="delete"
-                            value="{{ hike.hike_id }},{{ bookmarks_list.bookmarks_list_id }}"
-                            onclick="return confirm('Do you want to remove this hike?');"
-                            ><small>
-                            <i data-bs-toggle="tooltip" data-bs-placement="right" title="remove from list" className="bi bi-x"></i>
-                            </small></button>
-                        </form>
-
-                        &nbsp;&nbsp;&nbsp;
-
-                        <a href="/hikes/{{ hike.hike_id }}" target="_blank">
-                            {{ hike.hike_name }}
-                        </a>
-                        </div>
-                    </div>
-                    {% endfor %} */}
-          </div>
+          <div>{allHikeBookmarks}</div>
         </div>
       </div>
     </React.Fragment>
   );
 }
 
-function AddHikeToBookmarksList(props) {
-  // option to add to existing bookmarks list OR create new list
-
-  // For adding to new list
-
-  const [bookmarksListName, setAllPetOptions] = React.useState("");
-
-  // For adding to existing list
-  const [allBookmarksListIdOptions, setAllBookmarksListIdOptions] =
-    React.useState("");
-
-  function getLists() {
-    fetch("/user_bookmarks.json").then((response) =>
-      response.json().then((jsonResponse) => {
-        const { bookmarksLists } = jsonResponse;
-
-        const allBookmarksListIdOptions = [];
-        bookmarksLists.map((bookmarksList) => {
-          allBookmarksListIdOptions.push({
-            select: false,
-            bookmarks_list_name: bookmarksList.bookmarks_list_name,
-            bookmarks_list_id: bookmarksList.bookmarks_list_id,
-          });
-        });
-
-        setAllBookmarksListIdOptions(allBookmarksListIdOptions);
-      })
-    );
-  }
-
-  React.useEffect(() => {
-    getLists();
-  }, []);
-
-  //   // Validate form - need to make sure to validate each required item
-  //   function validateCheckIn(evt) {
-  //     const petCheckBoxes = document.querySelectorAll(
-  //       "input[name=add-check-in-pet_id]"
-  //     );
-  //     let atLeastOneChecked = false;
-  //     for (let i = 0; i < petCheckBoxes.length; i++) {
-  //       if (petCheckBoxes[i].checked) {
-  //         atLeastOneChecked = true;
-  //         break;
-  //       }
-  //     }
-  //     if (atLeastOneChecked === false) {
-  //       alert("Please add a pet to the check in");
-  //       evt.preventDefault();
-  //     }
-
-  //     addNewCheckIn();
-  //   }
-  // Add a POST request to hit the server /add-card endpoint and add a new card.
-  // Make sure you pass in the data it is expecting. When this request finishes,
-  // show an alert letting the user know they successfully added the card.
-  const hike_id = document.querySelector("#hike_id").innerText;
-
-  function addHikeToBookmarksList() {
-    fetch(`/hikes/${hike_id}/add-hike-to-existing-list`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        allBookmarksListIdOptions,
-      }),
-    }).then((response) => {
-      response.json().then((jsonResponse) => {
-        props.addHike();
-        console.log(jsonResponse);
-      });
-    });
-  }
-
-  function addHikeNewBookmarksList() {
-    fetch(`/hikes/${hike_id}/add-hike-to-new-list`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        bookmarksListName,
-      }),
-    }).then((response) => {
-      response.json().then((jsonResponse) => {
-        props.addHike();
-        console.log(jsonResponse);
-      });
-    });
-  }
-
-  console.log(allBookmarksListIdOptions);
-
-  return <React.Fragment>
-        <div className="modal fade" id="modal-add-bookmark" tabIndex="-1" aria-labelledby="modal-add-bookmark-label" aria-hidden="true">
-            <div className="modal-dialog">
-                <div className="modal-content">
-                <div className="modal-header">
-                    <h5 className="modal-title" id="modal-add-bookmark-label">Bookmark this hike</h5>
-                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div className="modal-body">
- 
-                    <h4>Add to New Bookmark List</h4>
-
-                    <div className="mb-3">
-                        <input
-                        type="text"
-                        name="bookmarks_list_name"
-                        className="form-control"
-                        placeholder="Hikes I Want To Visit"
-                        required
-                        />
-                    </div>
-
-                    <div className="mb-3">
-                        <button
-                        className="btn btn-sm btn-outline-dark btn-block"
-                        type="submit"
-                        name="hike_id"
-                        value="{{ hike.hike_id }}"
-                        data-bs-dismiss="modal"
-                        >
-                        Save
-                        </button>
-                    </div>
-
-                    <h4>Add to Existing Bookmark List</h4>
-
-                    <div className="mb-3">
-                        <select name="bookmarks_list_id" className="form-control input-lg">
-                        {allBookmarksListIdOptions.map((bookmarksListIdOption) => (
-                        <option value={bookmarksListIdOption.bookmarks_list_id}>
-                            {bookmarksListIdOption.bookmarks_list_name}
-                        </option>))}
-                        </select>
-                    </div>
-
-                    <div className="mb-3">
-                        <button
-                        className="btn btn-sm btn-outline-dark btn-block"
-                        type="submit"
-                        name="hike_id"
-                        value="{{ hike.hike_id }}"
-                        data-bs-dismiss="modal"
-                        >
-                        Save
-                        </button>
-                    </div>
-                    <div className="modal-footer">
-                        <button type="button" className="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-  </React.Fragment>;
-}
-
-// comment container component
+// Bookmarks Lists Container Component
 function BookmarksListContainer() {
   const [bookmarksLists, setBookmarksLists] = React.useState([]);
-
-  // Now, we want to actually display the new card on the page.
-  // However, displaying cards is handled by the parent component TradingCardContainer.
-  // You will need to create a new function and pass it as a prop from TradingCardContainer
-  // to AddTradingCard. This function should update the state of the TradingCardContainer component.
-  // Passing a function may seem a little strange but this is a pretty common practice in React
-  // when one component needs to update the state of another. It is known as “lifting state.”
-  function addBookmarksList(
-    bookmarks_list_id,
-    bookmarks_list_name,
-    hikes,
-    user_id
-  ) {
-    const newBookmarksList = {
-      bookmarks_list_id: bookmarks_list_id,
-      bookmarks_list_name: bookmarks_list_name,
-      hikes: hikes,
-      user_id: user_id,
-    }; // equivalent to { cardId: cardId, skill: skill, name: name, imgUrl: imgUrl }
-    const currentBookmarksLists = [...bookmarksLists]; // makes a copy of cards. similar to doing currentCards = cards[:] in Python
-    // [...currentCards, newCard] is an array containing all elements in currentCards followed by newCard
-    setBookmarksLists([newBookmarksList, ...currentBookmarksLists]);
-  }
-
-  // Use getComments() to set comments to all current comments
-  function editBookmarksList() {
-    getCheckIns();
-  }
-
-  // Use getComments() to set comments to all current comments
-  function deleteBookmarksList() {
-    getCheckIns();
-  }
-
-  // We’re going to use a GET request to get our card data,
-  // and then we’ll pass it to the setCards function to actually update the state of our component.
-  // Let’s make an HTTP request to our server for the cards we should display.
-  // To load initial data for a react component from the server, it’s typical to used a hook called useEffect.
-  // This hook takes a function (a callback) as an argument, and it runs that function every time the component renders,
-  // though we also have the ability to control when it happens if we want it to happen less often than that.
-  const hike_id = document.querySelector("#hike_id").innerText;
 
   function getBookmarksLists() {
     fetch(`/hikes/${hike_id}/bookmarks.json`)
@@ -372,6 +302,8 @@ function BookmarksListContainer() {
   React.useEffect(() => {
     getBookmarksLists();
   }, []);
+
+  const hike_id = document.querySelector("#hike_id").innerText;
 
   const allBookmarksLists = [];
 
@@ -391,50 +323,42 @@ function BookmarksListContainer() {
       />
     );
   }
+  // function addHikeNewList(
+  //   bookmarks_list_id,
+  //   bookmarks_list_name,
+  //   hikes,
+  //   user_id
+  // ) {
+  //   const newBookmarksList = {
+  //     bookmarks_list_id: bookmarks_list_id,
+  //     bookmarks_list_name: bookmarks_list_name,
+  //     hikes: hikes,
+  //     user_id: user_id,
+  //   }; // equivalent to { cardId: cardId, skill: skill, name: name, imgUrl: imgUrl }
+  //   const currentBookmarksLists = [...bookmarksLists]; // makes a copy of cards. similar to doing currentCards = cards[:] in Python
+  //   // [...currentCards, newCard] is an array containing all elements in currentCards followed by newCard
+  //   setBookmarksLists([newBookmarksList, ...currentBookmarksLists]);
+  // }
+
+  // Use getBookmarksLists() to set bookmarks lists when a list is renamed
+  function editBookmarksList() {
+    getBookmarksLists();
+  }
+
+  // Use getBookmarksLists() to set bookmarks lists when a list is removed
+  function deleteBookmarksList() {
+    getBookmarksLists();
+  }
 
   return (
     <React.Fragment>
-      <AddBookmarksList addBookmarksList={addBookmarksList} />
+      {/* <AddHikeToBookmarksList addHikeNewList={addHikeNewList} /> */}
       {allBookmarksLists}
     </React.Fragment>
   );
 }
 
 ReactDOM.render(
-  <BookmarksContainer />,
+  <BookmarksListContainer />,
   document.getElementById("react-bookmarks-container")
 );
-
-// <!-- Start Rename Bookmark Modal -->
-//               <div className="modal fade" id="modal-rename-bookmark-{{ bookmarks_list.bookmarks_list_id }}" tabindex="-1" aria-labelledby="modal-rename-bookmark-{{ bookmarks_list.bookmarks_list_id }}-label" aria-hidden="true">
-//                 <div className="modal-dialog">
-//                   <div className="modal-content">
-//                     <div className="modal-header">
-//                       <h5 className="modal-title" id="modal-rename-bookmark-{{ bookmarks_list.bookmarks_list_id }}-label">Rename Bookmark</h5>
-//                       <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-//                     </div>
-//                     <div className="modal-body">
-//                       <form
-//                         action="/edit-bookmarks-list"
-//                         method="POST"
-//                       >
-//                         <div className="mb-3">
-//                         <input
-//                           type="text"
-//                           name="bookmarks_list_name"
-//                           className="form-control input-lg"
-//                           value="{{ bookmarks_list.bookmarks_list_name }}"
-//                           required
-//                         />
-//                       </div>
-
-//                       <div className="modal-footer">
-//                         <button className="btn btn-sm btn-outline-dark btn-block" type="submit" name="edit" value="{{ bookmarks_list.bookmarks_list_id }}">Save</button>
-//                         <button type="button" className="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
-//                       </div>
-//                       </form>
-//                     </div>
-//                   </div>
-//                 </div>
-//               </div>
-//               <!-- End Rename Bookmark Modal -->
