@@ -3,9 +3,7 @@
 // comment body component with if session condition for edit and delete component
 function Comment(props) {
   // Process edit
-  const [comment_body, setCommentBody] = React.useState(
-    `${props.comment_body}`
-  );
+  const [comment_body, setCommentBody] = React.useState(props.comment_body);
 
   function editExistingComment() {
     fetch(`/edit-comment/${props.comment_id}`, {

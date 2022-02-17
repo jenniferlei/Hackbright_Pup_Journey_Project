@@ -9,76 +9,7 @@ endblock %} {% block body %}
 
 <!-- START ADD BOOKMARK MODAL -->
 {% if "login" in session %}
-<div class="modal fade" id="modal-add-bookmark" tabindex="-1" aria-labelledby="modal-add-bookmark-label" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modal-add-bookmark-label">Bookmark this hike</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form
-          action="/add-hike"
-          method="POST"
-        >
-          <h4>Add to New Bookmark List</h4>
 
-          <div class="mb-3">
-            <input
-              type="text"
-              name="bookmarks_list_name"
-              class="form-control input-lg"
-              placeholder="Hikes I Want To Visit"
-              required
-            />
-          </div>
-
-          <div class="mb-3">
-            <button
-              class="btn btn-sm btn-outline-dark btn-block"
-              type="submit"
-              name="hike_id"
-              value="{{ hike.hike_id }}"
-            >
-              Save
-            </button>
-          </div>
-        </form>
-
-        <form
-          action="/add-hike"
-          method="POST"
-        >
-          <h4>Add to Existing Bookmark List</h4>
-
-          <div class="mb-3">
-            <select name="bookmarks_list_id" class="form-control input-lg">
-              {% for bookmarks_list in bookmarks_list_by_user %}
-              <option value="{{ bookmarks_list.bookmarks_list_id }}">
-                {{ bookmarks_list.bookmarks_list_name }}
-              </option>
-              {% endfor %}
-            </select>
-          </div>
-
-          <div class="mb-3">
-            <button
-              class="btn btn-sm btn-outline-dark btn-block"
-              type="submit"
-              name="hike_id"
-              value="{{ hike.hike_id }}"
-            >
-              Save
-            </button>
-          </div>
-        </form>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 {% endif %}
 <!-- END ADD BOOKMARK MODAL -->
 
@@ -432,7 +363,7 @@ endblock %} {% block body %}
         >
           {% if "login" in session %}
           <a class="btn btn-sm mt-2" href="" data-bs-toggle="modal" data-bs-target="#modal-add-bookmark">
-            <i data-bs-toggle="tooltip" data-bs-placement="right" title="bookmark this hike" class="bi bi-bookmark-star"></i> add a bookmark
+            <i data-bs-toggle="tooltip" data-bs-placement="right" title="bookmark this hike" class="bi bi-bookmark-star"></i> bookmark this hike
           </a>
             {% if bookmarks_lists_by_user_hike != [] %}
             <div class="mt-1">You have this hike on the following lists (click on a list name to view all
@@ -494,5 +425,6 @@ endblock %} {% block body %}
 
 <script src="/static/js/hikeDetails.js"></script>
 <script src="/static/js/detailsComment.jsx" type="text/jsx"></script>
+<script src="/static/js/detailsBookmark.jsx" type="text/jsx"></script>
 <script src="/static/js/detailsCheckIn.jsx" type="text/jsx"></script>
 {% endblock %}

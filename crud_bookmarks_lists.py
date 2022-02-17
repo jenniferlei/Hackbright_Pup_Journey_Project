@@ -57,6 +57,8 @@ def get_bookmarks_lists_by_user_id_and_hike_id(user_id, hike_id):
                                 .options(db.joinedload('hikes'))
                                 .filter_by(user_id=user_id)
                                 .all())
+    
+    hike = db.session.query(Hike).get(hike_id)
 
 
     # For each list, check if there is a hike that matches the given hike_id
@@ -65,9 +67,8 @@ def get_bookmarks_lists_by_user_id_and_hike_id(user_id, hike_id):
     hike_user_bookmarks_lists = []
 
     for bookmarks_list in user_bookmarks_lists:
-        for hike in bookmarks_list.hikes:
-            if hike.hike_id == hike_id:
-                hike_user_bookmarks_lists.append(bookmarks_list)
+        if hike in bookmarks_list.hikes:
+            hike_user_bookmarks_lists.append(bookmarks_list)
         
     return hike_user_bookmarks_lists
 

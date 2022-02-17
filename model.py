@@ -216,7 +216,7 @@ class PetSchema(ma.SQLAlchemyAutoSchema):
         include_fk = True
         load_instance = True
         
-    check_ins = fields.List(fields.Nested("PetCheckInSchema"))
+    check_ins = fields.Nested("PetCheckInSchema", many=True)
 
 
 class HikeSchema(ma.SQLAlchemyAutoSchema):
@@ -278,7 +278,6 @@ class BookmarksListSchema(ma.SQLAlchemyAutoSchema):
 
 def connect_to_db(flask_app):
     
-
     ma.app = flask_app
     db.app = flask_app
     db.init_app(flask_app)
