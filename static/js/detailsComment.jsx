@@ -2,27 +2,6 @@
 
 // comment body component with if session condition for edit and delete component
 function Comment(props) {
-  // Process edit
-  const [comment_body, setCommentBody] = React.useState(props.comment_body);
-
-  function editExistingComment() {
-    fetch(`/edit-comment/${props.comment_id}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({ comment_body }),
-    })
-      .then((response) => {
-        response.json();
-      })
-      .then((jsonResponse) => {
-        // console.log(jsonResponse);
-        props.editComment();
-      });
-  }
-
   // Check if user wants to delete or not
   function deleteConfirm(event) {
     const validate = confirm("Do you want to delete this comment?");
@@ -45,6 +24,85 @@ function Comment(props) {
     });
   }
 
+  return (
+    <React.Fragment>
+      <div className="card mt-1">
+        <div className="card-header">
+          <div className="clearfix">
+            <div className="float-start">
+              {props.full_name}&nbsp;
+              <small className="text-muted">
+                posted {props.date_created}
+                {props.edit == true ? (
+                  <span>&nbsp;(edited {props.date_edited})</span>
+                ) : null}
+              </small>
+            </div>
+
+            {props.session_login === "True" &&
+            Number(props.session_user_id) === Number(props.user_id) ? (
+              <div className="d-flex float-end">
+                <a
+                  href=""
+                  data-bs-toggle="modal"
+                  data-bs-target={`#modal-edit-comment-${props.comment_id}`}
+                  style={{ color: "rgb(44, 44, 44)" }}
+                >
+                  <small>
+                    <i
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="right"
+                      title="edit comment"
+                      className="bi bi-pencil"
+                    ></i>
+                  </small>
+                </a>
+                &nbsp;&nbsp;&nbsp;
+                <button
+                  className="btn btn-sm"
+                  style={{ padding: 0 }}
+                  type="submit"
+                  onClick={deleteConfirm}
+                >
+                  <i
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="right"
+                    title="delete comment"
+                    className="bi bi-x"
+                  ></i>
+                </button>
+              </div>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="card-body">{props.comment_body}</div>
+      </div>
+    </React.Fragment>
+  );
+}
+
+function EditComment(props) {
+  // Process edit
+  const [comment_body, setCommentBody] = React.useState(props.comment_body);
+
+  function editExistingComment() {
+    fetch(`/edit-comment/${props.comment_id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ comment_body }),
+    })
+      .then((response) => {
+        response.json();
+      })
+      .then((jsonResponse) => {
+        // console.log(jsonResponse);
+        props.editComment();
+      });
+  }
   return (
     <React.Fragment>
       <div
@@ -102,59 +160,6 @@ function Comment(props) {
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="card mt-1">
-        <div className="card-header">
-          <div className="clearfix">
-            <div className="float-start">
-              {props.full_name}&nbsp;
-              <small className="text-muted">
-                posted {props.date_created}
-                {props.edit == true ? (
-                  <span>&nbsp;(edited {props.date_edited})</span>
-                ) : null}
-              </small>
-            </div>
-
-            {props.session_login === "True" &&
-            Number(props.session_user_id) === Number(props.user_id) ? (
-              <div className="d-flex float-end">
-                <a
-                  href=""
-                  data-bs-toggle="modal"
-                  data-bs-target={`#modal-edit-comment-${props.comment_id}`}
-                  style={{ color: "rgb(44, 44, 44)" }}
-                >
-                  <small>
-                    <i
-                      data-bs-toggle="tooltip"
-                      data-bs-placement="right"
-                      title="edit comment"
-                      className="bi bi-pencil"
-                    ></i>
-                  </small>
-                </a>
-                &nbsp;&nbsp;&nbsp;
-                <button
-                  className="btn btn-sm"
-                  style={{ padding: 0 }}
-                  type="submit"
-                  onClick={deleteConfirm}
-                >
-                  <i
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="right"
-                    title="delete comment"
-                    className="bi bi-x"
-                  ></i>
-                </button>
-              </div>
-            ) : null}
-          </div>
-        </div>
-
-        <div className="card-body">{props.comment_body}</div>
       </div>
     </React.Fragment>
   );
@@ -272,12 +277,6 @@ function AddComment(props) {
 function CommentContainer() {
   const [comments, setComments] = React.useState([]);
 
-  // Now, we want to actually display the new card on the page.
-  // However, displaying cards is handled by the parent component TradingCardContainer.
-  // You will need to create a new function and pass it as a prop from TradingCardContainer
-  // to AddTradingCard. This function should update the state of the TradingCardContainer component.
-  // Passing a function may seem a little strange but this is a pretty common practice in React
-  // when one component needs to update the state of another. It is known as “lifting state.”
   function addComment(
     comment_id,
     comment_body,
@@ -335,6 +334,7 @@ function CommentContainer() {
   }, []);
 
   const allComments = [];
+  const allEditComments = [];
 
   // the following line will print out the value of cards
   // pay attention to what it is initially and what it is when the component re-renders
@@ -360,20 +360,79 @@ function CommentContainer() {
         session_login={document.querySelector("#login").innerText}
         session_user_id={Number(document.querySelector("#user_id").innerText)}
         deleteComment={deleteComment}
+      />
+    );
+
+    allEditComments.push(
+      <EditComment
+        key={currentComment.comment_id}
+        hike_id={currentComment.hike_id}
+        comment_id={currentComment.comment_id}
+        full_name={currentComment.user.full_name}
+        user_id={currentComment.user_id}
+        date_created={date_created_formatted}
+        date_edited={date_edited_formatted}
+        edit={currentComment.edit}
+        comment_body={currentComment.body}
         editComment={editComment}
       />
     );
   }
 
+  const session_login = document.querySelector("#login").innerText;
+
   return (
     <React.Fragment>
       <AddComment addComment={addComment} />
-      {allComments}
+      {allEditComments}
+      <div
+        className="offcanvas offcanvas-end"
+        data-bs-keyboard="true"
+        data-bs-scroll="true"
+        data-bs-backdrop="true"
+        tabIndex="-1"
+        id="Comments"
+        aria-labelledby="CommentsLabel"
+      >
+        <div className="offcanvas-header">
+          <h3 className="offcanvas-title" id="CommentsLabel">
+            Comments
+          </h3>
+        </div>
+        <div className="offcanvas-body">
+          {session_login === "True" ? (
+            <a
+              class="btn btn-sm mt-2"
+              href=""
+              data-bs-toggle="modal"
+              data-bs-target="#modal-add-comment"
+            >
+              <i
+                data-bs-toggle="tooltip"
+                data-bs-placement="right"
+                title="add a comment"
+                class="bi bi-chat-text"
+              ></i>
+              &nbsp;add a comment
+            </a>
+          ) : (
+            <div class="mt-3">Please log in to add a comment.</div>
+          )}
+          <div style={{ padding: "0.5em" }}>{allComments}</div>
+          <button
+            type="button"
+            className="btn-close text-reset"
+            style={{
+              bottom: "1em",
+              left: "1em",
+              position: "absolute",
+              float: "right",
+            }}
+            data-bs-dismiss="offcanvas"
+            aria-label="Close"
+          ></button>
+        </div>
+      </div>
     </React.Fragment>
   );
 }
-
-ReactDOM.render(
-  <CommentContainer />,
-  document.getElementById("react-comment-container")
-);

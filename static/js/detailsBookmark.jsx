@@ -548,12 +548,40 @@ function BookmarksListContainer() {
         addHikeNewList={addHikeNewList}
         addHikeExistingList={addHikeExistingList}
       />
-      {allBookmarksLists}
+      <div
+        className="offcanvas offcanvas-end"
+        data-bs-keyboard="true"
+        data-bs-scroll="true"
+        data-bs-backdrop="true"
+        tabIndex="-1"
+        id="Bookmarks"
+        aria-labelledby="BookmarksLabel"
+      >
+        <div className="offcanvas-header">
+          <h3 className="offcanvas-title" id="BookmarksLabel">
+            Bookmarks
+          </h3>
+          View All
+        </div>
+        <div className="offcanvas-body" style={{ position: "relative" }}>
+          <div style={{ padding: "0.5em" }}>
+            You have this hike on the following lists:
+            {allBookmarksLists}
+          </div>
+          <button
+            type="button"
+            className="btn-close text-reset"
+            style={{
+              bottom: "1em",
+              left: "1em",
+              position: "absolute",
+              float: "right",
+            }}
+            data-bs-dismiss="offcanvas"
+            aria-label="Close"
+          ></button>
+        </div>
+      </div>
     </React.Fragment>
   );
 }
-
-ReactDOM.render(
-  <BookmarksListContainer />,
-  document.getElementById("react-bookmarks-container")
-);

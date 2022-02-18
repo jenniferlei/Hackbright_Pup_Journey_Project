@@ -632,12 +632,40 @@ function CheckInContainer() {
   return (
     <React.Fragment>
       <AddCheckIn addCheckIn={addCheckIn} />
-      {allCheckIns}
+      <div
+        className="offcanvas offcanvas-end"
+        data-bs-keyboard="true"
+        data-bs-scroll="true"
+        data-bs-backdrop="true"
+        tabIndex="-1"
+        id="CheckIns"
+        aria-labelledby="CheckInsLabel"
+      >
+        <div className="offcanvas-header">
+          <h3 className="offcanvas-title" id="CheckInsLabel">
+            Check Ins
+          </h3>
+          View All
+        </div>
+        <div className="offcanvas-body">
+          <div style={{ padding: "0.5em" }}>
+            These are the check ins for this hike:
+            {allCheckIns}
+          </div>
+          <button
+            type="button"
+            className="btn-close text-reset"
+            style={{
+              bottom: "1em",
+              left: "1em",
+              position: "absolute",
+              float: "right",
+            }}
+            data-bs-dismiss="offcanvas"
+            aria-label="Close"
+          ></button>
+        </div>
+      </div>
     </React.Fragment>
   );
 }
-
-ReactDOM.render(
-  <CheckInContainer />,
-  document.getElementById("react-check-in-container")
-);
