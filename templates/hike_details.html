@@ -181,14 +181,14 @@ endblock %} {% block body %}
           </div>
           {% if "login" in session %}
           <div class="d-flex" style="float:right">
-            <a class="btn btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-add-comment">
-              <i data-bs-toggle="tooltip" data-bs-placement="right" title="add a comment" class="bi bi-chat-text"></i>
-            </a>
             <a class="btn btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-add-bookmark">
               <i data-bs-toggle="tooltip" data-bs-placement="right" title="bookmark this hike" class="bi bi-bookmark-star"></i>
             </a>
             <a class="btn btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-add-check-in">
               <i data-bs-toggle="tooltip" data-bs-placement="right" title="add a check in" class="bi bi-check-circle"></i>
+            </a>
+            <a class="btn btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-add-comment">
+              <i data-bs-toggle="tooltip" data-bs-placement="right" title="add a comment" class="bi bi-chat-text"></i>
             </a>
           </div>
           {% endif %}

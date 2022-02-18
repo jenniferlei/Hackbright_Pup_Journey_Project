@@ -127,9 +127,7 @@ function CheckIn(props) {
               <div className="mb-3">
                 <div className="row">
                   <div className="col">
-                    <label htmlFor="pet_id" className="sr-only">
-                      Add a Pet
-                    </label>
+                    <label htmlFor="pet_id">Add a Pet</label>
                     {addPet.map((pet) => (
                       <div className="form-check">
                         <input
@@ -161,9 +159,7 @@ function CheckIn(props) {
                   </div>
 
                   <div className="col">
-                    <label htmlFor="pet_id" className="sr-only">
-                      Remove a Pet
-                    </label>
+                    <label htmlFor="pet_id">Remove a Pet</label>
                     {removePet.map((pet) => (
                       <div className="form-check">
                         <input
@@ -197,9 +193,7 @@ function CheckIn(props) {
               </div>
 
               <div className="mb-3">
-                <label htmlFor="date_hiked" className="sr-only">
-                  Date Hiked
-                </label>
+                <label htmlFor="date_hiked">Date Hiked</label>
                 &nbsp;<small className="text-muted">*</small>
                 <input
                   type="date"
@@ -210,9 +204,7 @@ function CheckIn(props) {
               </div>
 
               <div className="mb-3">
-                <label htmlFor="miles_completed" className="sr-only">
-                  Miles Completed
-                </label>
+                <label htmlFor="miles_completed">Miles Completed</label>
                 &nbsp;<small className="text-muted">*</small>
                 <input
                   type="number"
@@ -225,9 +217,7 @@ function CheckIn(props) {
               </div>
 
               <div className="mb-3">
-                <label htmlFor="total_time" className="sr-only">
-                  Total Time (Hours)
-                </label>
+                <label htmlFor="total_time">Total Time (Hours)</label>
                 <input
                   type="number"
                   step=".1"
@@ -239,9 +229,7 @@ function CheckIn(props) {
               </div>
 
               <div className="mb-3">
-                <label htmlFor="notes" className="sr-only">
-                  Notes
-                </label>
+                <label htmlFor="notes">Notes</label>
                 <input
                   type="text"
                   value={notes}
@@ -445,7 +433,7 @@ function AddCheckIn(props) {
             </div>
             <div className="modal-body">
               <div className="mb-3">
-                <label className="sr-only">Pets</label>&nbsp;
+                <label>Pets</label>&nbsp;
                 <small className="text-muted">*</small>
                 {allPetOptions.map((pet) => (
                   <div className="form-check">
@@ -479,9 +467,7 @@ function AddCheckIn(props) {
               </div>
 
               <div className="mb-3">
-                <label htmlFor="date_hiked" className="sr-only">
-                  Date Hiked
-                </label>
+                <label htmlFor="date_hiked">Date Hiked</label>
                 &nbsp;<small className="text-muted">*</small>
                 <input
                   type="date"
@@ -493,9 +479,7 @@ function AddCheckIn(props) {
               </div>
 
               <div className="mb-3">
-                <label htmlFor="miles_completed" className="sr-only">
-                  Miles Completed
-                </label>
+                <label htmlFor="miles_completed">Miles Completed</label>
                 &nbsp;<small className="text-muted">*</small>
                 <input
                   type="number"
@@ -508,9 +492,7 @@ function AddCheckIn(props) {
               </div>
 
               <div className="mb-3">
-                <label htmlFor="total_time" className="sr-only">
-                  Total Time (Hours)
-                </label>
+                <label htmlFor="total_time">Total Time (Hours)</label>
                 <input
                   type="number"
                   step=".1"
@@ -522,9 +504,7 @@ function AddCheckIn(props) {
               </div>
 
               <div className="mb-3">
-                <label htmlFor="notesInput" className="sr-only">
-                  Notes
-                </label>
+                <label htmlFor="notesInput">Notes</label>
                 <input
                   id="notesInput"
                   type="text"

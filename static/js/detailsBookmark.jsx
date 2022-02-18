@@ -2,6 +2,8 @@
 
 // Hikes in a Bookmarks List Component
 function HikeBookmark(props) {
+  const hike_id = Number(document.querySelector("#hike_id").innerText);
+
   // Check if user wants to delete or not
   function deleteConfirm(event) {
     const validate = confirm("Do you want to remove this hike from this list?");
@@ -19,7 +21,11 @@ function HikeBookmark(props) {
     }).then((response) => {
       response.json().then((jsonResponse) => {
         console.log(jsonResponse);
-        props.removeHike();
+        if (hike_id === props.hike_id) {
+          props.refreshLists();
+        } else {
+          props.removeHike();
+        }
       });
     });
   }
@@ -104,6 +110,7 @@ function BookmarksList(props) {
         parking={currentHike.parking}
         state={currentHike.state}
         removeHike={removeHike}
+        refreshLists={refreshLists}
         // addHikeExistingList={addHikeExistingList}
       />
     );
@@ -114,29 +121,8 @@ function BookmarksList(props) {
     getHikes();
   }
 
-  // Process renaming bookmarks list name
-  const [bookmarksListName, setBookmarksListName] = React.useState(
-    `${props.bookmarks_list_name}`
-  );
-
-  function editExistingBookmarksList() {
-    fetch(`/edit-bookmarks-list/${props.bookmarks_list_id}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        bookmarksListName,
-      }),
-    })
-      .then((response) => {
-        response.json();
-      })
-      .then((jsonResponse) => {
-        console.log(jsonResponse);
-        props.editBookmarksList();
-      });
+  function refreshLists() {
+    props.deleteBookmarksList();
   }
 
   // Check if user wants to delete or not
@@ -163,62 +149,6 @@ function BookmarksList(props) {
 
   return (
     <React.Fragment>
-      <div
-        className="modal fade"
-        id={`modal-rename-bookmark-${props.bookmarks_list_id}`}
-        tabIndex="-1"
-        aria-labelledby={`modal-rename-bookmark-${props.bookmarks_list_id}-label`}
-        aria-hidden="true"
-      >
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5
-                className="modal-title"
-                id={`modal-rename-bookmark-${props.bookmarks_list_id}-label`}
-              >
-                Rename Bookmark
-              </h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div className="modal-body">
-              <div className="mb-3">
-                <input
-                  type="text"
-                  name="bookmarks_list_name"
-                  className="form-control input-lg"
-                  value={bookmarksListName}
-                  onChange={(event) => setBookmarksListName(event.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="modal-footer">
-                <button
-                  className="btn btn-sm btn-outline-dark btn-block"
-                  type="submit"
-                  data-bs-dismiss="modal"
-                  onClick={editExistingBookmarksList}
-                >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-secondary btn-block"
-                  data-bs-dismiss="modal"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
       <div className="card mt-1">
         <div className="card-header">
           <div className="clearfix">
@@ -280,6 +210,94 @@ function BookmarksList(props) {
           id={`collapse-bookmarks-${props.bookmarks_list_id}`}
         >
           <div>{allHikeBookmarks}</div>
+        </div>
+      </div>
+    </React.Fragment>
+  );
+}
+
+function RenameBookmarksList(props) {
+  // Process renaming bookmarks list name
+  const [bookmarksListName, setBookmarksListName] = React.useState(
+    `${props.bookmarks_list_name}`
+  );
+
+  function editExistingBookmarksList() {
+    fetch(`/edit-bookmarks-list/${props.bookmarks_list_id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        bookmarksListName,
+      }),
+    })
+      .then((response) => {
+        response.json();
+      })
+      .then((jsonResponse) => {
+        console.log(jsonResponse);
+        props.editBookmarksList();
+      });
+  }
+
+  return (
+    <React.Fragment>
+      <div
+        className="modal fade"
+        id={`modal-rename-bookmark-${props.bookmarks_list_id}`}
+        tabIndex="-1"
+        aria-labelledby={`modal-rename-bookmark-${props.bookmarks_list_id}-label`}
+        aria-hidden="true"
+      >
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5
+                className="modal-title"
+                id={`modal-rename-bookmark-${props.bookmarks_list_id}-label`}
+              >
+                Rename Bookmark
+              </h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              <div className="mb-3">
+                <input
+                  type="text"
+                  name="bookmarks_list_name"
+                  className="form-control input-lg"
+                  value={bookmarksListName}
+                  onChange={(event) => setBookmarksListName(event.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="modal-footer">
+                <button
+                  className="btn btn-sm btn-outline-dark btn-block"
+                  type="submit"
+                  data-bs-dismiss="modal"
+                  onClick={editExistingBookmarksList}
+                >
+                  Save
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-secondary btn-block"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </React.Fragment>
@@ -504,6 +522,7 @@ function BookmarksListContainer() {
   const hike_id = document.querySelector("#hike_id").innerText;
 
   const allBookmarksLists = [];
+  const allRenameBookmarksLists = [];
 
   // the following line will print out the value of cards
   // pay attention to what it is initially and what it is when the component re-renders
@@ -517,6 +536,14 @@ function BookmarksListContainer() {
         bookmarks_list_id={currentBookmarksList.bookmarks_list_id}
         hikes={currentBookmarksList.hikes}
         deleteBookmarksList={deleteBookmarksList}
+      />
+    );
+
+    allRenameBookmarksLists.push(
+      <RenameBookmarksList
+        key={currentBookmarksList.bookmarks_list_id}
+        bookmarks_list_name={currentBookmarksList.bookmarks_list_name}
+        bookmarks_list_id={currentBookmarksList.bookmarks_list_id}
         editBookmarksList={editBookmarksList}
       />
     );
@@ -548,6 +575,7 @@ function BookmarksListContainer() {
         addHikeNewList={addHikeNewList}
         addHikeExistingList={addHikeExistingList}
       />
+      {allRenameBookmarksLists}
       <div
         className="offcanvas offcanvas-end"
         data-bs-keyboard="true"

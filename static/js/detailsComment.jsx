@@ -402,7 +402,7 @@ function CommentContainer() {
         <div className="offcanvas-body">
           {session_login === "True" ? (
             <a
-              class="btn btn-sm mt-2"
+              className="btn btn-sm mt-2"
               href=""
               data-bs-toggle="modal"
               data-bs-target="#modal-add-comment"
@@ -411,12 +411,12 @@ function CommentContainer() {
                 data-bs-toggle="tooltip"
                 data-bs-placement="right"
                 title="add a comment"
-                class="bi bi-chat-text"
+                className="bi bi-chat-text"
               ></i>
               &nbsp;add a comment
             </a>
           ) : (
-            <div class="mt-3">Please log in to add a comment.</div>
+            <div className="mt-3">Please log in to add a comment.</div>
           )}
           <div style={{ padding: "0.5em" }}>{allComments}</div>
           <button
