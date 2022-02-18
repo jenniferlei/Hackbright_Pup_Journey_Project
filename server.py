@@ -565,12 +565,22 @@ def delete_bookmarks_list(bookmarks_list_id):
 def add_hike_to_existing_bookmarks_list(hike_id):
     """Add hike to an existing bookmarks list"""
 
-    logged_in_email = session.get("user_email")
-    user = crud_users.get_user_by_email(logged_in_email)
-    bookmarks_list_id = request.get_json().get("allBookmarksListIdOptions") # this will get a list of objects
+    hike = crud_hikes.get_hike_by_id(hike_id)
+    bookmarks_list_options = request.get_json().get("allBookmarksListOptions") # this will get a list of objects
 
-    hike_bookmark = crud_hikes_bookmarks_lists.create_hike_bookmarks_list(hike_id, bookmarks_list_id)
-    db.session.add(hike_bookmark)
+    for bookmarks_list in bookmarks_list_options:
+        select, _, bookmarks_list_id = bookmarks_list
+        bookmarks_list_obj = crud_bookmarks_lists.get_bookmarks_list_by_bookmarks_list_id(bookmarks_list[bookmarks_list_id])
+        bookmarks_list_hikes = bookmarks_list_obj.hikes
+        if bookmarks_list[select] is True and hike not in bookmarks_list_hikes:
+            # if selected, check if there's already a connection, else add connection
+            hike_bookmark = crud_hikes_bookmarks_lists.create_hike_bookmarks_list(hike_id, bookmarks_list[bookmarks_list_id])
+            db.session.add(hike_bookmark)
+        elif bookmarks_list[select] is False and hike in bookmarks_list_hikes:
+            # if unselected and there's a connection, delete connection
+            hike_bookmark = crud_hikes_bookmarks_lists.get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(hike_id, bookmarks_list[bookmarks_list_id])
+            db.session.delete(hike_bookmark)
+
     db.session.commit()
 
     return jsonify({"success": True})
@@ -605,10 +615,6 @@ def remove_hike(bookmarks_list_id, hike_id):
     )
     hikes_bookmarks_list = crud_hikes_bookmarks_lists.get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(
         hike_id, bookmarks_list_id
-    )
-
-    flash(
-        f"Success! {hike.hike_name} has been removed from {bookmarks_list.bookmarks_list_name}."
     )
 
     db.session.delete(hikes_bookmarks_list)
