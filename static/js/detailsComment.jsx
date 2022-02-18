@@ -72,14 +72,14 @@ function Comment(props) {
             </div>
             <div className="modal-body">
               <div className="mb-3">
-                <input
-                  type="text"
+                <textarea
                   className="form-control"
                   name="body"
+                  rows="3"
                   value={comment_body}
                   onChange={(event) => setCommentBody(event.target.value)}
                   required
-                />
+                ></textarea>
               </div>
 
               <div className="modal-footer">
@@ -107,7 +107,7 @@ function Comment(props) {
       <div className="card mt-1">
         <div className="card-header">
           <div className="clearfix">
-            <div className="left">
+            <div className="float-start">
               {props.full_name}&nbsp;
               <small className="text-muted">
                 posted {props.date_created}
@@ -119,7 +119,7 @@ function Comment(props) {
 
             {props.session_login === "True" &&
             Number(props.session_user_id) === Number(props.user_id) ? (
-              <div className="d-flex right">
+              <div className="d-flex float-end">
                 <a
                   href=""
                   data-bs-toggle="modal"
@@ -233,15 +233,15 @@ function AddComment(props) {
             </div>
             <div className="modal-body">
               <div className="mb-3">
-                <input
-                  type="text"
+                <textarea
                   name="body"
+                  rows="3"
                   className="form-control"
                   placeholder="Enter your comment here"
                   value={comment_body}
                   onChange={(event) => setCommentBody(event.target.value)}
                   required
-                />
+                ></textarea>
               </div>
               <div className="modal-footer">
                 <button

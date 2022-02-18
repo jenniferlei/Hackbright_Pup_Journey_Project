@@ -44,7 +44,11 @@ function HikeBookmark(props) {
             </small>
           </button>
           &nbsp;&nbsp;&nbsp;
-          <a href={`/hikes/${props.hike_id}`} target="_blank">
+          <a
+            className="link-dark"
+            href={`/hikes/${props.hike_id}`}
+            target="_blank"
+          >
             {props.hike_name}
           </a>
         </div>
@@ -218,7 +222,7 @@ function BookmarksList(props) {
       <div className="card mt-1">
         <div className="card-header">
           <div className="clearfix">
-            <div className="left">
+            <div className="float-start">
               <a
                 className="btn btn-md"
                 data-bs-toggle="collapse"
@@ -237,7 +241,7 @@ function BookmarksList(props) {
               </a>
             </div>
 
-            <div className="d-flex right">
+            <div className="d-flex float-end">
               <a
                 href=""
                 data-bs-toggle="modal"

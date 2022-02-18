@@ -3,26 +3,18 @@
 
 {% block body %}
 
+<!-- OFF CANVAS SEARCH -->
+<div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasSearch" aria-labelledby="offcanvasSearchLabel">
+  <div class="offcanvas-header">
+    <h3 class="offcanvas-title" id="offcanvasSearchLabel">Search</h3>
+    <div style="float:right">
+      <small><a class="link-dark" href="/hikes">View all hikes</a></small>
+    </div>
 
-<div class="container-fluid">
-
-  <div class="d-flex justify-content-start">
-
-    <!-- START SEARCH BAR -->
-
-    <div class="card col-3 mt-4 search-bar-container">
-      <div class="card-header">
-        <div class="clearfix">
-          <h3 style="float:left">Search</h3>
-          <div style="float:right">
-            <small><a href="/hikes">All hikes</a></small>
-          </div>
-        </div>
-      </div>
-
-      <div class="card-body">
-      <div style="padding:.5em">
-      <form method="GET" action="/hikes/search">
+  </div>
+  <div class="offcanvas-body" style="position:relative">
+    <div style="padding:0.5em">
+    <form method="GET" action="/hikes/search">
         <div class="form-floating row mt-2">
           <input id="search-keyword"
                   class="form-control"
@@ -160,24 +152,53 @@
           </div>
         </div>
 
-
-
-        
-
-        
-
-        
-
         <div class="row">
           <button class="btn btn-sm btn-outline-dark btn-block mt-4" type="submit">Submit</button>
         </div>
 
       </form>
-      </div>
-      </div>
     </div>
+    <button type="button" class="btn-close text-reset" style="bottom:1em; right:1em; position:absolute; float:right" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+</div>
+<!-- END OFF CANVAS SEARCH -->
 
-    <!-- END SEARCH BAR -->
+<!-- START OFF CANVAS CHECK INS -->
+<div class="offcanvas offcanvas-end" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasCheckIns" aria-labelledby="offcanvasCheckInsLabel">
+  <div class="offcanvas-header">
+    <h3 class="offcanvas-title" id="offcanvasCheckInsLabel">Check Ins</h3>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body" style="position:relative">
+    <div style="padding:0.5em">
+    content here
+    </div>
+  
+    <button type="button" class="btn-close text-reset" style="bottom:1em; left:1em; position:absolute; float:right" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+</div>
+<!-- END OFF CANVAS CHECK INS -->
+
+<!-- START OFF CANVAS BOOKMARKS -->
+<div class="offcanvas offcanvas-end" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasBookmarks" aria-labelledby="offcanvasBookmarksLabel">
+  <div class="offcanvas-header">
+    <h3 class="offcanvas-title" id="offcanvasBookmarksLabel">Bookmarks</h3>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body" style="position:relative">
+    <div style="padding:0.5em">
+    content here
+    </div>
+    <button type="button" class="btn-close text-reset" style="bottom:1em; left:1em; position:absolute; float:right" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+</div>
+<!-- END OFF CANVAS BOOKMARKS -->
+
+<div class="container-fluid">
+
+  <div class="d-flex justify-content-start">
+
+    
   
     <div class="card col mt-4" style="width:100vw">
 
@@ -193,7 +214,7 @@
                   <i data-bs-toggle="tooltip" data-bs-placement="right" title="bookmark this hike" class="bi bi-bookmark-star"></i>
                 </a>
                 {% endif %}
-                <a href="/hikes/{{ hike.hike_id }}">{{ hike.hike_name }}</a>
+                <a class="link-dark" href="/hikes/{{ hike.hike_id }}">{{ hike.hike_name }}</a>
                 <br><small>{{ hike.difficulty }} | {{ hike.miles }} miles | {{ hike.city }}, {{ hike.state }} | {{ hike.area }} | {{ hike.leash_rule }} | {{ hike.parking }}</small>
               </li>
 
@@ -281,5 +302,35 @@
 
   </div>
 
+ 
+<nav class="navbar navbar-expand-sm navbar-light bg-light fixed-bottom">
+  <div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasSearch" role="button" aria-controls="offcanvasSearch"><small><i data-bs-toggle="tooltip" data-bs-placement="right" title="search" class="bi bi-search"></i> Search</small></a>
+        </li>
+      </ul>
+      <div class="d-flex">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasBookmarks" role="button" aria-controls="offcanvasBookmarks"><small><i data-bs-toggle="tooltip" data-bs-placement="right" title="bookmarks" class="bi bi-bookmark-star"></i>&nbsp;Bookmarks</small></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasCheckIns" role="button" aria-controls="offcanvasCheckIns"><small><i data-bs-toggle="tooltip" data-bs-placement="right" title="check ins" class="bi bi-check-circle"></i>&nbsp;Check Ins</small></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+  
 </div>
+
+
 {% endblock %}

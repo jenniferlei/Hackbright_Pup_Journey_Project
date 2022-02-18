@@ -273,13 +273,13 @@ function CheckIn(props) {
 
       <div className="card card-body mt-1">
         <div className="clearfix">
-          <div className="left">
+          <div className="float-start">
             🐾&nbsp;&nbsp;{" "}
             {props.pets_on_hike.map((pet) => `${pet.pet_name} | `)}
             {`hiked on ${props.date_hiked} | ${props.miles_completed} miles`}
           </div>
 
-          <div className="d-flex right">
+          <div className="d-flex float-end">
             <a
               href=""
               data-bs-toggle="modal"
