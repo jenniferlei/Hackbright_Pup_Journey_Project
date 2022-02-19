@@ -102,8 +102,8 @@ def all_hikes():
         bookmarks_list_by_user=bookmarks_list_by_user)
 
 
-@app.route("/hikes/search")
-def find_hikes():
+@app.route("/hikes/advanced_search", methods=["GET"])
+def advanced_search():
     """Search for hikes"""
 
     keyword = request.args.get("keyword", "")
@@ -117,7 +117,7 @@ def find_hikes():
     park = request.args.getlist("parking")
 
     # Populate the list of hikes
-    search_hikes = crud_hikes.get_hikes_by_search(keyword, difficulties, leash_rules, areas, cities, state, length_min, length_max, park)
+    search_hikes = crud_hikes.get_hikes_by_advanced_search(keyword, difficulties, leash_rules, areas, cities, state, length_min, length_max, park)
     # Populate options for the search bar
     hikes = crud_hikes.get_hikes()
     states = crud_hikes.get_hike_states()
@@ -143,6 +143,60 @@ def find_hikes():
         parking=parking,
         bookmarks_list_by_user=bookmarks_list_by_user
     )
+
+
+@app.route("/hikes/search", methods=["GET"])
+def search_box():
+    """Search for hikes by search term"""
+
+    search_term = request.args.get("search_term")
+
+    # Populate the list of hikes
+    search_hikes = crud_hikes.get_hike_by_keyword(search_term)
+
+    hikes_schema = HikeSchema(many=True)
+    hikes_json = hikes_schema.dump(search_hikes)
+
+        # Populate options for the search bar
+    hikes = crud_hikes.get_hikes()
+    states = crud_hikes.get_hike_states()
+    cities = crud_hikes.get_hike_cities()
+    areas = crud_hikes.get_hike_areas()
+    parking = crud_hikes.get_hike_parking()
+
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email != None:
+        user = crud_users.get_user_by_email(session["user_email"])
+        bookmarks_list_by_user = crud_bookmarks_lists.get_bookmarks_lists_by_user_id(user.user_id)
+    else:
+        bookmarks_list_by_user = None
+
+    return render_template(
+        "all_hikes.html",
+        search_hikes=search_hikes,
+        hikes=hikes,
+        states=states,
+        cities=cities,
+        areas=areas,
+        parking=parking,
+        bookmarks_list_by_user=bookmarks_list_by_user
+    )
+
+
+# @app.route("/hikes/search", methods=["GET"])
+# def search_box():
+#     """Search for hikes by search term"""
+
+#     search_term = request.get_json().get("searchTerm")
+
+#     # Populate the list of hikes
+#     search_hikes = crud_hikes.get_hike_by_keyword(search_term)
+
+#     hikes_schema = HikeSchema(many=True)
+#     hikes_json = hikes_schema.dump(search_hikes)
+
+#     return jsonify({"searchHikes": hikes_json})
 
 
 @app.route("/hikes/<hike_id>")
@@ -327,8 +381,6 @@ def edit_pet():
             pet.pet_imgURL = result["secure_url"]
             pet.img_public_id = result["public_id"]
 
-        flash(f"Success! Your {pet.pet_name}'s profile has been updated.")
-
         db.session.commit()
 
     return redirect(request.referrer)
@@ -402,21 +454,6 @@ def add_hike_check_in(hike_id):
 
     check_in_schema = CheckInSchema()
     check_in_json = check_in_schema.dump(check_in)
-
-    # pet_schema = PetSchema()
-
-    # check_in_json["pets_not_on_hike"] = PetSchema(many=True).dump(pets_not_checked_in)
-    # check_in_json["pets"] = PetSchema(many=True).dump(pets_to_check_in)
-
-    # check_in_json = {"check_in_id": check_in.check_in_id,
-    #                 "date_hiked": check_in.date_hiked,
-    #                 "hike_id": check_in.hike_id,
-    #                 "hike_name": check_in.hike.hike_name,
-    #                 "miles_completed": check_in.miles_completed,
-    #                 "notes": check_in.notes,
-    #                 "pets": pets_to_check_in,
-    #                 "pets_not_on_hike": pets_not_checked_in,
-    #                 "total_time": check_in.total_time}
 
     return jsonify({"checkInAdded": check_in_json})
 

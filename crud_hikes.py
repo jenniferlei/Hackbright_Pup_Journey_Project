@@ -55,7 +55,7 @@ def get_hike_by_id(hike_id):
     return db.session.query(Hike).get(hike_id)
 
 
-def get_hikes_by_search(
+def get_hikes_by_advanced_search(
     keyword, difficulties, leash_rules, areas, cities, state, length_min, length_max, parking
 ):
 
