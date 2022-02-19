@@ -174,6 +174,8 @@ function AddComment(props) {
   // Review it if you need help configuring your form data correctly.
   const hike_id = document.querySelector("#hike_id").innerText;
   const add_comment_url = `/hikes/${hike_id}/add-comment`;
+  const session_login = document.querySelector("#login").innerText;
+
   const [comment_body, setCommentBody] = React.useState("");
 
   // Add a POST request to hit the server /add-card endpoint and add a new card.
@@ -237,34 +239,40 @@ function AddComment(props) {
               ></button>
             </div>
             <div className="modal-body">
-              <div className="mb-3">
-                <textarea
-                  name="body"
-                  rows="3"
-                  className="form-control"
-                  placeholder="Enter your comment here"
-                  value={comment_body}
-                  onChange={(event) => setCommentBody(event.target.value)}
-                  required
-                ></textarea>
-              </div>
-              <div className="modal-footer">
-                <button
-                  className="btn btn-sm btn-outline-dark btn-block"
-                  type="submit"
-                  data-bs-dismiss="modal"
-                  onClick={addNewComment}
-                >
-                  Submit
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-secondary btn-block"
-                  data-bs-dismiss="modal"
-                >
-                  Close
-                </button>
-              </div>
+              {session_login !== "True" ? (
+                <div>Please log in to add a check in.</div>
+              ) : (
+                <div>
+                  <div className="mb-3">
+                    <textarea
+                      name="body"
+                      rows="3"
+                      className="form-control"
+                      placeholder="Enter your comment here"
+                      value={comment_body}
+                      onChange={(event) => setCommentBody(event.target.value)}
+                      required
+                    ></textarea>
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      className="btn btn-sm btn-outline-dark btn-block"
+                      type="submit"
+                      data-bs-dismiss="modal"
+                      onClick={addNewComment}
+                    >
+                      Submit
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-secondary btn-block"
+                      data-bs-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -400,9 +408,11 @@ function CommentContainer() {
           </h3>
         </div>
         <div className="offcanvas-body">
-          {session_login === "True" ? (
+          {session_login !== "True" ? (
+            <div>Please log in to add a comment.</div>
+          ) : (
             <a
-              className="btn btn-sm mt-2"
+              className="btn btn-sm"
               href=""
               data-bs-toggle="modal"
               data-bs-target="#modal-add-comment"
@@ -415,22 +425,25 @@ function CommentContainer() {
               ></i>
               &nbsp;add a comment
             </a>
-          ) : (
-            <div className="mt-3">Please log in to add a comment.</div>
           )}
+
           <div style={{ padding: "0.5em" }}>{allComments}</div>
-          <button
-            type="button"
-            className="btn-close text-reset"
+          <div
+            class="offcanvas-footer"
             style={{
+              position: "fixed",
+              right: "355px",
               bottom: "1em",
-              left: "1em",
-              position: "absolute",
-              float: "right",
+              zIndex: "100",
             }}
-            data-bs-dismiss="offcanvas"
-            aria-label="Close"
-          ></button>
+          >
+            <button
+              type="button"
+              className="btn-close text-reset"
+              data-bs-dismiss="offcanvas"
+              aria-label="Close"
+            ></button>
+          </div>
         </div>
       </div>
     </React.Fragment>

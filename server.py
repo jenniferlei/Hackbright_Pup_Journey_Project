@@ -801,7 +801,7 @@ def get_user_hike_check_ins_json(hike_id):
     for check_in in check_ins:
         pets_not_checked_in = []
         pets_checked_in = []
-        for pet in sorted(user.pets, key=lambda x: x.pet_name):
+        for pet in sorted(user.pets, key=lambda x: x.pet_name.lower()):
             if pet not in check_in.pets:
                 pets_not_checked_in.append({"pet_id": pet.pet_id, "pet_name": pet.pet_name})
             else:
@@ -922,7 +922,7 @@ def get_bookmarks_hikes_json(bookmarks_list_id):
     # sort hikes in alphabetical order
     # convert to JSON
     # add to bookmark object
-    sorted_hikes_by_bookmark = sorted(hikes_by_bookmark.hikes, key=lambda x: x.hike_name)
+    sorted_hikes_by_bookmark = sorted(hikes_by_bookmark.hikes, key=lambda x: x.hike_name.lower())
     hikes_schema = HikeSchema(many=True, only=["area", "city", "state", "difficulty", "hike_id", "hike_name", "leash_rule", "miles", "parking"])
     hikes_json = hikes_schema.dump(sorted_hikes_by_bookmark)
 
@@ -940,7 +940,7 @@ def get_hike_bookmarks_json(hike_id):
 
     bookmarks_by_hike = crud_bookmarks_lists.get_bookmarks_lists_by_user_id_and_hike_id(user.user_id, hike_id)
 
-    sorted_bookmarks_by_hike = sorted(bookmarks_by_hike, key=lambda x: x.bookmarks_list_name)
+    sorted_bookmarks_by_hike = sorted(bookmarks_by_hike, key=lambda x: x.bookmarks_list_name.lower())
 
     bookmarks_schema = BookmarksListSchema(many=True)
     bookmarks_json = bookmarks_schema.dump(sorted_bookmarks_by_hike)
@@ -952,7 +952,7 @@ def get_hike_bookmarks_json(hike_id):
 
     for bookmark_json in bookmarks_json:
         for bookmarks_list in sorted_bookmarks_by_hike:
-            hikes_json = hikes_schema.dump(sorted(bookmarks_list.hikes, key=lambda x: x.hike_name))
+            hikes_json = hikes_schema.dump(sorted(bookmarks_list.hikes, key=lambda x: x.hike_name.lower()))
             bookmark_json["hikes"] = hikes_json
 
     return jsonify({"bookmarksLists": bookmarks_json})
@@ -967,7 +967,7 @@ def get_user_bookmarks_lists():
 
     # Get list of bookmark objects for the user
     bookmarks_by_user = crud_bookmarks_lists.get_bookmarks_lists_by_user_id(user.user_id)
-    sorted_bookmarks_by_user = sorted(bookmarks_by_user, key=lambda x: x.bookmarks_list_name)
+    sorted_bookmarks_by_user = sorted(bookmarks_by_user, key=lambda x: x.bookmarks_list_name.lower())
 
     bookmarks_schema = BookmarksListSchema(many=True)
     bookmarks_json = bookmarks_schema.dump(bookmarks_by_user)

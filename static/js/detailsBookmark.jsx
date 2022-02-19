@@ -111,7 +111,6 @@ function BookmarksList(props) {
         state={currentHike.state}
         removeHike={removeHike}
         refreshLists={refreshLists}
-        // addHikeExistingList={addHikeExistingList}
       />
     );
   }
@@ -122,7 +121,7 @@ function BookmarksList(props) {
   }
 
   function refreshLists() {
-    props.deleteBookmarksList();
+    props.refreshBookmarksLists();
   }
 
   // Check if user wants to delete or not
@@ -142,7 +141,7 @@ function BookmarksList(props) {
     }).then((response) => {
       response.json().then((jsonResponse) => {
         console.log(jsonResponse);
-        props.deleteBookmarksList();
+        props.refreshBookmarksLists();
       });
     });
   }
@@ -238,7 +237,7 @@ function RenameBookmarksList(props) {
       })
       .then((jsonResponse) => {
         console.log(jsonResponse);
-        props.editBookmarksList();
+        props.refreshBookmarksLists();
       });
   }
 
@@ -306,6 +305,8 @@ function RenameBookmarksList(props) {
 
 function AddHikeToBookmarksList(props) {
   const hike_id = document.querySelector("#hike_id").innerText;
+  const session_login = document.querySelector("#login").innerText;
+
   // option to add to existing bookmarks list OR create new list with hike on it
 
   // For adding to existing list
@@ -345,9 +346,11 @@ function AddHikeToBookmarksList(props) {
     );
   }
 
-  React.useEffect(() => {
-    setListOptionsState();
-  }, [setAllBookmarksListOptions]);
+  if (session_login === "True") {
+    React.useEffect(() => {
+      setListOptionsState();
+    }, []);
+  }
 
   console.log("allBookmarksListOptions", allBookmarksListOptions);
 
@@ -363,7 +366,7 @@ function AddHikeToBookmarksList(props) {
       }),
     }).then((response) => {
       response.json().then((jsonResponse) => {
-        props.addHikeExistingList();
+        props.refreshBookmarksLists();
         console.log(jsonResponse);
       });
     });
@@ -384,7 +387,8 @@ function AddHikeToBookmarksList(props) {
       }),
     }).then((response) => {
       response.json().then((jsonResponse) => {
-        props.addHikeNewList();
+        setListOptionsState();
+        props.refreshBookmarksLists();
         console.log(jsonResponse);
       });
     });
@@ -413,88 +417,96 @@ function AddHikeToBookmarksList(props) {
               ></button>
             </div>
             <div className="modal-body">
-              <h4>Add to New Bookmark List</h4>
+              {session_login !== "True" ? (
+                <div>Please log in to add a bookmark.</div>
+              ) : (
+                <div>
+                  <h4>Add to New Bookmark List</h4>
 
-              <div className="mb-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Hikes I Want To Visit"
-                  value={bookmarksListName}
-                  onChange={(event) => setBookmarksListName(event.target.value)}
-                  required
-                />
-              </div>
+                  <div className="mb-3">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Hikes I Want To Visit"
+                      value={bookmarksListName}
+                      onChange={(event) =>
+                        setBookmarksListName(event.target.value)
+                      }
+                      required
+                    />
+                  </div>
 
-              <div className="mb-3">
-                <button
-                  className="btn btn-sm btn-outline-dark btn-block"
-                  type="submit"
-                  data-bs-dismiss="modal"
-                  onClick={addHikeNewBookmarksList}
-                >
-                  Save
-                </button>
-              </div>
+                  <div className="mb-3">
+                    <button
+                      className="btn btn-sm btn-outline-dark btn-block"
+                      type="submit"
+                      data-bs-dismiss="modal"
+                      onClick={addHikeNewBookmarksList}
+                    >
+                      Save
+                    </button>
+                  </div>
 
-              <h4>Add to Existing Bookmark List</h4>
+                  <h4>Add to Existing Bookmark List</h4>
 
-              <div className="mb-3">
-                {allBookmarksListOptions !== ""
-                  ? allBookmarksListOptions.map((bookmarksListOption) => (
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          id={`add-hike-${bookmarksListOption.bookmarks_list_id}`}
-                          value={bookmarksListOption.bookmarks_list_id}
-                          checked={bookmarksListOption.select}
-                          onChange={(event) => {
-                            event.stopPropagation();
-                            let checked = event.target.checked;
-                            setAllBookmarksListOptions(
-                              allBookmarksListOptions.map((data) => {
-                                if (
-                                  bookmarksListOption.bookmarks_list_id ===
-                                  data.bookmarks_list_id
-                                ) {
-                                  data.select = checked;
-                                }
-                                return data;
-                              })
-                            );
-                          }}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor={`add-hike-${bookmarksListOption.bookmarks_list_id}`}
-                        >
-                          {bookmarksListOption.bookmarks_list_name}
-                        </label>
-                      </div>
-                    ))
-                  : null}
-              </div>
+                  <div className="mb-3">
+                    {allBookmarksListOptions !== ""
+                      ? allBookmarksListOptions.map((bookmarksListOption) => (
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id={`add-hike-${bookmarksListOption.bookmarks_list_id}`}
+                              value={bookmarksListOption.bookmarks_list_id}
+                              checked={bookmarksListOption.select}
+                              onChange={(event) => {
+                                event.stopPropagation();
+                                let checked = event.target.checked;
+                                setAllBookmarksListOptions(
+                                  allBookmarksListOptions.map((data) => {
+                                    if (
+                                      bookmarksListOption.bookmarks_list_id ===
+                                      data.bookmarks_list_id
+                                    ) {
+                                      data.select = checked;
+                                    }
+                                    return data;
+                                  })
+                                );
+                              }}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor={`add-hike-${bookmarksListOption.bookmarks_list_id}`}
+                            >
+                              {bookmarksListOption.bookmarks_list_name}
+                            </label>
+                          </div>
+                        ))
+                      : null}
+                  </div>
 
-              <div className="mb-3">
-                <button
-                  className="btn btn-sm btn-outline-dark btn-block"
-                  type="submit"
-                  data-bs-dismiss="modal"
-                  onClick={addHikeExistingBookmarksList}
-                >
-                  Save
-                </button>
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-sm btn-secondary btn-block"
-                  data-bs-dismiss="modal"
-                >
-                  Close
-                </button>
-              </div>
+                  <div className="mb-3">
+                    <button
+                      className="btn btn-sm btn-outline-dark btn-block"
+                      type="submit"
+                      data-bs-dismiss="modal"
+                      onClick={addHikeExistingBookmarksList}
+                    >
+                      Save
+                    </button>
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-secondary btn-block"
+                      data-bs-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -505,7 +517,9 @@ function AddHikeToBookmarksList(props) {
 
 // Bookmarks Lists Container Component
 function BookmarksListContainer() {
+  const session_login = document.querySelector("#login").innerText;
   const [bookmarksLists, setBookmarksLists] = React.useState([]);
+  const hike_id = document.querySelector("#hike_id").innerText;
 
   function getBookmarksLists() {
     fetch(`/hikes/${hike_id}/bookmarks.json`)
@@ -515,11 +529,11 @@ function BookmarksListContainer() {
       });
   }
 
-  React.useEffect(() => {
-    getBookmarksLists();
-  }, []);
-
-  const hike_id = document.querySelector("#hike_id").innerText;
+  if (session_login === "True") {
+    React.useEffect(() => {
+      getBookmarksLists();
+    }, []);
+  }
 
   const allBookmarksLists = [];
   const allRenameBookmarksLists = [];
@@ -535,7 +549,7 @@ function BookmarksListContainer() {
         bookmarks_list_name={currentBookmarksList.bookmarks_list_name}
         bookmarks_list_id={currentBookmarksList.bookmarks_list_id}
         hikes={currentBookmarksList.hikes}
-        deleteBookmarksList={deleteBookmarksList}
+        refreshBookmarksLists={refreshBookmarksLists}
       />
     );
 
@@ -544,37 +558,19 @@ function BookmarksListContainer() {
         key={currentBookmarksList.bookmarks_list_id}
         bookmarks_list_name={currentBookmarksList.bookmarks_list_name}
         bookmarks_list_id={currentBookmarksList.bookmarks_list_id}
-        editBookmarksList={editBookmarksList}
+        refreshBookmarksLists={refreshBookmarksLists}
       />
     );
   }
 
   // Use getBookmarksLists() to set bookmarks lists when a hike is added and a new list is created
-  function addHikeNewList() {
-    getBookmarksLists();
-  }
-
-  // Use getBookmarksLists() to set bookmarks lists when a hike is added to a list
-  function addHikeExistingList() {
-    getBookmarksLists();
-  }
-
-  // Use getBookmarksLists() to set bookmarks lists when a list is renamed
-  function editBookmarksList() {
-    getBookmarksLists();
-  }
-
-  // Use getBookmarksLists() to set bookmarks lists when a list is removed
-  function deleteBookmarksList() {
+  function refreshBookmarksLists() {
     getBookmarksLists();
   }
 
   return (
     <React.Fragment>
-      <AddHikeToBookmarksList
-        addHikeNewList={addHikeNewList}
-        addHikeExistingList={addHikeExistingList}
-      />
+      <AddHikeToBookmarksList refreshBookmarksLists={refreshBookmarksLists} />
       {allRenameBookmarksLists}
       <div
         className="offcanvas offcanvas-end"
@@ -591,23 +587,47 @@ function BookmarksListContainer() {
           </h3>
           View All
         </div>
-        <div className="offcanvas-body" style={{ position: "relative" }}>
-          <div style={{ padding: "0.5em" }}>
-            You have this hike on the following lists:
-            {allBookmarksLists}
-          </div>
-          <button
-            type="button"
-            className="btn-close text-reset"
+        <div className="offcanvas-body">
+          {session_login !== "True" ? (
+            <div>Please log in to add a bookmark.</div>
+          ) : (
+            <React.Fragment>
+              <a
+                className="btn btn-sm"
+                href=""
+                data-bs-toggle="modal"
+                data-bs-target="#modal-add-bookmark"
+              >
+                <i
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="right"
+                  title="bookmark this hike"
+                  className="bi bi-bookmark-star"
+                ></i>{" "}
+                bookmark this hike
+              </a>
+              <div>
+                You have this hike on the following lists:
+                {allBookmarksLists}
+              </div>
+            </React.Fragment>
+          )}
+          <div
+            class="offcanvas-footer"
             style={{
+              position: "fixed",
+              right: "355px",
               bottom: "1em",
-              left: "1em",
-              position: "absolute",
-              float: "right",
+              zIndex: "100",
             }}
-            data-bs-dismiss="offcanvas"
-            aria-label="Close"
-          ></button>
+          >
+            <button
+              type="button"
+              className="btn-close text-reset"
+              data-bs-dismiss="offcanvas"
+              aria-label="Close"
+            ></button>
+          </div>
         </div>
       </div>
     </React.Fragment>
