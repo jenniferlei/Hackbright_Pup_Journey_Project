@@ -14,7 +14,7 @@ Chart.js adapter #}
 
 <!-- MODALS -->
 <!-- START ADD PET MODAL -->
-<div
+<!-- <div
   class="modal fade"
   id="modal-add-pet"
   tabindex="-1"
@@ -35,7 +35,7 @@ Chart.js adapter #}
       <div class="modal-body">
         <form action="/add-pet" method="POST" enctype="multipart/form-data">
           <div class="mb-3">
-            <label for="pet_name" class="sr-only"> Name </label>&nbsp;<small class="text-muted">*</small>
+            <label for="pet_name"> Name </label>&nbsp;<small class="text-muted">*</small>
             <input
               type="text"
               name="pet_name"s
@@ -46,7 +46,7 @@ Chart.js adapter #}
           </div>
 
           <div class="mb-3">
-            <label for="gender" class="sr-only"> Gender </label>
+            <label for="gender"> Gender </label>
             <select name="gender" class="form-control">
               <option value=""></option>
               <option value="female">female</option>
@@ -55,12 +55,12 @@ Chart.js adapter #}
           </div>
 
           <div class="mb-3">
-            <label for="birthday" class="sr-only"> Birthday </label>
+            <label for="birthday"> Birthday </label>
             <input type="date" name="birthday" class="form-control" />
           </div>
 
           <div class="mb-3">
-            <label for="breed" class="sr-only"> Breed </label>
+            <label for="breed"> Breed </label>
             <input
               type="text"
               name="breed"
@@ -70,7 +70,7 @@ Chart.js adapter #}
           </div>
 
           <div class="mb-3">
-            <label for="my_file" class="sr-only"> Image </label>
+            <label for="my_file"> Image </label>
             <input
               type="file"
               name="my_file"
@@ -98,7 +98,7 @@ Chart.js adapter #}
       </div>
     </div>
   </div>
-</div>
+</div> -->
 <!-- END ADD PET MODAL -->
 
 <!-- START ADD CHECK IN MODAL -->
@@ -127,7 +127,7 @@ Chart.js adapter #}
           onSubmit="validateCheckIn() || event.preventDefault();"
         >
           <div class="mb-3">
-            <label for="hike_id" class="sr-only">Hike</label>&nbsp;<small class="text-muted">*</small>
+            <label for="hike_id">Hike</label>&nbsp;<small class="text-muted">*</small>
             <select name="hike_id" class="form-control" required>
               {% for hike in hikes|sort(attribute='hike_name') %}
               <option value="{{ hike.hike_id }}">{{ hike.hike_name }}</option>
@@ -137,7 +137,7 @@ Chart.js adapter #}
 
 
           <div class="mb-3">
-            <label for="pet_id" class="sr-only">Pets</label>&nbsp;<small class="text-muted">*</small>
+            <label for="pet_id">Pets</label>&nbsp;<small class="text-muted">*</small>
             {% for pet in pets|sort(attribute='pet_name') %}
             <div class="form-check">
               <input class="form-check-input" type="checkbox" name="add-check-in-pet_id" value="{{ pet.pet_id }}" id="check-in-{{ pet.pet_id }}">
@@ -149,7 +149,7 @@ Chart.js adapter #}
           </div>
 
           <div class="mb-3">
-            <label for="date_hiked" class="sr-only">Date Hiked</label>&nbsp;<small class="text-muted">*</small>
+            <label for="date_hiked">Date Hiked</label>&nbsp;<small class="text-muted">*</small>
             <input
               type="date"
               name="date_hiked"
@@ -159,7 +159,7 @@ Chart.js adapter #}
           </div>
 
           <div class="mb-3">
-            <label for="miles_completed" class="sr-only">Miles Completed</label>&nbsp;<small class="text-muted">*</small>
+            <label for="miles_completed">Miles Completed</label>&nbsp;<small class="text-muted">*</small>
             <input
               type="number"
               step=".1"
@@ -171,7 +171,7 @@ Chart.js adapter #}
           </div>
 
           <div class="mb-3">
-            <label for="total_time" class="sr-only">Total Time (Hours)</label>
+            <label for="total_time">Total Time (Hours)</label>
             <input
               type="number"
               step=".1"
@@ -182,7 +182,7 @@ Chart.js adapter #}
           </div>
 
           <div class="mb-3">
-            <label for="notes" class="sr-only">Notes</label>
+            <label for="notes">Notes</label>
             <input
                 type="text"
                 name="notes"
@@ -222,7 +222,7 @@ Chart.js adapter #}
       <div class="modal-body">
         <form action="/add-bookmarks-list" method="POST">
           <div class="mb-3">
-            <label for="bookmarks_list_name" class="sr-only"> Name your list </label>
+            <label for="bookmarks_list_name"> Name your list </label>
             <input
               type="text"
               name="bookmarks_list_name"
@@ -440,7 +440,7 @@ Chart.js adapter #}
                         enctype="multipart/form-data"
                       >
                         <div class="mb-3">
-                          <label htmlFor="pet_name" class="sr-only">
+                          <label htmlFor="pet_name">
                             Name
                           </label>&nbsp;<small class="text-muted">*</small>
                           <input
@@ -453,7 +453,7 @@ Chart.js adapter #}
                         </div>
 
                         <div class="mb-3">
-                          <label for="gender" class="sr-only">
+                          <label for="gender">
                             Gender
                           </label>
                           <select
@@ -468,7 +468,7 @@ Chart.js adapter #}
                         </div>
 
                         <div class="mb-3">
-                          <label htmlFor="birthday" class="sr-only">
+                          <label htmlFor="birthday">
                             Birthday
                           </label>
                           <input
@@ -480,7 +480,7 @@ Chart.js adapter #}
                         </div>
 
                         <div class="mb-3">
-                          <label htmlFor="breed" class="sr-only">
+                          <label htmlFor="breed">
                             Breed
                           </label>
                           <input
@@ -493,7 +493,7 @@ Chart.js adapter #}
                         </div>
 
                         <div class="mb-3">
-                          <label htmlFor="my_file" class="sr-only">
+                          <label htmlFor="my_file">
                             Image
                           </label>
                           <input
@@ -698,7 +698,7 @@ Chart.js adapter #}
                               <div class="mb-3">
                                 <div class="row">
                                   <div class="col">
-                                    <label for="pet_id" class="sr-only">Add a Pet</label>
+                                    <label for="pet_id">Add a Pet</label>
                                     {% for pet in pets|sort(attribute='pet_name') %}
                                     {% if pet not in check_in.pets %}
                                     <div class="form-check">
@@ -712,7 +712,7 @@ Chart.js adapter #}
                                   </div>
 
                                   <div class="col">
-                                    <label for="pet_id" class="sr-only">Remove a Pet</label>
+                                    <label for="pet_id">Remove a Pet</label>
                                     {% for pet in pets|sort(attribute='pet_name') %}
                                     {% if pet in check_in.pets %}
                                     <div class="form-check">
@@ -728,7 +728,7 @@ Chart.js adapter #}
                               </div>
                               
                               <div class="mb-3">
-                                <label for="date_hiked" class="sr-only">Date Hiked</label>&nbsp;<small class="text-muted">*</small>
+                                <label for="date_hiked">Date Hiked</label>&nbsp;<small class="text-muted">*</small>
                                 <input
                                     type="date"
                                     name="date_hiked"
@@ -737,7 +737,7 @@ Chart.js adapter #}
                               </div>
 
                               <div class="mb-3">
-                                <label for="miles_completed" class="sr-only">Miles Completed</label>&nbsp;<small class="text-muted">*</small>
+                                <label for="miles_completed">Miles Completed</label>&nbsp;<small class="text-muted">*</small>
                                 <input
                                     type="number"
                                     step=".1"
@@ -749,7 +749,7 @@ Chart.js adapter #}
                               </div>
 
                               <div class="mb-3">
-                                <label for="total_time" class="sr-only">Total Time (Hours)</label>
+                                <label for="total_time">Total Time (Hours)</label>
                                 <input
                                     type="number"
                                     step=".1"
@@ -760,7 +760,7 @@ Chart.js adapter #}
                               </div>
 
                               <div class="mb-3">
-                                <label for="notes" class="sr-only">Notes</label>
+                                <label for="notes">Notes</label>
                                 <input
                                     type="text"
                                     name="notes"

@@ -23,31 +23,18 @@ def get_bookmarks_list_by_bookmarks_list_id(bookmarks_list_id):
 def get_bookmarks_lists_by_user_id(user_id):
     """Return all bookmarks lists by user_id."""
 
-    return db.session.query(BookmarksList).filter_by(user_id=user_id).all()
-
-
-def get_names_of_bookmarks_lists_by_user_id(user_id):
-    """Return list of all names of bookmarks lists by user_id."""
-
-    bookmarks_lists_names = []
-
-    bookmarks_lists_by_user = get_bookmarks_lists_by_user_id(user_id)
-
-    for bookmarks_lists in bookmarks_lists_by_user:
-        bookmarks_lists_names.append(bookmarks_lists.bookmarks_list_name)
-
-    return bookmarks_lists_names
+    return db.session.query(BookmarksList).filter_by(user_id=user_id).order_by(BookmarksList.bookmarks_list_name.asc()).all()
     
 
 def get_bookmarks_list_by_user_id_and_bookmarks_list_name(user_id, bookmarks_list_name):
     """Return bookmarks list by bookmarks_list_name."""
 
-    bookmarks_lists_by_user = (db.session.query(BookmarksList)
+    bookmarks_lists_by_user_and_name = (db.session.query(BookmarksList)
                                         .filter(BookmarksList.user_id==user_id,
                                                 BookmarksList.bookmarks_list_name==bookmarks_list_name)
                                         .one())
 
-    return bookmarks_lists_by_user
+    return bookmarks_lists_by_user_and_name
 
 
 def get_bookmarks_lists_by_user_id_and_hike_id(user_id, hike_id):
@@ -57,6 +44,7 @@ def get_bookmarks_lists_by_user_id_and_hike_id(user_id, hike_id):
     user_bookmarks_lists = (db.session.query(BookmarksList)
                                 .options(db.joinedload('hikes'))
                                 .filter_by(user_id=user_id)
+                                .order_by(BookmarksList.bookmarks_list_name.asc())
                                 .all())
     
     hike = db.session.query(Hike).get(hike_id)

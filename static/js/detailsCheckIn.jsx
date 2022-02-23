@@ -29,9 +29,20 @@ function CheckIn(props) {
       <div className="card card-body mt-1">
         <div className="clearfix">
           <div className="float-start">
-            🐾&nbsp;&nbsp;{" "}
-            {props.pets_on_hike.map((pet) => `${pet.pet_name} | `)}
-            {`hiked on ${props.date_hiked} | ${props.miles_completed} miles`}
+            <small>
+              {props.pets_on_hike.map((pet) => `🐾    ${pet.pet_name} `)}
+              <br></br>
+              {`hiked on ${props.date_hiked} | ${props.miles_completed} miles`}
+              {props.total_time !== null ? (
+                <React.Fragment>
+                  &nbsp;| {props.total_time} hours
+                </React.Fragment>
+              ) : null}
+              <br></br>
+              {props.notes !== null && props.notes !== "" ? (
+                <React.Fragment>Notes: {props.notes}</React.Fragment>
+              ) : null}
+            </small>
           </div>
 
           <div className="d-flex float-end">
@@ -68,12 +79,6 @@ function CheckIn(props) {
             </button>
           </div>
         </div>
-        {props.total_time !== null ? (
-          <div className="row">Total time: {props.total_time}</div>
-        ) : null}
-        {props.notes !== null && props.notes !== "" ? (
-          <div className="row">Notes: {props.notes}</div>
-        ) : null}
       </div>
     </React.Fragment>
   );
@@ -502,13 +507,13 @@ function AddCheckIn(props) {
 
                   <div className="mb-3">
                     <label htmlFor="notesInput">Notes</label>
-                    <input
+                    <textarea
                       id="notesInput"
-                      type="text"
+                      rows="3"
                       value={notes}
                       onChange={(event) => setNotes(event.target.value)}
                       className="form-control"
-                    />
+                    ></textarea>
                   </div>
                   <div className="modal-footer">
                     <button
@@ -648,7 +653,7 @@ function CheckInContainer() {
             </div>
           )}
           <div
-            class="offcanvas-footer"
+            className="offcanvas-footer"
             style={{
               position: "fixed",
               right: "355px",

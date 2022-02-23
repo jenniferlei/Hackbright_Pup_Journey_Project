@@ -613,7 +613,7 @@ function BookmarksListContainer() {
             </React.Fragment>
           )}
           <div
-            class="offcanvas-footer"
+            className="offcanvas-footer"
             style={{
               position: "fixed",
               right: "355px",

@@ -29,12 +29,12 @@ function PetProfile(props) {
       <div className="card mb-3" style={{ maxWidth: "540px" }}>
         <div className="row g-0">
           <div className="col-md-4">
-            {props.pet_imgURL !== null ? (
+            {props.pet_img_URL !== null ? (
               <div>
                 <img
-                  src={props.pet_imgURL}
+                  src={props.pet_img_URL}
                   alt="profile"
-                  class="pet-profile-img"
+                  className="pet-profile-img"
                   id={`pet-img-${props.pet_id}`}
                 />
               </div>
@@ -42,7 +42,7 @@ function PetProfile(props) {
           </div>
           <div className="col-md-8">
             <div className="card-body">
-              <div class="clearfix">
+              <div className="clearfix">
                 <h5 className="card-title float-start">{props.pet_name}</h5>
                 <div className="d-flex float-end">
                   <a
@@ -78,7 +78,7 @@ function PetProfile(props) {
                   </form>
                 </div>
               </div>
-              <p className="card-text">
+              <div className="card-text">
                 {props.breed !== null &&
                 props.breed !== "" &&
                 props.breed != "None" ? (
@@ -99,11 +99,32 @@ function PetProfile(props) {
                   </div>
                 ) : null}
 
-                {/* {% if pet.check_ins != [] %}
-                  <div><small>I've done {{ pet.check_ins|length }} {% if pet.check_ins|length > 1 %} hikes{% else %} hike{% endif %}</small></div>
-                  <div><small>and walked {{ pet.check_ins|sum(attribute="miles_completed") }} {% if pet.check_ins|sum(attribute="miles_completed") > 1 %} miles{% else %} mile{% endif %}!</small></div>
-                  {% endif %} */}
-              </p>
+                {props.check_ins.length !== 0 ? (
+                  <React.Fragment>
+                    <div>
+                      <small>
+                        I've done {props.check_ins.length}{" "}
+                        {props.check_ins.length === 1 ? (
+                          <span>hike</span>
+                        ) : (
+                          <span>hikes</span>
+                        )}
+                      </small>
+                    </div>
+                    <div>
+                      <small>
+                        and walked&nbsp;
+                        {props.total_miles === 1 ? (
+                          <span>{props.total_miles} mile</span>
+                        ) : (
+                          <span>{props.total_miles} miles</span>
+                        )}
+                        !
+                      </small>
+                    </div>
+                  </React.Fragment>
+                ) : null}
+              </div>
             </div>
           </div>
         </div>
@@ -115,67 +136,25 @@ function PetProfile(props) {
 function EditPetProfile(props) {
   // Process edit
 
-  const [addPet, setAddPet] = React.useState([]);
-  const [removePet, setRemovePet] = React.useState([]);
-  const [dateHiked, setDateHiked] = React.useState("");
-  const [milesCompleted, setMilesCompleted] = React.useState("");
-  const [totalTime, setTotalTime] = React.useState("");
-  const [notes, setNotes] = React.useState("");
-
-  // get the pets that are on the check in and not on the check in to set initial state of addPet and removePet
-  function setPetStates() {
-    fetch(`/check_in/${props.check_in_id}.json`).then((response) =>
-      response.json().then((jsonResponse) => {
-        const { checkIn } = jsonResponse;
-        const pets_on_hike = checkIn.pets;
-        const pets_not_on_hike = checkIn.pets_not_on_hike;
-
-        const addPet = [];
-        const removePet = [];
-
-        pets_on_hike.map((pet) => {
-          removePet.push({
-            select: false,
-            pet_name: pet.pet_name,
-            pet_id: pet.pet_id,
-          });
-        });
-
-        pets_not_on_hike.map((pet) => {
-          addPet.push({
-            select: false,
-            pet_name: pet.pet_name,
-            pet_id: pet.pet_id,
-          });
-        });
-
-        setAddPet(addPet);
-        setRemovePet(removePet);
-      })
-    );
-  }
-
-  React.useEffect(() => {
-    setPetStates();
-  }, []);
+  const [petName, setPetName] = React.useState(`${props.pet_name}`);
+  const [gender, setGender] = React.useState("");
+  const [birthday, setBirthday] = React.useState("");
+  const [breed, setBreed] = React.useState("");
+  const [imageFile, setImageFile] = React.useState("");
 
   // console.log(addPet);
   // console.log(removePet);
 
   function editExistingPetProfile() {
-    fetch(`/edit-check-in/${props.check_in_id}`, {
+    fetch(`/edit-pet/${props.pet_id}`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
+      headers: {},
       body: JSON.stringify({
-        addPet, // this will return a list of dictionary objects
-        removePet, // this will return a list of dictionary objects
-        dateHiked,
-        milesCompleted,
-        totalTime,
-        notes,
+        petName,
+        gender,
+        birthday,
+        breed,
+        imageFile,
       }),
     })
       .then((response) => {
@@ -183,27 +162,23 @@ function EditPetProfile(props) {
       })
       .then((jsonResponse) => {
         // console.log(jsonResponse);
-        props.refreshCheckIns();
-        setPetStates();
+        props.refreshPets();
       });
   }
   return (
     <React.Fragment>
       <div
         className="modal fade"
-        id={`modal-edit-check-in-${props.check_in_id}`}
+        id={`modal-edit-${props.pet_id}`}
         tabIndex="-1"
-        aria-labelledby={`modal-edit-check-in-${props.check_in_id}-label`}
+        aria-labelledby="modal-edit-pet-label"
         aria-hidden="true"
       >
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5
-                className="modal-title"
-                id={`modal-edit-check-in-${props.check_in_id}-label`}
-              >
-                Edit check in to this hike
+              <h5 className="modal-title" id="modal-edit-pet-label">
+                Edit Pet Info
               </h5>
               <button
                 type="button"
@@ -214,130 +189,73 @@ function EditPetProfile(props) {
             </div>
             <div className="modal-body">
               <div className="mb-3">
-                <div className="row">
-                  <div className="col">
-                    <label htmlFor="pet_id">Add a Pet</label>
-                    {addPet.map((pet) => (
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value={pet.pet_id}
-                          id={`add-to-check-in-${pet.pet_id}`}
-                          checked={pet.select}
-                          onChange={(event) => {
-                            let checked = event.target.checked;
-                            setAddPet(
-                              addPet.map((data) => {
-                                if (pet.pet_id === data.pet_id) {
-                                  data.select = checked;
-                                }
-                                return data;
-                              })
-                            );
-                          }}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor={`add-to-check-in-${pet.pet_id}`}
-                        >
-                          {pet.pet_name}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="col">
-                    <label htmlFor="pet_id">Remove a Pet</label>
-                    {removePet.map((pet) => (
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value={pet.pet_id}
-                          id={`remove-from-check-in-${pet.pet_id}`}
-                          checked={pet.select}
-                          onChange={(event) => {
-                            let checked = event.target.checked;
-                            setRemovePet(
-                              removePet.map((data) => {
-                                if (pet.pet_id === data.pet_id) {
-                                  data.select = checked;
-                                }
-                                return data;
-                              })
-                            );
-                          }}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor={`remove-from-check-in-${pet.pet_id}`}
-                        >
-                          {pet.pet_name}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="mb-3">
-                <label htmlFor="date_hiked">Date Hiked</label>
-                &nbsp;<small className="text-muted">*</small>
-                <input
-                  type="date"
-                  value={dateHiked}
-                  onChange={(event) => setDateHiked(event.target.value)}
-                  className="form-control input-lg"
-                />
-              </div>
-
-              <div className="mb-3">
-                <label htmlFor="miles_completed">Miles Completed</label>
-                &nbsp;<small className="text-muted">*</small>
-                <input
-                  type="number"
-                  step=".1"
-                  min="0"
-                  value={milesCompleted}
-                  onChange={(event) => setMilesCompleted(event.target.value)}
-                  className="form-control input-lg"
-                />
-              </div>
-
-              <div className="mb-3">
-                <label htmlFor="total_time">Total Time (Hours)</label>
-                <input
-                  type="number"
-                  step=".1"
-                  min="0"
-                  value={totalTime}
-                  onChange={(event) => setTotalTime(event.target.value)}
-                  className="form-control input-lg"
-                />
-              </div>
-
-              <div className="mb-3">
-                <label htmlFor="notes">Notes</label>
+                <label htmlFor="pet_name">Name</label>&nbsp;
+                <small className="text-muted">*</small>
                 <input
                   type="text"
-                  value={notes}
-                  onChange={(event) => setNotes(event.target.value)}
+                  name="pet_name"
+                  value={petName}
+                  onChange={(event) => setPetName(event.target.value)}
                   className="form-control"
+                  required
+                />
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="gender">Gender</label>
+                <select
+                  className="form-control"
+                  selected={gender}
+                  onChange={(event) => setGender(event.target.value)}
+                >
+                  <option value=""></option>
+                  <option value="female">female</option>
+                  <option value="male">male</option>
+                </select>
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="birthday">Birthday</label>
+                <input
+                  type="date"
+                  value={birthday}
+                  onChange={(event) => setBirthday(event.target.value)}
+                  className="form-control"
+                />
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="breed">Breed</label>
+                <input
+                  type="text"
+                  value={breed}
+                  onChange={(event) => setBreed(event.target.value)}
+                  className="form-control"
+                  placeholder="Breed"
+                />
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="my_file">Image</label>
+                <input
+                  type="file"
+                  onChange={(event) => setImageFile(event.target.files[0])}
+                  className="form-control"
+                  accept="image/png, image/jpeg"
                 />
               </div>
               <div className="modal-footer">
                 <button
-                  className="btn btn-sm btn-outline-dark btn-block"
-                  type="submit"
+                  className="btn btn-sm btn-outline-dark btn-block mt-4"
                   data-bs-dismiss="modal"
-                  onClick={editExistingCheckIn}
+                  onClick={editExistingPetProfile}
+                  type="submit"
                 >
-                  Submit
+                  Save
                 </button>
                 <button
                   type="button"
-                  className="btn btn-sm btn-secondary btn-block"
+                  className="btn btn-sm btn-secondary btn-block mt-4"
                   data-bs-dismiss="modal"
                 >
                   Close
@@ -351,102 +269,62 @@ function EditPetProfile(props) {
   );
 }
 
-function AddCheckIn(props) {
+function AddPetProfile(props) {
   const session_login = document.querySelector("#login").innerText;
-
-  const [allPetOptions, setAllPetOptions] = React.useState([]);
-  const [dateHiked, setDateHiked] = React.useState("");
-  const [milesCompleted, setMilesCompleted] = React.useState("");
-  const [totalTime, setTotalTime] = React.useState("");
-  const [notes, setNotes] = React.useState("");
-
-  function getPets() {
-    fetch("/pets.json").then((response) =>
-      response.json().then((jsonResponse) => {
-        const { pets } = jsonResponse;
-
-        const allPetOptions = [];
-        pets.map((pet) => {
-          allPetOptions.push({
-            select: false,
-            pet_name: pet.pet_name,
-            pet_id: pet.pet_id,
-          });
-        });
-
-        setAllPetOptions(allPetOptions);
-      })
-    );
-  }
-
-  if (session_login === "True") {
-    React.useEffect(() => {
-      getPets();
-    }, []);
-  }
-
-  // Validate form - need to make sure to validate each required item
-  function validateCheckIn(evt) {
-    const petCheckBoxes = document.querySelectorAll(
-      "input[name=add-check-in-pet_id]"
-    );
-    let atLeastOneChecked = false;
-    for (let i = 0; i < petCheckBoxes.length; i++) {
-      if (petCheckBoxes[i].checked) {
-        atLeastOneChecked = true;
-        break;
-      }
-    }
-    if (atLeastOneChecked === false) {
-      alert("Please add a pet to the check in");
-      evt.preventDefault();
-    }
-
-    addNewCheckIn();
-  }
-  // Add a POST request to hit the server /add-card endpoint and add a new card.
-  // Make sure you pass in the data it is expecting. When this request finishes,
-  // show an alert letting the user know they successfully added the card.
   const hike_id = document.querySelector("#hike_id").innerText;
 
-  function addNewCheckIn() {
-    fetch(`/hikes/${hike_id}/add-check-in`, {
+  const [petName, setPetName] = React.useState("");
+  const [gender, setGender] = React.useState("");
+  const [birthday, setBirthday] = React.useState("");
+  const [breed, setBreed] = React.useState("");
+  const [imageFile, setImageFile] = React.useState("");
+
+  function addNewPetProfile() {
+    const formData = new FormData();
+
+    formData.append("petName", petName);
+    formData.append("gender", gender);
+    formData.append("birthday", birthday);
+    formData.append("breed", breed);
+    formData.append("imageFile", imageFile);
+
+    for (const key of formData.entries()) {
+      console.log(key);
+    }
+
+    console.log("petName:", petName);
+    console.log("gender:", gender);
+    console.log("birthday:", birthday);
+    console.log("breed:", breed);
+    console.log("imageFile:", imageFile);
+
+    fetch("/add-pet", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        allPetOptions, // this will return a list of dictionary objects
-        dateHiked,
-        milesCompleted,
-        totalTime,
-        notes,
-      }),
+      body: formData,
     }).then((response) => {
       response.json().then((jsonResponse) => {
-        props.refreshCheckIns();
-        // console.log(jsonResponse);
+        props.refreshPets();
+        console.log(jsonResponse);
       });
     });
   }
 
-  // console.log(allPetOptions);
+  // console.log();
 
   return (
     <React.Fragment>
       <div
         className="modal fade"
-        id="modal-add-check-in"
+        id="modal-add-pet"
         tabIndex="-1"
-        aria-labelledby="modal-add-check-in-label"
+        aria-labelledby="modal-add-pet-label"
         aria-hidden="true"
       >
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title" id="modal-add-check-in-label">
-                Check in to this hike
+              <h5 className="modal-title" id="modal-add-pet-label">
+                Add Pet Info
               </h5>
               <button
                 type="button"
@@ -456,112 +334,79 @@ function AddCheckIn(props) {
               ></button>
             </div>
             <div className="modal-body">
-              {session_login !== "True" ? (
-                <div>Please log in to add a check in.</div>
-              ) : (
-                <div>
-                  <div className="mb-3">
-                    <label>Pets</label>&nbsp;
-                    <small className="text-muted">*</small>
-                    {allPetOptions.map((pet) => (
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          name="add-check-in-pet_id"
-                          value={pet.pet_id}
-                          id={`check-in-${pet.pet_id}`}
-                          checked={pet.select}
-                          onChange={(event) => {
-                            let checked = event.target.checked;
-                            setAllPetOptions(
-                              allPetOptions.map((data) => {
-                                if (pet.pet_id === data.pet_id) {
-                                  data.select = checked;
-                                }
-                                return data;
-                              })
-                            );
-                          }}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor={`check-in-${pet.pet_id}`}
-                        >
-                          {pet.pet_name}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
+              <div className="mb-3">
+                <label htmlFor="pet_name"> Name </label>&nbsp;
+                <small className="text-muted">*</small>
+                <input
+                  type="text"
+                  value={petName}
+                  onChange={(event) => setPetName(event.target.value)}
+                  className="form-control"
+                  placeholder="Name"
+                  required
+                />
+              </div>
 
-                  <div className="mb-3">
-                    <label htmlFor="date_hiked">Date Hiked</label>
-                    &nbsp;<small className="text-muted">*</small>
-                    <input
-                      type="date"
-                      value={dateHiked}
-                      onChange={(event) => setDateHiked(event.target.value)}
-                      className="form-control"
-                      required
-                    />
-                  </div>
+              <div className="mb-3">
+                <label htmlFor="gender"> Gender </label>
+                <select
+                  selected={gender}
+                  onChange={(event) => setGender(event.target.value)}
+                  className="form-control"
+                >
+                  <option value=""></option>
+                  <option value="female">female</option>
+                  <option value="male">male</option>
+                </select>
+              </div>
 
-                  <div className="mb-3">
-                    <label htmlFor="miles_completed">Miles Completed</label>
-                    &nbsp;<small className="text-muted">*</small>
-                    <input
-                      type="number"
-                      step=".1"
-                      min="0"
-                      value={milesCompleted}
-                      onChange={(event) =>
-                        setMilesCompleted(event.target.value)
-                      }
-                      className="form-control"
-                    />
-                  </div>
+              <div className="mb-3">
+                <label htmlFor="birthday"> Birthday </label>
+                <input
+                  type="date"
+                  value={birthday}
+                  onChange={(event) => setBirthday(event.target.value)}
+                  className="form-control"
+                />
+              </div>
 
-                  <div className="mb-3">
-                    <label htmlFor="total_time">Total Time (Hours)</label>
-                    <input
-                      type="number"
-                      step=".1"
-                      min="0"
-                      value={totalTime}
-                      onChange={(event) => setTotalTime(event.target.value)}
-                      className="form-control"
-                    />
-                  </div>
+              <div className="mb-3">
+                <label htmlFor="breed"> Breed </label>
+                <input
+                  type="text"
+                  value={breed}
+                  onChange={(event) => setBreed(event.target.value)}
+                  className="form-control"
+                  placeholder="Breed"
+                />
+              </div>
 
-                  <div className="mb-3">
-                    <label htmlFor="notesInput">Notes</label>
-                    <input
-                      id="notesInput"
-                      type="text"
-                      value={notes}
-                      onChange={(event) => setNotes(event.target.value)}
-                      className="form-control"
-                    />
-                  </div>
-                  <div className="modal-footer">
-                    <button
-                      className="btn btn-sm btn-outline-dark btn-block"
-                      type="submit"
-                      data-bs-dismiss="modal"
-                      onClick={validateCheckIn}
-                    >
-                      Submit
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-secondary btn-block"
-                      data-bs-dismiss="modal"
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-              )}
+              <div className="mb-3">
+                <label htmlFor="my_file"> Image </label>
+                <input
+                  type="file"
+                  onChange={(event) => setImageFile(event.target.files[0])}
+                  className="form-control"
+                  accept="image/png, image/jpeg"
+                />
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="submit"
+                  className="btn btn-sm btn-outline-dark btn-block mt-4"
+                  data-bs-dismiss="modal"
+                  onClick={addNewPetProfile}
+                >
+                  Save
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-secondary btn-block mt-4"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -571,117 +416,146 @@ function AddCheckIn(props) {
 }
 
 // comment container component
-function CheckInContainer() {
-  const [checkIns, setCheckIns] = React.useState([]);
+function PetProfileContainer() {
+  const [petProfiles, setPetProfiles] = React.useState([]);
 
-  function refreshCheckIns() {
-    getCheckIns();
+  function refreshPets() {
+    getPetProfiles();
   }
 
   const session_login = document.querySelector("#login").innerText;
-  const hike_id = document.querySelector("#hike_id").innerText;
 
-  function getCheckIns() {
-    fetch(`/hikes/${hike_id}/user_check_ins.json`)
+  function getPetProfiles() {
+    fetch("/pets.json")
       .then((response) => response.json())
       .then((data) => {
-        setCheckIns(data.checkIns);
+        setPetProfiles(data.petProfiles);
       });
   }
 
   if (session_login === "True") {
     React.useEffect(() => {
-      getCheckIns();
+      getPetProfiles();
     }, []);
   }
 
-  const allCheckIns = [];
-  const allEditCheckIns = [];
+  const allPetProfiles = [];
+  const allEditPetProfiles = [];
 
-  // the following line will print out the value of cards
-  // pay attention to what it is initially and what it is when the component re-renders
-  // console.log(`checkIns: `, checkIns);
+  for (const currentPetProfile of petProfiles) {
+    let initial_miles = 0;
+    let total_miles = currentPetProfile.check_ins.reduce(function (
+      previousValue,
+      currentValue
+    ) {
+      return previousValue + currentValue.miles_completed;
+    },
+    initial_miles);
 
-  for (const currentCheckIn of checkIns) {
-    const date_hiked = new Date(currentCheckIn.date_hiked);
-    const date_hiked_formatted = date_hiked.toLocaleDateString();
+    if (
+      currentPetProfile.birthday !== null &&
+      currentPetProfile.birthday !== ""
+    ) {
+      const birthday = new Date(currentPetProfile.birthday);
+      const birthday_formatted = birthday.toLocaleDateString();
 
-    allCheckIns.push(
-      <CheckIn
-        key={currentCheckIn.check_in_id}
-        hike_id={currentCheckIn.hike_id}
-        check_in_id={currentCheckIn.check_in_id}
-        date_hiked={date_hiked_formatted}
-        miles_completed={currentCheckIn.miles_completed}
-        total_time={currentCheckIn.total_time}
-        notes={currentCheckIn.notes}
-        pets_on_hike={currentCheckIn.pets}
-        pets_not_on_hike={currentCheckIn.pets_not_on_hike}
-        refreshCheckIns={refreshCheckIns}
-      />
-    );
-    allEditCheckIns.push(
-      <EditCheckIn
-        key={currentCheckIn.check_in_id}
-        hike_id={currentCheckIn.hike_id}
-        check_in_id={currentCheckIn.check_in_id}
-        date_hiked={date_hiked_formatted}
-        miles_completed={currentCheckIn.miles_completed}
-        total_time={currentCheckIn.total_time}
-        notes={currentCheckIn.notes}
-        pets_on_hike={currentCheckIn.pets}
-        pets_not_on_hike={currentCheckIn.pets_not_on_hike}
-        refreshCheckIns={refreshCheckIns}
-      />
-    );
+      allPetProfiles.push(
+        <PetProfile
+          key={currentPetProfile.pet_id}
+          pet_id={currentPetProfile.pet_id}
+          pet_name={currentPetProfile.pet_name}
+          gender={currentPetProfile.gender}
+          birthday={currentPetProfile.birthday}
+          breed={currentPetProfile.breed}
+          pet_img_URL={currentPetProfile.pet_imgURL}
+          check_ins={currentPetProfile.check_ins}
+          total_miles={total_miles}
+          refreshPets={refreshPets}
+        />
+      );
+      allEditPetProfiles.push(
+        <EditPetProfile
+          key={currentPetProfile.pet_id}
+          pet_id={currentPetProfile.pet_id}
+          pet_name={currentPetProfile.pet_name}
+          gender={currentPetProfile.gender}
+          birthday={birthday_formatted}
+          breed={currentPetProfile.breed}
+          refreshPets={refreshPets}
+        />
+      );
+    } else {
+      allPetProfiles.push(
+        <PetProfile
+          key={currentPetProfile.pet_id}
+          pet_id={currentPetProfile.pet_id}
+          pet_name={currentPetProfile.pet_name}
+          gender={currentPetProfile.gender}
+          birthday={currentPetProfile.birthday}
+          breed={currentPetProfile.breed}
+          pet_img_URL={currentPetProfile.pet_imgURL}
+          check_ins={currentPetProfile.check_ins}
+          total_miles={total_miles}
+          refreshPets={refreshPets}
+        />
+      );
+      allEditPetProfiles.push(
+        <EditPetProfile
+          key={currentPetProfile.pet_id}
+          pet_id={currentPetProfile.pet_id}
+          pet_name={currentPetProfile.pet_name}
+          gender={currentPetProfile.gender}
+          birthday={currentPetProfile.birthday}
+          breed={currentPetProfile.breed}
+          refreshPets={refreshPets}
+        />
+      );
+    }
   }
 
   return (
     <React.Fragment>
-      <AddCheckIn refreshCheckIns={refreshCheckIns} />
-      {allEditCheckIns}
+      <AddPetProfile refreshPets={refreshPets} />
+      {allEditPetProfiles}
       <div
         className="offcanvas offcanvas-end"
         data-bs-keyboard="true"
         data-bs-scroll="true"
         data-bs-backdrop="true"
         tabIndex="-1"
-        id="CheckIns"
-        aria-labelledby="CheckInsLabel"
+        id="Profile"
+        aria-labelledby="ProfileLabel"
       >
         <div className="offcanvas-header">
-          <h3 className="offcanvas-title" id="CheckInsLabel">
-            Check Ins
+          <h3 className="offcanvas-title" id="ProfileLabel">
+            Pet Profile
           </h3>
           View All
         </div>
         <div className="offcanvas-body">
           {session_login !== "True" ? (
-            <div>Please log in to add a check in.</div>
+            <div>Please log in to add a pet profile.</div>
           ) : (
             <div>
               <a
                 className="btn btn-sm"
                 href=""
                 data-bs-toggle="modal"
-                data-bs-target="#modal-add-check-in"
+                data-bs-target="#modal-add-pet"
               >
                 <i
                   data-bs-toggle="tooltip"
                   data-bs-placement="right"
-                  title="add a check in"
-                  className="bi bi-check-circle"
+                  title="add a pet profile"
+                  className="fa-solid fa-paw"
                 ></i>{" "}
-                add a check in
+                add a pet profile
               </a>
-              <div style={{ padding: "0.5em" }}>
-                These are the check ins for this hike:
-                {allCheckIns}
-              </div>
+              <div style={{ padding: "0.5em" }}>{allPetProfiles}</div>
             </div>
           )}
           <div
-            class="offcanvas-footer"
+            className="offcanvas-footer"
             style={{
               position: "fixed",
               right: "355px",

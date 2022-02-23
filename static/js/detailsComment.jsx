@@ -32,9 +32,11 @@ function Comment(props) {
             <div className="float-start">
               {props.full_name}&nbsp;
               <small className="text-muted">
+                <br></br>
                 posted {props.date_created}
+                <br></br>
                 {props.edit == true ? (
-                  <span>&nbsp;(edited {props.date_edited})</span>
+                  <span>(edited {props.date_edited})</span>
                 ) : null}
               </small>
             </div>
@@ -429,7 +431,7 @@ function CommentContainer() {
 
           <div style={{ padding: "0.5em" }}>{allComments}</div>
           <div
-            class="offcanvas-footer"
+            className="offcanvas-footer"
             style={{
               position: "fixed",
               right: "355px",

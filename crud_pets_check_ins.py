@@ -13,7 +13,7 @@ def create_pet_check_in(pet_id, check_in_id):
 
 
 def get_pet_check_in_by_pet_id(pet_id):
-    """Return a pet check in object given a pet_id"""
+    """Return a list of pet check in objects given a pet_id"""
 
     return (db.session.query(PetCheckIn).filter_by(pet_id = pet_id).all())
 

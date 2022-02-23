@@ -151,6 +151,7 @@ function FixedFooter(props) {
 function Everything(props) {
   return (
     <React.Fragment>
+      <PetProfileContainer />
       <BookmarksListContainer />
       <CheckInContainer />
       <CommentContainer />

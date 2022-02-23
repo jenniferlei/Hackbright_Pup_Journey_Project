@@ -79,13 +79,13 @@ def all_hikes():
     # Populate options for the search bar
     search_hikes = hikes = crud_hikes.get_hikes()
     states = crud_hikes.get_hike_states()
-    cities = crud_hikes.get_hike_cities()
-    areas = crud_hikes.get_hike_areas()
+    cities = crud_hikes.get_hike_cities('California')
+    areas = crud_hikes.get_hike_areas('California')
     parking = crud_hikes.get_hike_parking()
 
     logged_in_email = session.get("user_email")
 
-    if logged_in_email != None:
+    if logged_in_email is not None:
         user = crud_users.get_user_by_email(session["user_email"])
         bookmarks_list_by_user = crud_bookmarks_lists.get_bookmarks_lists_by_user_id(user.user_id)
     else:
@@ -121,13 +121,13 @@ def advanced_search():
     # Populate options for the search bar
     hikes = crud_hikes.get_hikes()
     states = crud_hikes.get_hike_states()
-    cities = crud_hikes.get_hike_cities()
-    areas = crud_hikes.get_hike_areas()
+    cities = crud_hikes.get_hike_cities('California')
+    areas = crud_hikes.get_hike_areas('California')
     parking = crud_hikes.get_hike_parking()
 
     logged_in_email = session.get("user_email")
 
-    if logged_in_email != None:
+    if logged_in_email is not None:
         user = crud_users.get_user_by_email(session["user_email"])
         bookmarks_list_by_user = crud_bookmarks_lists.get_bookmarks_lists_by_user_id(user.user_id)
     else:
@@ -160,13 +160,13 @@ def search_box():
         # Populate options for the search bar
     hikes = crud_hikes.get_hikes()
     states = crud_hikes.get_hike_states()
-    cities = crud_hikes.get_hike_cities()
-    areas = crud_hikes.get_hike_areas()
+    cities = crud_hikes.get_hike_cities('California')
+    areas = crud_hikes.get_hike_areas('California')
     parking = crud_hikes.get_hike_parking()
 
     logged_in_email = session.get("user_email")
 
-    if logged_in_email != None:
+    if logged_in_email is not None:
         user = crud_users.get_user_by_email(session["user_email"])
         bookmarks_list_by_user = crud_bookmarks_lists.get_bookmarks_lists_by_user_id(user.user_id)
     else:
@@ -207,8 +207,8 @@ def show_hike(hike_id):
     hike_resources = hike.resources.split(",")
     comments = crud_comments.get_comment_by_hike_id(hike_id)
     states = crud_hikes.get_hike_states()
-    cities = crud_hikes.get_hike_cities()
-    areas = crud_hikes.get_hike_areas()
+    cities = crud_hikes.get_hike_cities('California')
+    areas = crud_hikes.get_hike_areas('California')
     parking = crud_hikes.get_hike_parking()
 
     logged_in_email = session.get("user_email")
@@ -267,70 +267,59 @@ def add_pet():
     """Create a pet profile"""
 
     logged_in_email = session.get("user_email")
+    user = crud_users.get_user_by_email(logged_in_email)
 
-    if logged_in_email is None:
-        flash("You must log in to add a pet profile.")
+    form_data = request.form.to_dict("formData")
+    pet_name = form_data["petName"]
+    gender = form_data["gender"]
+    birthday = form_data["birthday"]
+    breed = form_data["breed"]
+    my_file = request.files["imageFile"]
+
+    if gender == "":
+        gender = None
+    if birthday == "":
+        birthday = None
+    if breed == "":
+        breed = None
+    if my_file.filename == "":
+        pet_img_url = None
+        img_public_id = None
     else:
-        user = crud_users.get_user_by_email(logged_in_email)
-
-        pet_name = request.form.get("pet_name")
-        gender = request.form.get("gender")
-
-        if gender == "":
-            gender = None
-
-        birthday = request.form.get("birthday")
-
-        if birthday == "":
-            birthday = None
-
-        breed = request.form.get("breed")
-
-        if breed == "":
-            breed = None
-
-        my_file = request.files["my_file"]
-
-        if my_file.filename == "":
-            pet_imgURL = None
-            img_public_id = None
-        else:
-            # save the uploaded file to Cloudinary by making an API request
-            result = cloudinary.uploader.upload(
-                my_file,
-                api_key=CLOUDINARY_KEY,
-                api_secret=CLOUDINARY_SECRET,
-                cloud_name=CLOUD_NAME,
-            )
-
-            pet_imgURL = result["secure_url"]
-            img_public_id = result["public_id"]
-
-        check_ins = []
-
-        pet = crud_pets.create_pet(
-            user,
-            pet_name,
-            gender,
-            birthday,
-            breed,
-            pet_imgURL,
-            img_public_id,
-            check_ins,
+        # save the uploaded file to Cloudinary by making an API request
+        result = cloudinary.uploader.upload(
+            my_file,
+            api_key=CLOUDINARY_KEY,
+            api_secret=CLOUDINARY_SECRET,
+            cloud_name=CLOUD_NAME,
         )
-        db.session.add(pet)
-        db.session.commit()
-        flash(f"Success! {pet_name} profile has been added.")
+        pet_img_url = result["secure_url"]
+        img_public_id = result["public_id"]
 
-        pet_schema = PetSchema()
-        pet_json = pet_schema.dump(pet)
+    check_ins = []
 
-    # return jsonify({"success": True, "petAdded": pet_json})
-    return redirect(request.referrer)
+    pet = crud_pets.create_pet(
+        user,
+        pet_name,
+        gender,
+        birthday,
+        breed,
+        pet_img_url,
+        img_public_id,
+        check_ins,
+    )
+    db.session.add(pet)
+    db.session.commit()
+    
+
+    pet_schema = PetSchema()
+    pet_json = pet_schema.dump(pet)
+
+    return jsonify({"success": True, "petAdded": pet_json})
 
 
-@app.route("/edit-pet", methods=["POST"])
-def edit_pet():
+@app.route("/edit-pet/<pet_id>", methods=["POST"])
+def edit_pet(pet_id):
     """Edit a pet"""
 
     # would be nice for this to be a react inline form editor
@@ -363,7 +352,7 @@ def edit_pet():
         # then upload new image
         if my_file.filename != "":
             img_public_id = pet.img_public_id
-            if img_public_id != None:
+            if img_public_id is not None:
                 cloudinary.uploader.destroy(
                     img_public_id,
                     api_key=CLOUDINARY_KEY,
@@ -378,7 +367,7 @@ def edit_pet():
                 cloud_name=CLOUD_NAME,
             )
 
-            pet.pet_imgURL = result["secure_url"]
+            pet.pet_img_URL = result["secure_url"]
             pet.img_public_id = result["public_id"]
 
         db.session.commit()
@@ -386,31 +375,24 @@ def edit_pet():
     return redirect(request.referrer)
 
 
-@app.route("/delete-pet", methods=["POST"])
-def delete_pet():
+@app.route("/delete-pet/<pet_id>", methods=["DELETE"])
+def delete_pet(pet_id):
     """Delete a pet profile"""
 
-    logged_in_email = session.get("user_email")
+    pet = crud_pets.get_pet_by_id(pet_id)
+    img_public_id = pet.img_public_id
+    if img_public_id is not None:
+        cloudinary.uploader.destroy(
+            img_public_id,
+            api_key=CLOUDINARY_KEY,
+            api_secret=CLOUDINARY_SECRET,
+            cloud_name=CLOUD_NAME,
+        )
 
-    if logged_in_email is None:
-        flash("You must log in to delete a pet profile.")
-    else:
-        pet_id = request.form.get("delete")
-        pet = crud_pets.get_pet_by_id(pet_id)
-        img_public_id = pet.img_public_id
-        if img_public_id != None:
-            cloudinary.uploader.destroy(
-                img_public_id,
-                api_key=CLOUDINARY_KEY,
-                api_secret=CLOUDINARY_SECRET,
-                cloud_name=CLOUD_NAME,
-            )
-        flash(f"Success! {pet.pet_name} profile has been deleted.")
+    db.session.delete(pet)
+    db.session.commit()
 
-        db.session.delete(pet)
-        db.session.commit()
-
-    return redirect(request.referrer)
+    return jsonify({"success": True})
 
 
 @app.route("/hikes/<hike_id>/add-check-in", methods=["POST"])
@@ -880,7 +862,13 @@ def get_pets_json():
     pets_schema = PetSchema(many=True)
     pets_json = pets_schema.dump(pets)
 
-    return jsonify({"pets": pets_json})
+    check_ins_schema = CheckInSchema(many=True, only=["miles_completed"])
+
+    for idx, pet in enumerate(pets):
+        check_ins_json = check_ins_schema.dump(pet.check_ins)
+        pets_json[idx]["check_ins"] = check_ins_json
+
+    return jsonify({"petProfiles": pets_json})
 
 
 @app.route("/check-ins-by-pets.json")
@@ -971,7 +959,6 @@ def get_bookmarks_hikes_json(bookmarks_list_id):
 @app.route("/hikes/<hike_id>/bookmarks.json")
 def get_hike_bookmarks_json(hike_id):
     """Return a JSON response for a hike's bookmarks."""
-    
     logged_in_email = session.get("user_email")
     user = crud_users.get_user_by_email(logged_in_email)
 

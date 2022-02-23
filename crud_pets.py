@@ -21,7 +21,7 @@ def create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, img_public_i
 def get_pets_by_user_id(user_id):
     """Return all pets by user_id."""
 
-    return (db.session.query(Pet).filter_by(user_id=user_id).all())
+    return (db.session.query(Pet).filter_by(user_id=user_id).order_by(Pet.pet_name.asc()).all())
 
 
 def get_pet_by_id(pet_id):
