@@ -274,7 +274,7 @@ def add_pet():
     gender = form_data["gender"]
     birthday = form_data["birthday"]
     breed = form_data["breed"]
-    my_file = request.files["imageFile"]
+    my_file = request.files.get("imageFile")
 
     if gender == "":
         gender = None
@@ -282,7 +282,7 @@ def add_pet():
         birthday = None
     if breed == "":
         breed = None
-    if my_file.filename == "":
+    if my_file == None:
         pet_img_url = None
         img_public_id = None
     else:
@@ -322,57 +322,50 @@ def add_pet():
 def edit_pet(pet_id):
     """Edit a pet"""
 
-    # would be nice for this to be a react inline form editor
+    pet = crud_pets.get_pet_by_id(pet_id)
 
-    logged_in_email = session.get("user_email")
+    form_data = request.form.to_dict("formData")
 
-    if logged_in_email is None:
-        flash("You must log in to edit a pet profile.")
-    else:
-        # this would be better if user can edit one line at a time,
-        # in case they want to keep some info and change/remove other info
-        pet_id = request.form.get("edit")
-        pet = crud_pets.get_pet_by_id(pet_id)
+    pet.pet_name = form_data["petName"]
 
-        pet.pet_name = request.form.get("pet_name")
+    gender = form_data["gender"]
+    birthday = form_data["birthday"]
+    breed = form_data["breed"]
+    my_file = request.files.get("imageFile")
 
-        gender = request.form.get("gender")
-        birthday = request.form.get("birthday")
-        breed = request.form.get("breed")
-        my_file = request.files["my_file"]
+    print(my_file)
 
-        if gender != "":
-            pet.gender = gender
-        if birthday != "":
-            pet.birthday = birthday
-        if breed != "":
-            pet.breed = breed
+    if gender != "":
+        pet.gender = gender
+    if birthday != "":
+        pet.birthday = birthday
+    if breed != "":
+        pet.breed = breed
 
-        # if user uploads new image file, delete old image from cloudinary
-        # then upload new image
-        if my_file.filename != "":
-            img_public_id = pet.img_public_id
-            if img_public_id is not None:
-                cloudinary.uploader.destroy(
-                    img_public_id,
-                    api_key=CLOUDINARY_KEY,
-                    api_secret=CLOUDINARY_SECRET,
-                    cloud_name=CLOUD_NAME,
-            )
-            # save the uploaded file to Cloudinary by making an API request
-            result = cloudinary.uploader.upload(
-                my_file,
+    if my_file is not None: # if user uploads new image file, delete old image from cloudinary
+    # then upload new image
+        img_public_id = pet.img_public_id
+        if img_public_id is not None:
+            cloudinary.uploader.destroy(
+                img_public_id,
                 api_key=CLOUDINARY_KEY,
                 api_secret=CLOUDINARY_SECRET,
                 cloud_name=CLOUD_NAME,
-            )
+        )
+        # save the uploaded file to Cloudinary by making an API request
+        result = cloudinary.uploader.upload(
+            my_file,
+            api_key=CLOUDINARY_KEY,
+            api_secret=CLOUDINARY_SECRET,
+            cloud_name=CLOUD_NAME,
+        )
 
-            pet.pet_img_URL = result["secure_url"]
-            pet.img_public_id = result["public_id"]
+        pet.pet_imgURL = result["secure_url"]
+        pet.img_public_id = result["public_id"]
 
-        db.session.commit()
+    db.session.commit()
 
-    return redirect(request.referrer)
+    return jsonify({"success": True})
 
 
 @app.route("/delete-pet/<pet_id>", methods=["DELETE"])

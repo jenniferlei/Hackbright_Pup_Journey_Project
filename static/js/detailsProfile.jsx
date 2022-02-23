@@ -48,7 +48,7 @@ function PetProfile(props) {
                   <a
                     href=""
                     data-bs-toggle="modal"
-                    data-bs-target="#modal-edit-{{ pet.pet_id }}"
+                    data-bs-target={`#modal-edit-${props.pet_id}`}
                     style={{ color: "rgb(44, 44, 44)" }}
                   >
                     <small>
@@ -61,21 +61,19 @@ function PetProfile(props) {
                     </small>
                   </a>
                   &nbsp;&nbsp;&nbsp;
-                  <form action="/delete-pet" method="POST">
-                    <button
-                      className="btn btn-sm"
-                      style={{ padding: "0" }}
-                      type="submit"
-                      onClick={deleteConfirm}
-                    >
-                      <i
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="right"
-                        title="delete pet profile"
-                        className="bi bi-x"
-                      ></i>
-                    </button>
-                  </form>
+                  <button
+                    className="btn btn-sm"
+                    style={{ padding: "0" }}
+                    type="submit"
+                    onClick={deleteConfirm}
+                  >
+                    <i
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="right"
+                      title="delete pet profile"
+                      className="bi bi-x"
+                    ></i>
+                  </button>
                 </div>
               </div>
               <div className="card-text">
@@ -146,23 +144,31 @@ function EditPetProfile(props) {
   // console.log(removePet);
 
   function editExistingPetProfile() {
+    const formData = new FormData();
+
+    formData.append("petName", petName);
+    formData.append("gender", gender);
+    formData.append("birthday", birthday);
+    formData.append("breed", breed);
+
+    if (imageFile !== null && typeof imageFile !== "undefined") {
+      formData.append("imageFile", imageFile);
+    }
+
+    for (const key of formData.entries()) {
+      console.log(key);
+    }
+
     fetch(`/edit-pet/${props.pet_id}`, {
       method: "POST",
-      headers: {},
-      body: JSON.stringify({
-        petName,
-        gender,
-        birthday,
-        breed,
-        imageFile,
-      }),
+      body: formData,
     })
       .then((response) => {
         response.json();
       })
       .then((jsonResponse) => {
-        // console.log(jsonResponse);
         props.refreshPets();
+        console.log(jsonResponse);
       });
   }
   return (
@@ -189,24 +195,24 @@ function EditPetProfile(props) {
             </div>
             <div className="modal-body">
               <div className="mb-3">
-                <label htmlFor="pet_name">Name</label>&nbsp;
+                <label htmlFor="pet_name"> Name </label>&nbsp;
                 <small className="text-muted">*</small>
                 <input
                   type="text"
-                  name="pet_name"
                   value={petName}
                   onChange={(event) => setPetName(event.target.value)}
                   className="form-control"
+                  placeholder="Name"
                   required
                 />
               </div>
 
               <div className="mb-3">
-                <label htmlFor="gender">Gender</label>
+                <label htmlFor="gender"> Gender </label>
                 <select
-                  className="form-control"
                   selected={gender}
                   onChange={(event) => setGender(event.target.value)}
+                  className="form-control"
                 >
                   <option value=""></option>
                   <option value="female">female</option>
@@ -215,7 +221,7 @@ function EditPetProfile(props) {
               </div>
 
               <div className="mb-3">
-                <label htmlFor="birthday">Birthday</label>
+                <label htmlFor="birthday"> Birthday </label>
                 <input
                   type="date"
                   value={birthday}
@@ -246,10 +252,10 @@ function EditPetProfile(props) {
               </div>
               <div className="modal-footer">
                 <button
+                  type="submit"
                   className="btn btn-sm btn-outline-dark btn-block mt-4"
                   data-bs-dismiss="modal"
                   onClick={editExistingPetProfile}
-                  type="submit"
                 >
                   Save
                 </button>
@@ -292,11 +298,11 @@ function AddPetProfile(props) {
       console.log(key);
     }
 
-    console.log("petName:", petName);
-    console.log("gender:", gender);
-    console.log("birthday:", birthday);
-    console.log("breed:", breed);
-    console.log("imageFile:", imageFile);
+    // console.log("petName:", petName);
+    // console.log("gender:", gender);
+    // console.log("birthday:", birthday);
+    // console.log("breed:", breed);
+    // console.log("imageFile:", imageFile);
 
     fetch("/add-pet", {
       method: "POST",
@@ -530,7 +536,6 @@ function PetProfileContainer() {
           <h3 className="offcanvas-title" id="ProfileLabel">
             Pet Profile
           </h3>
-          View All
         </div>
         <div className="offcanvas-body">
           {session_login !== "True" ? (
