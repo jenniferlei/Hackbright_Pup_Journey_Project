@@ -1,5 +1,6 @@
 """CRUD operations for Hike Model."""
 
+from sqlalchemy import func
 from model import db, User, Pet, Hike, Comment, CheckIn, PetCheckIn, BookmarksList, HikeBookmarksList, connect_to_db
 
 
@@ -46,8 +47,7 @@ def create_hike(
 def get_hikes():
     """Return all hikes."""
 
-    return db.session.query(Hike).order_by(Hike.hike_name.asc()).all()
-
+    return db.session.query(Hike).order_by(func.lower(Hike.hike_name).asc()).all()
 
 def get_hike_by_id(hike_id):
     """Return hike by id."""
@@ -83,10 +83,10 @@ def get_hikes_by_advanced_search(
     return db.session.query(Hike).filter(*queries).order_by(Hike.hike_name.asc()).all()
 
 
-# def get_hike_by_keyword(keyword):
-#     """Return hikes by keyword."""
+def get_hike_by_keyword(keyword):
+    """Return hikes by keyword."""
 
-#     return db.session.query(Hike).filter(Hike.hike_name.ilike(f"%{keyword}%")).all()
+    return db.session.query(Hike).filter(Hike.hike_name.ilike(f"%{keyword}%")).all()
 
 
 # def get_hike_by_difficulty(difficulty):

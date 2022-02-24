@@ -3,6 +3,7 @@
 
 {% block body %}
 
+<div id="allHikesRoot"></div>
 <!-- OFF CANVAS SEARCH -->
 <div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasSearch" aria-labelledby="offcanvasSearchLabel">
   <div class="offcanvas-header">
@@ -163,49 +164,6 @@
 </div>
 <!-- END OFF CANVAS SEARCH -->
 
-<!-- START OFF CANVAS CHECK INS -->
-<div class="offcanvas offcanvas-end" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasCheckIns" aria-labelledby="offcanvasCheckInsLabel">
-  <div class="offcanvas-header">
-    <h3 class="offcanvas-title" id="offcanvasCheckInsLabel">Check Ins</h3>
-  </div>
-  <div class="offcanvas-body" style="position:relative">
-    <div style="padding:0.5em">
-    content here
-    </div>
-  
-    <button type="button" class="btn-close text-reset" style="bottom:1em; left:1em; position:absolute; float:right" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-  </div>
-</div>
-<!-- END OFF CANVAS CHECK INS -->
-
-<!-- START OFF CANVAS BOOKMARKS -->
-<div class="offcanvas offcanvas-end" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasBookmarks" aria-labelledby="offcanvasBookmarksLabel">
-  <div class="offcanvas-header">
-    <h3 class="offcanvas-title" id="offcanvasBookmarksLabel">Bookmarks</h3>
-  </div>
-  <div class="offcanvas-body" style="position:relative">
-    <div style="padding:0.5em">
-    content here
-    </div>
-    <button type="button" class="btn-close text-reset" style="bottom:1em; left:1em; position:absolute; float:right" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-  </div>
-</div>
-<!-- END OFF CANVAS BOOKMARKS -->
-
-<!-- START OFF CANVAS PROFILE -->
-<div class="offcanvas offcanvas-end" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasProfile" aria-labelledby="offcanvasProfileLabel">
-  <div class="offcanvas-header">
-    <h3 class="offcanvas-title" id="offcanvasProfileLabel">Profile</h3>
-  </div>
-  <div class="offcanvas-body" style="position:relative">
-    <div style="padding:0.5em">
-    content here
-    </div>
-    <button type="button" class="btn-close text-reset" style="bottom:1em; left:1em; position:absolute; float:right" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-  </div>
-</div>
-<!-- END OFF CANVAS BOOKMARKS -->
-
 <div class="container-fluid">
 
   <div class="d-flex justify-content-start">
@@ -234,17 +192,17 @@
           <ul class="no-bullets">
             {% for hike in search_hikes|sort(attribute='hike_name') %}
               <li>
-                {% if "login" in session %}
+                <!-- {% if "login" in session %}
                 <a class="btn btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-add-bookmark-{{ hike.hike_id}}">
                   <i data-bs-toggle="tooltip" data-bs-placement="right" title="bookmark this hike" class="bi bi-bookmark-star"></i>
                 </a>
-                {% endif %}
+                {% endif %} -->
                 <a class="link-dark" href="/hikes/{{ hike.hike_id }}">{{ hike.hike_name }}</a>
                 <br><small>{{ hike.difficulty }} | {{ hike.miles }} miles | {{ hike.city }}, {{ hike.state }} | {{ hike.area }} | {{ hike.leash_rule }} | {{ hike.parking }}</small>
               </li>
 
               <!-- Begin Add Bookmark Modal -->
-              <div class="modal fade" id="modal-add-bookmark-{{ hike.hike_id}}" tabindex="-1" aria-labelledby="modal-add-bookmark-{{ hike.hike_id}}-label" aria-hidden="true">
+              <!-- <div class="modal fade" id="modal-add-bookmark-{{ hike.hike_id}}" tabindex="-1" aria-labelledby="modal-add-bookmark-{{ hike.hike_id}}-label" aria-hidden="true">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">
@@ -315,7 +273,7 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
               <!-- End of Add Bookmark Modal -->
 
 
@@ -326,48 +284,23 @@
     </div>
 
   </div>
-
- 
-<nav class="navbar navbar-expand-sm navbar-light bg-light fixed-bottom">
-  <div class="container-fluid">
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto">
-        <li class="nav-item">
-          <input class="form-control me-2 input-sm" type="search" placeholder="Search" aria-label="Search"></input>
-          
-        </li>
-        <li>
-          <a class="nav-link" role="button" type="submit"><small><i data-bs-toggle="tooltip" data-bs-placement="right" title="search" class="bi bi-search"></i></small></a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasSearch" role="button" aria-controls="offcanvasSearch">
-            <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="filter" class="bi bi-sliders"></i></small>
-          </a>
-        </li>
-      </ul>
-      <div class="d-flex">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasProfile" role="button" aria-controls="offcanvasProfile"><small><i data-bs-toggle="tooltip" data-bs-placement="right" title="profile" class="fa-solid fa-paw"></i>&nbsp;Profile</small></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasBookmarks" role="button" aria-controls="offcanvasBookmarks"><small><i data-bs-toggle="tooltip" data-bs-placement="right" title="bookmarks" class="bi bi-bookmark-star"></i>&nbsp;Bookmarks</small></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasCheckIns" role="button" aria-controls="offcanvasCheckIns"><small><i data-bs-toggle="tooltip" data-bs-placement="right" title="check ins" class="bi bi-check-circle"></i>&nbsp;Check Ins</small></a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</nav>
-
-
   
 </div>
 
+{% if "login" in session %}
+<div hidden id="login">True</div>
+<div hidden id="user_id">{{ user.user_id }}</div>
+{% else %}
+<div hidden id="login">False</div>
+<div hidden id="user_id">None</div>
+{% endif %}
 
+
+{% endblock %}
+{% block js %}
+<script src="/static/js/detailsProfile.jsx" type="text/jsx"></script>
+<script src="/static/js/detailsComment.jsx" type="text/jsx"></script>
+<script src="/static/js/detailsBookmark.jsx" type="text/jsx"></script>
+<script src="/static/js/detailsCheckIn.jsx" type="text/jsx"></script>
+<script src="/static/js/hikeComponents.jsx" type="text/jsx"></script>
 {% endblock %}

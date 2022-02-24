@@ -2,7 +2,7 @@
 endblock %} {% block body %}
 
 
-<div id="root"></div>
+<div id="hikeDetailsRoot"></div>
 <!-- OFF CANVAS SEARCH -->
 <div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="Search" aria-labelledby="SearchLabel">
   <div class="offcanvas-header">
@@ -167,115 +167,7 @@ endblock %} {% block body %}
 
 
 
-<div class="container-fluid">
-  <div class="d-flex justify-content-start">
 
-    <!-- HIKE INFO -->
-
-    <div class="card col mt-4" style="width:100vw">
-
-
-      <div class="card-header">
-        <div class="clearfix">
-          <div style="float:left">
-            <h3 class="mt-1">{{ hike.hike_name }}</h3>
-          </div>
-          <div class="d-flex" style="float:right">
-            <div class="btn-group mt-1">
-              <button type="button" class="btn btn-sm btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                actions
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="btn btn-sm dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#modal-add-bookmark">
-              <i data-bs-toggle="tooltip" data-bs-placement="right" title="bookmark this hike" class="bi bi-bookmark-star"></i> bookmark
-            </a></li>
-                <li><a class="btn btn-sm dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#modal-add-check-in">
-              <i data-bs-toggle="tooltip" data-bs-placement="right" title="add a check in" class="bi bi-check-circle"></i> check in
-            </a></li>
-                <li><a class="btn btn-sm dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#modal-add-comment">
-              <i data-bs-toggle="tooltip" data-bs-placement="right" title="add a comment" class="bi bi-chat-text"></i> comment
-            </a></li>
-              </ul>
-            </div>
-
-
-
-            <!-- <a class="btn btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-add-bookmark">
-              <i data-bs-toggle="tooltip" data-bs-placement="right" title="bookmark this hike" class="bi bi-bookmark-star"></i>
-            </a>
-            <a class="btn btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-add-check-in">
-              <i data-bs-toggle="tooltip" data-bs-placement="right" title="add a check in" class="bi bi-check-circle"></i>
-            </a>
-            <a class="btn btn-sm" href="" data-bs-toggle="modal" data-bs-target="#modal-add-comment">
-              <i data-bs-toggle="tooltip" data-bs-placement="right" title="add a comment" class="bi bi-chat-text"></i>
-            </a> -->
-          </div>
-        </div>
-      </div>
-
-      <div class="row g-0">
-
-      <div class="col-md-7">
-        <div class="card-body">
-          {{ hike.description }}
-          <ul class="no-bullets">
-            <li>
-              <strong><span id="area">Area:</span></strong> {{ hike.area }}, {{
-              hike.city }}, {{ hike.state }}
-            </li>
-            <li>
-              <strong><span id="difficulty">Difficulty:</span></strong> {{
-              hike.difficulty }}
-            </li>
-            <li>
-              <strong><span id="leash_rule">Leash Rule:</span></strong> {{
-              hike.leash_rule }}
-            </li>
-            <li>
-              <strong><span id="address">Address:</span></strong> {{ hike.address }}
-            </li>
-            <li>
-              <strong><span id="coordinates">Coordinates:</span></strong> <span id="latitude">{{ hike.latitude }}</span>, <span id="longitude">{{ hike.longitude }}</span>
-            </li>
-            <li>
-              <strong><span id="length">Length:</span></strong> {{ hike.miles }} {{
-              hike.path }}
-            </li>
-            <li>
-              <strong><span id="parking">Parking:</span></strong> {{ hike.parking }}
-            </li>
-            <li>
-              <strong><span id="resources">Resources:</span></strong>
-              {% for hike_resource in hike_resources %}
-              <br /><a href="{{ hike_resource }}" target="_blank"
-                >{{ hike_resource }}</a
-              >
-              {% endfor %}
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md-5">
-        <div class="embed-google-map">
-              <iframe width="100%" height="375" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?q={{ hike.latitude }},{{ hike.longitude }}&t=&zoom=8&maptype=roadmap&ie=UTF8&iwloc=&output=embed">
-              </iframe>
-
-              <!-- API MAP -->
-              <!-- <iframe
-                width="500"
-                height="300"
-                frameborder="0" style="border:0"
-                src="https://www.google.com/maps/embed/v1/directions?key={{ GOOGLE_KEY }}&origin=Current+Location&destination={{ hike.latitude }},{{ hike.longitude }}&center={{ hike.latitude }},{{ hike.longitude }}&avoid=tolls&zoom=11" allowfullscreen>
-              </iframe> -->
-            </div>
-      </div>
-    </div>
-      </div>
-    </div>
-  </div>
-
-
-</div>
 
 <div hidden id="hike_id">{{ hike.hike_id }}</div>
 
@@ -296,7 +188,8 @@ endblock %} {% block body %}
   src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_KEY }}&callback=initMap">
 </script> -->
 
-<script src="/static/js/hikeDetails.js"></script>
+<!-- <script src="/static/js/hikeDetails.js"></script> -->
+<script src="/static/js/hikeDetails.jsx"></script>
 <script src="/static/js/detailsProfile.jsx" type="text/jsx"></script>
 <script src="/static/js/detailsComment.jsx" type="text/jsx"></script>
 <script src="/static/js/detailsBookmark.jsx" type="text/jsx"></script>

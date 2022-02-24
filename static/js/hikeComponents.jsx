@@ -1,7 +1,13 @@
 function FixedFooter(props) {
+  const HikeDetailsBookmarksListContainerRef = React.useRef();
+  const HikeDetailsCheckInContainerRef = React.useRef();
+
   return (
     <React.Fragment>
-      <BookmarksListContainer />
+      <HikeDetailsBookmarksListContainer
+        ref={HikeDetailsBookmarksListContainerRef}
+      />
+      <HikeDetailsCheckInContainer ref={HikeDetailsCheckInContainerRef} />
       <nav className="navbar navbar-expand-sm navbar-light bg-light fixed-bottom">
         <div className="container-fluid">
           <button
@@ -89,6 +95,9 @@ function FixedFooter(props) {
                     href="#Bookmarks"
                     role="button"
                     aria-controls="Bookmarks"
+                    onClick={() =>
+                      HikeDetailsBookmarksListContainerRef.current.getHikeBookmarksLists()
+                    }
                   >
                     <small>
                       <i
@@ -108,6 +117,9 @@ function FixedFooter(props) {
                     href="#CheckIns"
                     role="button"
                     aria-controls="CheckIns"
+                    onClick={() =>
+                      HikeDetailsCheckInContainerRef.current.getCheckIns()
+                    }
                   >
                     <small>
                       <i
@@ -148,16 +160,38 @@ function FixedFooter(props) {
   );
 }
 
-function Everything(props) {
+function HikeDetailsEverything(props) {
   return (
     <React.Fragment>
       <PetProfileContainer />
-      <BookmarksListContainer />
-      <CheckInContainer />
-      <CommentContainer />
+      <HikeDetailsCommentContainer />
       <FixedFooter />
     </React.Fragment>
   );
 }
 
-ReactDOM.render(<Everything />, document.getElementById("root"));
+function AllHikesEverything(props) {
+  return (
+    <React.Fragment>
+      <PetProfileContainer />
+      {/* <AllHikesBookmarksListContainer />
+      <AllHikesCheckInContainer />
+      <AllHikesCommentContainer /> */}
+      <FixedFooter />
+    </React.Fragment>
+  );
+}
+
+if (document.getElementById("hikeDetailsRoot") !== null) {
+  ReactDOM.render(
+    <HikeDetailsEverything />,
+    document.getElementById("hikeDetailsRoot")
+  );
+}
+
+if (document.getElementById("allHikesRoot") !== null) {
+  ReactDOM.render(
+    <AllHikesEverything />,
+    document.getElementById("allHikesRoot")
+  );
+}

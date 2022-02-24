@@ -16,7 +16,7 @@ def get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(hike_id, bookmarks_list
     """Return a hike bookmarks list object given a hike_id and bookmarks_list_id"""
 
     return (db.session.query(HikeBookmarksList).filter(HikeBookmarksList.hike_id==hike_id,
-                                                        HikeBookmarksList.bookmarks_list_id==bookmarks_list_id).one())
+                                                        HikeBookmarksList.bookmarks_list_id==bookmarks_list_id).all())
 
 
 if __name__ == '__main__':

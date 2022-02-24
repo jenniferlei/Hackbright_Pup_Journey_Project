@@ -30,7 +30,11 @@ function CheckIn(props) {
         <div className="clearfix">
           <div className="float-start">
             <small>
-              {props.pets_on_hike.map((pet) => `🐾    ${pet.pet_name} `)}
+              {props.pets_on_hike.map((pet) => `${pet.pet_name} `)}
+              <br></br>
+              <a className="link-dark" href={`/hikes/${props.hike_id}`}>
+                {props.hike_name}
+              </a>
               <br></br>
               {`hiked on ${props.date_hiked} | ${props.miles_completed} miles`}
               {props.total_time !== null ? (
@@ -188,14 +192,17 @@ function EditCheckIn(props) {
               <div className="mb-3">
                 <div className="row">
                   <div className="col">
-                    <label htmlFor="pet_id">Add a Pet</label>
+                    <label htmlFor="petIdInput">Add a Pet</label>
                     {addPet.map((pet) => (
-                      <div className="form-check">
+                      <div
+                        className="form-check"
+                        key={`add-${props.check_in_id}-${pet.pet_id}`}
+                      >
                         <input
                           className="form-check-input"
                           type="checkbox"
                           value={pet.pet_id}
-                          id={`add-to-check-in-${pet.pet_id}`}
+                          id={`add-to-check-in-${props.check_in_id}-${pet.pet_id}`}
                           checked={pet.select}
                           onChange={(event) => {
                             let checked = event.target.checked;
@@ -222,7 +229,10 @@ function EditCheckIn(props) {
                   <div className="col">
                     <label htmlFor="pet_id">Remove a Pet</label>
                     {removePet.map((pet) => (
-                      <div className="form-check">
+                      <div
+                        className="form-check"
+                        key={`remove-${props.check_in_id}-${pet.pet_id}`}
+                      >
                         <input
                           className="form-check-input"
                           type="checkbox"
@@ -254,7 +264,7 @@ function EditCheckIn(props) {
               </div>
 
               <div className="mb-3">
-                <label htmlFor="date_hiked">Date Hiked</label>
+                <label htmlFor="dateHikedInput">Date Hiked</label>
                 &nbsp;<small className="text-muted">*</small>
                 <input
                   type="date"
@@ -265,7 +275,7 @@ function EditCheckIn(props) {
               </div>
 
               <div className="mb-3">
-                <label htmlFor="miles_completed">Miles Completed</label>
+                <label htmlFor="milesCompletedInput">Miles Completed</label>
                 &nbsp;<small className="text-muted">*</small>
                 <input
                   type="number"
@@ -278,7 +288,7 @@ function EditCheckIn(props) {
               </div>
 
               <div className="mb-3">
-                <label htmlFor="total_time">Total Time (Hours)</label>
+                <label htmlFor="totalTimeInput">Total Time (Hours)</label>
                 <input
                   type="number"
                   step=".1"
@@ -290,7 +300,7 @@ function EditCheckIn(props) {
               </div>
 
               <div className="mb-3">
-                <label htmlFor="notes">Notes</label>
+                <label htmlFor="notesInput">Notes</label>
                 <input
                   type="text"
                   value={notes}
@@ -335,10 +345,10 @@ function AddCheckIn(props) {
   function getPets() {
     fetch("/pets.json").then((response) =>
       response.json().then((jsonResponse) => {
-        const { pets } = jsonResponse;
+        const { petProfiles } = jsonResponse;
 
         const allPetOptions = [];
-        pets.map((pet) => {
+        petProfiles.map((pet) => {
           allPetOptions.push({
             select: false,
             pet_name: pet.pet_name,
@@ -436,7 +446,10 @@ function AddCheckIn(props) {
                     <label>Pets</label>&nbsp;
                     <small className="text-muted">*</small>
                     {allPetOptions.map((pet) => (
-                      <div className="form-check">
+                      <div
+                        className="form-check"
+                        key={`check-in-${pet.pet_id}`}
+                      >
                         <input
                           className="form-check-input"
                           type="checkbox"
@@ -467,7 +480,7 @@ function AddCheckIn(props) {
                   </div>
 
                   <div className="mb-3">
-                    <label htmlFor="date_hiked">Date Hiked</label>
+                    <label htmlFor="dateHikedInput">Date Hiked</label>
                     &nbsp;<small className="text-muted">*</small>
                     <input
                       type="date"
@@ -479,7 +492,7 @@ function AddCheckIn(props) {
                   </div>
 
                   <div className="mb-3">
-                    <label htmlFor="miles_completed">Miles Completed</label>
+                    <label htmlFor="milesCompletedInput">Miles Completed</label>
                     &nbsp;<small className="text-muted">*</small>
                     <input
                       type="number"
@@ -494,7 +507,7 @@ function AddCheckIn(props) {
                   </div>
 
                   <div className="mb-3">
-                    <label htmlFor="total_time">Total Time (Hours)</label>
+                    <label htmlFor="totalTimeInput">Total Time (Hours)</label>
                     <input
                       type="number"
                       step=".1"
@@ -543,7 +556,7 @@ function AddCheckIn(props) {
 }
 
 // comment container component
-function CheckInContainer() {
+const HikeDetailsCheckInContainer = React.forwardRef((props, ref) => {
   const [checkIns, setCheckIns] = React.useState([]);
 
   function refreshCheckIns() {
@@ -561,11 +574,15 @@ function CheckInContainer() {
       });
   }
 
-  if (session_login === "True") {
-    React.useEffect(() => {
-      getCheckIns();
-    }, []);
-  }
+  React.useImperativeHandle(ref, () => ({
+    getCheckIns() {
+      fetch(`/hikes/${hike_id}/user_check_ins.json`)
+        .then((response) => response.json())
+        .then((data) => {
+          setCheckIns(data.checkIns);
+        });
+    },
+  }));
 
   const allCheckIns = [];
   const allEditCheckIns = [];
@@ -582,6 +599,7 @@ function CheckInContainer() {
       <CheckIn
         key={currentCheckIn.check_in_id}
         hike_id={currentCheckIn.hike_id}
+        hike_name={currentCheckIn.hike_name}
         check_in_id={currentCheckIn.check_in_id}
         date_hiked={date_hiked_formatted}
         miles_completed={currentCheckIn.miles_completed}
@@ -614,6 +632,7 @@ function CheckInContainer() {
       {allEditCheckIns}
       <div
         className="offcanvas offcanvas-end"
+        style={{ width: "450px" }}
         data-bs-keyboard="true"
         data-bs-scroll="true"
         data-bs-backdrop="true"
@@ -656,7 +675,7 @@ function CheckInContainer() {
             className="offcanvas-footer"
             style={{
               position: "fixed",
-              right: "355px",
+              right: "405px",
               bottom: "1em",
               zIndex: "100",
             }}
@@ -673,3 +692,4 @@ function CheckInContainer() {
     </React.Fragment>
   );
 }
+)

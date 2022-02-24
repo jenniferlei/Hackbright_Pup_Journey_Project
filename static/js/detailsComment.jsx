@@ -284,7 +284,7 @@ function AddComment(props) {
 }
 
 // comment container component
-function CommentContainer() {
+function HikeDetailsCommentContainer() {
   const [comments, setComments] = React.useState([]);
 
   function addComment(

@@ -21,7 +21,11 @@ function HikeBookmark(props) {
     }).then((response) => {
       response.json().then((jsonResponse) => {
         console.log(jsonResponse);
-        props.refreshLists();
+        if (hike_id === props.hike_id) {
+          props.refreshLists();
+        } else {
+          props.removeHike();
+        }
       });
     });
   }
@@ -103,9 +107,15 @@ function BookmarksList(props) {
         miles={currentHike.miles}
         parking={currentHike.parking}
         state={currentHike.state}
+        removeHike={removeHike}
         refreshLists={refreshLists}
       />
     );
+  }
+
+  // Use getHikes() to set hikes when a hike is removed
+  function removeHike() {
+    getHikes();
   }
 
   function refreshLists() {
@@ -238,6 +248,7 @@ function RenameBookmarksList(props) {
       .then((jsonResponse) => {
         console.log(jsonResponse);
         props.getBookmarksLists();
+        props.setListOptionsState();
       });
   }
 
@@ -390,182 +401,177 @@ function CreateBookmarksList(props) {
   );
 }
 
-function AddHikesToBookmarksList(props) {
-  const session_login = document.querySelector("#login").innerText;
-  // Set Hike options
-  const [allHikesOptions, setAllHikesOptions] = React.useState("");
+// function AddHikesToBookmarksList(props) {
+//   const session_login = document.querySelector("#login").innerText;
+//   // Set Hike options
+//   const [allHikesOptions, setAllHikesOptions] = React.useState("");
 
-  console.log(props.bookmarks_list_id);
-  console.log(props.hikes);
+//   console.log(props.bookmarks_list_id);
+//   console.log(props.hikes);
 
-  function setHikesOptionsState() {
-    fetch("/all_hikes.json").then((response) =>
-      response.json().then((jsonResponse) => {
-        const hikes = jsonResponse.hikes;
-        const allHikeOptions = [];
+//   function setHikesOptionsState() {
+//     fetch("/all_hikes.json").then((response) =>
+//       response.json().then((jsonResponse) => {
+//         const hikes = jsonResponse.hikes;
+//         const allHikeOptions = [];
 
-        // go through each hike
-        // if hike is found in current bookmarks_list's hikes, add to list as true
-        // otherwise, add as false
-        hikes.map((responseHike) => {
-          let hikeOnList = false;
-          for (const propsHike of props.hikes) {
-            if (propsHike.hike_id === responseHike.hike_id) {
-              hikeOnList = true;
-            }
-          }
+//         // go through each hike
+//         // if hike is found in current bookmarks_list's hikes, add to list as true
+//         // otherwise, add as false
+//         hikes.map((responseHike) => {
+//           let hikeOnList = false;
+//           for (const propsHike of props.hikes) {
+//             if (propsHike.hike_id === responseHike.hike_id) {
+//               hikeOnList = true;
+//             }
+//           }
 
-          // if (props.hikes.map((a) => a.hike_id).includes(hike.hike_id)) {
-          //   hikeOnList = true;
-          // }
+//           // if (props.hikes.map((a) => a.hike_id).includes(hike.hike_id)) {
+//           //   hikeOnList = true;
+//           // }
 
-          if (hikeOnList) {
-            allHikeOptions.push({
-              select: true,
-              hike_name: responseHike.hike_name,
-              hike_id: responseHike.hike_id,
-            });
-          } else {
-            allHikeOptions.push({
-              select: false,
-              hike_name: responseHike.hike_name,
-              hike_id: responseHike.hike_id,
-            });
-          }
-        });
-        setAllHikesOptions(allHikeOptions);
-      })
-    );
-  }
+//           if (hikeOnList) {
+//             allHikeOptions.push({
+//               select: true,
+//               hike_name: responseHike.hike_name,
+//               hike_id: responseHike.hike_id,
+//             });
+//           } else {
+//             allHikeOptions.push({
+//               select: false,
+//               hike_name: responseHike.hike_name,
+//               hike_id: responseHike.hike_id,
+//             });
+//           }
+//         });
+//         setAllHikesOptions(allHikeOptions);
+//       })
+//     );
+//   }
 
-  if (session_login === "True") {
-    React.useEffect(() => {
-      setHikesOptionsState();
-    }, []);
-    // console.log(allHikesOptions);
-  }
+//   if (session_login === "True") {
+//     React.useEffect(() => {
+//       setHikesOptionsState();
+//     }, []);
+//     // console.log(allHikesOptions);
+//   }
 
-  console.log("allHikesOptions", allHikesOptions);
+//   console.log("allHikesOptions", allHikesOptions);
 
-  function addHikesToBookmarksList() {
-    fetch(`/${props.bookmarks_list_id}/add-hikes`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        allHikesOptions, // returns list of objects
-      }),
-    }).then((response) => {
-      response.json().then((jsonResponse) => {
-        setHikesOptionsState();
-        props.getBookmarksLists();
-        console.log(jsonResponse);
-        console.log("allHikesOptions", allHikesOptions);
-      });
-    });
-  }
+//   function addHikesToBookmarksList() {
+//     fetch(`/${props.bookmarks_list_id}/add-hikes`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Accept: "application/json",
+//       },
+//       body: JSON.stringify({
+//         allHikesOptions, // returns list of objects
+//       }),
+//     }).then((response) => {
+//       response.json().then((jsonResponse) => {
+//         setHikesOptionsState();
+//         props.getBookmarksLists();
+//         console.log(jsonResponse);
+//         console.log("allHikesOptions", allHikesOptions);
+//       });
+//     });
+//   }
 
-  return (
-    <React.Fragment>
-      <div
-        className="modal fade"
-        id={`modal-add-hikes-${props.bookmarks_list_id}`}
-        tabIndex="-1"
-        aria-labelledby={`#modal-add-hikes-${props.bookmarks_list_id}-label`}
-        aria-hidden="true"
-      >
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5
-                className="modal-title"
-                id={`#modal-add-hikes-${props.bookmarks_list_id}-label`}
-              >
-                Add Hikes
-              </h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div className="modal-body">
-              <div className="mb-3">
-                <label className="form-label" htmlFor="hikesInput">
-                  Hikes
-                </label>
-                <div style={{ height: "50vh", overflow: "auto" }}>
-                  {allHikesOptions !== ""
-                    ? allHikesOptions.map((hikeOption) => (
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id={`add-hike-${hikeOption.hike_id}-to-list-${props.bookmarks_list_id}`}
-                            value={hikeOption.hike_id}
-                            checked={hikeOption.select}
-                            onChange={(event) => {
-                              let checked = event.target.checked;
-                              setAllHikesOptions(
-                                allHikesOptions.map((data) => {
-                                  if (hikeOption.hike_id === data.hike_id) {
-                                    data.select = checked;
-                                  }
-                                  return data;
-                                })
-                              );
-                            }}
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor={`add-hike-${hikeOption.hike_id}-to-list-${props.bookmarks_list_id}`}
-                          >
-                            {hikeOption.hike_name}
-                          </label>
-                        </div>
-                      ))
-                    : null}
-                </div>
-              </div>
+//   return (
+//     <React.Fragment>
+//       <div
+//         className="modal fade"
+//         id={`modal-add-hikes-${props.bookmarks_list_id}`}
+//         tabIndex="-1"
+//         aria-labelledby={`#modal-add-hikes-${props.bookmarks_list_id}-label`}
+//         aria-hidden="true"
+//       >
+//         <div className="modal-dialog">
+//           <div className="modal-content">
+//             <div className="modal-header">
+//               <h5
+//                 className="modal-title"
+//                 id={`#modal-add-hikes-${props.bookmarks_list_id}-label`}
+//               >
+//                 Add Hikes
+//               </h5>
+//               <button
+//                 type="button"
+//                 className="btn-close"
+//                 data-bs-dismiss="modal"
+//                 aria-label="Close"
+//               ></button>
+//             </div>
+//             <div className="modal-body">
+//               <div className="mb-3">
+//                 <label className="form-label" htmlFor="hikesInput">
+//                   Hikes
+//                 </label>
+//                 <div style={{ height: "50vh", overflow: "auto" }}>
+//                   {allHikesOptions !== ""
+//                     ? allHikesOptions.map((hikeOption) => (
+//                         <div className="form-check">
+//                           <input
+//                             className="form-check-input"
+//                             type="checkbox"
+//                             id={`add-hike-${hikeOption.hike_id}-to-list-${props.bookmarks_list_id}`}
+//                             value={hikeOption.hike_id}
+//                             checked={hikeOption.select}
+//                             onChange={(event) => {
+//                               let checked = event.target.checked;
+//                               setAllHikesOptions(
+//                                 allHikesOptions.map((data) => {
+//                                   if (hikeOption.hike_id === data.hike_id) {
+//                                     data.select = checked;
+//                                   }
+//                                   return data;
+//                                 })
+//                               );
+//                             }}
+//                           />
+//                           <label
+//                             className="form-check-label"
+//                             htmlFor={`add-hike-${hikeOption.hike_id}-to-list-${props.bookmarks_list_id}`}
+//                           >
+//                             {hikeOption.hike_name}
+//                           </label>
+//                         </div>
+//                       ))
+//                     : null}
+//                 </div>
+//               </div>
 
-              <div className="modal-footer">
-                <button
-                  type="submit"
-                  className="btn btn-sm btn-outline-dark btn-block mt-4"
-                  data-bs-dismiss="modal"
-                  onClick={addHikesToBookmarksList}
-                >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-secondary btn-block mt-4"
-                  data-bs-dismiss="modal"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>
-  );
-}
+//               <div className="modal-footer">
+//                 <button
+//                   type="submit"
+//                   className="btn btn-sm btn-outline-dark btn-block mt-4"
+//                   data-bs-dismiss="modal"
+//                   onClick={addHikesToBookmarksList}
+//                 >
+//                   Save
+//                 </button>
+//                 <button
+//                   type="button"
+//                   className="btn btn-sm btn-secondary btn-block mt-4"
+//                   data-bs-dismiss="modal"
+//                 >
+//                   Close
+//                 </button>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </React.Fragment>
+//   );
+// }
 
-// Bookmarks Lists Container Component
-const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
+function AddCurrentHikeToBookmarksList(props) {
   const hike_id = document.querySelector("#hike_id").innerText;
   const session_login = document.querySelector("#login").innerText;
 
-  // Set States
-  const [bookmarksLists, setBookmarksLists] = React.useState([]);
-  const [bookmarksListsHeader, setBookmarksListsHeader] = React.useState(
-    "Bookmarks For This Hike"
-  );
+  // option to add to existing bookmarks list OR create new list with hike on it
 
   // For adding to existing list
   const [allBookmarksListOptions, setAllBookmarksListOptions] =
@@ -604,6 +610,14 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
     );
   }
 
+  if (session_login === "True") {
+    React.useEffect(() => {
+      setListOptionsState();
+    }, []);
+  }
+
+  console.log("allBookmarksListOptions", allBookmarksListOptions);
+
   function addHikeExistingBookmarksList() {
     fetch(`/hikes/${hike_id}/add-hike-to-existing-list`, {
       method: "POST",
@@ -616,7 +630,8 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
       }),
     }).then((response) => {
       response.json().then((jsonResponse) => {
-        getBookmarksLists();
+        setListOptionsState();
+        props.getBookmarksLists();
         console.log(jsonResponse);
       });
     });
@@ -637,107 +652,12 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
       }),
     }).then((response) => {
       response.json().then((jsonResponse) => {
-        getBookmarksLists();
+        setListOptionsState();
+        props.getBookmarksLists();
         console.log(jsonResponse);
       });
     });
   }
-
-  function getBookmarksLists() {
-    if (
-      document.querySelector("#BookmarksLabel").innerText ===
-      "Bookmarks For This Hike"
-    ) {
-      getHikeBookmarksLists();
-    } else if (
-      document.querySelector("#BookmarksLabel").innerText === "All Bookmarks"
-    ) {
-      getUserBookmarksLists();
-    }
-  }
-
-  function getHikeBookmarksLists() {
-    fetch(`/hikes/${hike_id}/bookmarks.json`)
-      .then((response) => response.json())
-      .then((data) => {
-        setBookmarksLists(data.bookmarksLists);
-        setBookmarksListsHeader("Bookmarks For This Hike");
-      });
-  }
-
-  function getUserBookmarksLists() {
-    fetch("/user_bookmarks_lists.json")
-      .then((response) => response.json())
-      .then((data) => {
-        setBookmarksLists(data.bookmarksLists);
-        setBookmarksListsHeader("All Bookmarks");
-      });
-  }
-
-  React.useImperativeHandle(ref, () => ({
-    getHikeBookmarksLists() {
-      fetch(`/hikes/${hike_id}/bookmarks.json`)
-        .then((response) => response.json())
-        .then((data) => {
-          setBookmarksLists(data.bookmarksLists);
-          setBookmarksListsHeader("Bookmarks For This Hike");
-        });
-    },
-  }));
-
-  const allBookmarksLists = [];
-  const allRenameBookmarksLists = [];
-  const allAddHikesToBookmarks = [];
-
-  // the following line will print out the value of cards
-  // pay attention to what it is initially and what it is when the component re-renders
-  console.log(`bookmarksLists: `, bookmarksLists);
-
-  for (const currentBookmarksList of bookmarksLists) {
-    allBookmarksLists.push(
-      <BookmarksList
-        key={currentBookmarksList.bookmarks_list_id}
-        bookmarks_list_name={currentBookmarksList.bookmarks_list_name}
-        bookmarks_list_id={currentBookmarksList.bookmarks_list_id}
-        hikes={currentBookmarksList.hikes}
-        getBookmarksLists={getBookmarksLists}
-      />
-    );
-
-    // allAddHikesToBookmarks.push(
-    //   <AddHikesToBookmarksList
-    //     key={currentBookmarksList.bookmarks_list_id}
-    //     bookmarks_list_name={currentBookmarksList.bookmarks_list_name}
-    //     bookmarks_list_id={currentBookmarksList.bookmarks_list_id}
-    //     hikes={currentBookmarksList.hikes}
-    //     getBookmarksLists={getBookmarksLists}
-    //   />
-    // );
-
-    allRenameBookmarksLists.push(
-      <RenameBookmarksList
-        key={currentBookmarksList.bookmarks_list_id}
-        bookmarks_list_name={currentBookmarksList.bookmarks_list_name}
-        bookmarks_list_id={currentBookmarksList.bookmarks_list_id}
-        getBookmarksLists={getBookmarksLists}
-      />
-    );
-  }
-
-  const [hikeDetails, setHikeDetails] = React.useState("");
-
-  // Get all hikes for the bookmarks list
-  function getHikeDetails() {
-    fetch(`/hikes/${hike_id}.json`)
-      .then((response) => response.json())
-      .then((data) => {
-        setHikeDetails(data.hike);
-      });
-  }
-
-  React.useEffect(() => {
-    getHikeDetails();
-  }, []);
 
   return (
     <React.Fragment>
@@ -799,7 +719,7 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
                       ? allBookmarksListOptions.map((bookmarksListOption) => (
                           <div
                             className="form-check"
-                            key={`${hike_id}-${bookmarksListOption.bookmarks_list_id}`}
+                            key={`${props.hike_id}-${bookmarksListOption.bookmarks_list_id}`}
                           >
                             <input
                               className="form-check-input"
@@ -859,8 +779,99 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
           </div>
         </div>
       </div>
+    </React.Fragment>
+  );
+}
 
+// Bookmarks Lists Container Component
+function HikeDetailsBookmarksListContainer() {
+  const session_login = document.querySelector("#login").innerText;
+  const [bookmarksLists, setBookmarksLists] = React.useState([]);
+  const [bookmarksListsHeader, setBookmarksListsHeader] = React.useState(
+    "Bookmarks For This Hike"
+  );
+  const hike_id = document.querySelector("#hike_id").innerText;
+
+  function getBookmarksLists() {
+    if (
+      document.querySelector("#BookmarksLabel").innerText ===
+      "Bookmarks For This Hike"
+    ) {
+      getHikeBookmarksLists();
+    } else if (
+      document.querySelector("#BookmarksLabel").innerText === "All Bookmarks"
+    ) {
+      getUserBookmarksLists();
+    }
+  }
+
+  function getHikeBookmarksLists() {
+    fetch(`/hikes/${hike_id}/bookmarks.json`)
+      .then((response) => response.json())
+      .then((data) => {
+        setBookmarksLists(data.bookmarksLists);
+        setBookmarksListsHeader("Bookmarks For This Hike");
+      });
+  }
+
+  function getUserBookmarksLists() {
+    fetch("/user_bookmarks_lists.json")
+      .then((response) => response.json())
+      .then((data) => {
+        setBookmarksLists(data.bookmarksLists);
+        setBookmarksListsHeader("All Bookmarks");
+      });
+  }
+
+  if (session_login === "True") {
+    React.useEffect(() => {
+      getHikeBookmarksLists();
+    }, []);
+  }
+
+  const allBookmarksLists = [];
+  const allRenameBookmarksLists = [];
+  const allAddHikesToBookmarks = [];
+
+  // the following line will print out the value of cards
+  // pay attention to what it is initially and what it is when the component re-renders
+  console.log(`bookmarksLists: `, bookmarksLists);
+
+  for (const currentBookmarksList of bookmarksLists) {
+    allBookmarksLists.push(
+      <BookmarksList
+        key={currentBookmarksList.bookmarks_list_id}
+        bookmarks_list_name={currentBookmarksList.bookmarks_list_name}
+        bookmarks_list_id={currentBookmarksList.bookmarks_list_id}
+        hikes={currentBookmarksList.hikes}
+        getBookmarksLists={getBookmarksLists}
+      />
+    );
+
+    // allAddHikesToBookmarks.push(
+    //   <AddHikesToBookmarksList
+    //     key={currentBookmarksList.bookmarks_list_id}
+    //     bookmarks_list_name={currentBookmarksList.bookmarks_list_name}
+    //     bookmarks_list_id={currentBookmarksList.bookmarks_list_id}
+    //     hikes={currentBookmarksList.hikes}
+    //     getBookmarksLists={getBookmarksLists}
+    //   />
+    // );
+
+    allRenameBookmarksLists.push(
+      <RenameBookmarksList
+        key={currentBookmarksList.bookmarks_list_id}
+        bookmarks_list_name={currentBookmarksList.bookmarks_list_name}
+        bookmarks_list_id={currentBookmarksList.bookmarks_list_id}
+        getBookmarksLists={getBookmarksLists}
+      />
+    );
+  }
+
+  return (
+    <React.Fragment>
       <CreateBookmarksList getBookmarksLists={getBookmarksLists} />
+      <AddCurrentHikeToBookmarksList getBookmarksLists={getBookmarksLists} />
       {allRenameBookmarksLists}
       {/* {allAddHikesToBookmarks} */}
       <div
@@ -905,7 +916,7 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
                       href=""
                       data-bs-toggle="modal"
                       data-bs-target="#modal-add-bookmark"
-                      onClick={setListOptionsState}
+                      // onClick={setListOptionsState}
                     >
                       bookmark this hike
                     </a>
@@ -975,168 +986,6 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
           </div>
         </div>
       </div>
-
-      <div className="container-fluid">
-        <div className="d-flex justify-content-start">
-          <div className="card col mt-4" style={{ width: "100vw" }}>
-            <div className="card-header">
-              <div className="clearfix">
-                <div className="float-start">
-                  <h3 className="mt-1">{hikeDetails.hike_name}</h3>
-                </div>
-                <div className="d-flex float-end">
-                  <div className="btn-group mt-1">
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-dark dropdown-toggle"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      actions
-                    </button>
-                    <ul className="dropdown-menu dropdown-menu-end">
-                      <li>
-                        <a
-                          className="btn btn-sm dropdown-item"
-                          href=""
-                          data-bs-toggle="modal"
-                          data-bs-target="#modal-add-bookmark"
-                          onClick={setListOptionsState}
-                        >
-                          <i
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="right"
-                            title="bookmark this hike"
-                            className="bi bi-bookmark-star"
-                          ></i>{" "}
-                          bookmark
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          className="btn btn-sm dropdown-item"
-                          href=""
-                          data-bs-toggle="modal"
-                          data-bs-target="#modal-add-check-in"
-                        >
-                          <i
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="right"
-                            title="add a check in"
-                            className="bi bi-check-circle"
-                          ></i>{" "}
-                          check in
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          className="btn btn-sm dropdown-item"
-                          href=""
-                          data-bs-toggle="modal"
-                          data-bs-target="#modal-add-comment"
-                        >
-                          <i
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="right"
-                            title="add a comment"
-                            className="bi bi-chat-text"
-                          ></i>{" "}
-                          comment
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="row g-0">
-              <div className="col-md-7">
-                <div className="card-body">
-                  {hikeDetails.description}
-                  <ul className="no-bullets">
-                    <li>
-                      <strong>
-                        <span id="area">Area:</span>
-                      </strong>{" "}
-                      {hikeDetails.area}, {hikeDetails.city},{" "}
-                      {hikeDetails.state}
-                    </li>
-                    <li>
-                      <strong>
-                        <span id="difficulty">Difficulty:</span>
-                      </strong>{" "}
-                      {hikeDetails.difficulty}
-                    </li>
-                    <li>
-                      <strong>
-                        <span id="leash_rule">Leash Rule:</span>
-                      </strong>{" "}
-                      {hikeDetails.leash_rule}
-                    </li>
-                    <li>
-                      <strong>
-                        <span id="address">Address:</span>
-                      </strong>{" "}
-                      {hikeDetails.address}
-                    </li>
-                    <li>
-                      <strong>
-                        <span id="coordinates">Coordinates:</span>
-                      </strong>{" "}
-                      <span id="latitude">{hikeDetails.latitude}</span>,{" "}
-                      <span id="longitude">{hikeDetails.longitude}</span>
-                    </li>
-                    <li>
-                      <strong>
-                        <span id="length">Length:</span>
-                      </strong>{" "}
-                      {hikeDetails.miles} {hikeDetails.path}
-                    </li>
-                    <li>
-                      <strong>
-                        <span id="parking">Parking:</span>
-                      </strong>{" "}
-                      {hikeDetails.parking}
-                    </li>
-                    <li>
-                      <strong>
-                        <span id="resources">Resources:</span>
-                      </strong>
-                      <br />
-                      <a href="{{ hike_resource }}" target="_blank">
-                        {hikeDetails.resource}
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div className="col-md-5">
-                <div className="embed-google-map">
-                  <iframe
-                    width="100%"
-                    height="375"
-                    frameBorder="0"
-                    scrolling="no"
-                    marginHeight="0"
-                    marginWidth="0"
-                    src={`https://maps.google.com/maps?q=${hikeDetails.latitude},${hikeDetails.longitude}&t=&zoom=8&maptype=roadmap&ie=UTF8&iwloc=&output=embed`}
-                  ></iframe>
-                  {/* API MAP
-                <iframe
-                  width="500"
-                  height="300"
-                  frameBorder="0"
-                  style="border:0"
-                  src={`"https://www.google.com/maps/embed/v1/directions?key={{ GOOGLE_KEY }}&origin=Current+Location&destination={{ hikeDetails.latitude }},{{ hikeDetails.longitude }}&center={{ hikeDetails.latitude }},{{ hikeDetails.longitude }}&avoid=tolls&zoom=11"`}
-                  allowfullscreen
-                ></iframe> */}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </React.Fragment>
   );
-});
+}

@@ -14,7 +14,7 @@ function PetProfile(props) {
 
   // Process deletion
   function deleteExistingPetProfile() {
-    fetch(`/delete-check-in/${props.pet_id}`, {
+    fetch(`/delete-pet/${props.pet_id}`, {
       method: "DELETE",
     }).then((response) => {
       response.json().then((jsonResponse) => {
@@ -44,7 +44,7 @@ function PetProfile(props) {
             <div className="card-body">
               <div className="clearfix">
                 <h5 className="card-title float-start">{props.pet_name}</h5>
-                <div className="d-flex float-end">
+                <div className="float-end">
                   <a
                     href=""
                     data-bs-toggle="modal"
@@ -277,7 +277,6 @@ function EditPetProfile(props) {
 
 function AddPetProfile(props) {
   const session_login = document.querySelector("#login").innerText;
-  const hike_id = document.querySelector("#hike_id").innerText;
 
   const [petName, setPetName] = React.useState("");
   const [gender, setGender] = React.useState("");
@@ -525,6 +524,7 @@ function PetProfileContainer() {
       {allEditPetProfiles}
       <div
         className="offcanvas offcanvas-end"
+        style={{ width: "450px" }}
         data-bs-keyboard="true"
         data-bs-scroll="true"
         data-bs-backdrop="true"
@@ -563,7 +563,7 @@ function PetProfileContainer() {
             className="offcanvas-footer"
             style={{
               position: "fixed",
-              right: "355px",
+              right: "405px",
               bottom: "1em",
               zIndex: "100",
             }}
