@@ -984,7 +984,7 @@ def get_hike_bookmarks_json(hike_id):
     hikes_schema = HikeSchema(many=True, exclude=["comments", "check_ins", "bookmarks_lists"])
 
     for idx, bookmark in enumerate(bookmarks_by_hike):
-        hikes_json = hikes_schema.dump(bookmark.hikes)
+        hikes_json = hikes_schema.dump(sorted(bookmark.hikes, key=lambda x: x.hike_name))
         bookmarks_json[idx]["hikes"] = hikes_json
 
     return jsonify({"bookmarksLists": bookmarks_json})
@@ -1005,10 +1005,9 @@ def get_user_bookmarks_lists():
 
     hikes_schema = HikeSchema(many=True, exclude=["comments", "check_ins", "bookmarks_lists"])
 
-    # for bookmark in bookmarks_json:
-    #     for bookmarks_list in sorted_bookmarks_by_user:
-    #         hikes_json = hikes_schema.dump(sorted(bookmarks_list.hikes, key=lambda x: x.hike_name))
-    #         bookmark_json["hikes"] = hikes_json
+    for idx, bookmark in enumerate(bookmarks_by_user):
+        hikes_json = hikes_schema.dump(sorted(bookmark.hikes, key=lambda x: x.hike_name))
+        bookmarks_json[idx]["hikes"] = hikes_json
 
     return jsonify({"bookmarksLists": bookmarks_json})
 

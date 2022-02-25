@@ -67,29 +67,13 @@ function HikeBookmark(props) {
 
 // Bookmarks List Component
 const BookmarksList = React.forwardRef((props, ref) => {
-  const [hikes, setHikes] = React.useState([]);
-
-  // Get all hikes for the bookmarks list
-  function getHikes() {
-    fetch(`/${props.bookmarks_list_id}/hikes.json`)
-      .then((response) => response.json())
-      .then((data) => {
-        setHikes(data.bookmarksLists.hikes);
-      });
-  }
-
-  // Set state of all hikes in the bookmarks list (runs one time at the start)
-  React.useEffect(() => {
-    getHikes();
-  }, []);
-
   // Make an array of HikeBookmark Components (hikes on each bookmarks list)
   const allHikeBookmarks = [];
 
   // the following line will print out the hikes
-  console.log(`hikes: `, hikes);
+  // console.log(`hikes: `, hikes);
 
-  for (const currentHike of hikes) {
+  for (const currentHike of props.hikes) {
     allHikeBookmarks.push(
       <HikeBookmark
         key={currentHike.hike_id}
@@ -426,10 +410,6 @@ const AddMultHikesToExistingList = React.forwardRef((props, ref) => {
             }
           }
 
-          // if (props.hikes.map((a) => a.hike_id).includes(hike.hike_id)) {
-          //   hikeOnList = true;
-          // }
-
           if (hikeOnList) {
             allHikeOptions.push({
               select: true,
@@ -450,7 +430,7 @@ const AddMultHikesToExistingList = React.forwardRef((props, ref) => {
     );
   }
 
-  // Access getHikeBookmarksLists function from Footer component
+  // Access setHikesOptionsState function from Footer component
   React.useImperativeHandle(ref, () => ({
     setHikesOptionsState() {
       fetch("/all_hikes.json").then((response) =>
@@ -982,7 +962,7 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
         tabIndex="-1"
         id="Bookmarks"
         aria-labelledby="BookmarksLabel"
-        style={{ width: "750px" }}
+        style={{ width: "770px" }}
       >
         <div className="offcanvas-header">
           <h3 className="offcanvas-title" id="BookmarksLabel">
@@ -1074,7 +1054,7 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
             className="offcanvas-footer"
             style={{
               position: "fixed",
-              right: "705px",
+              right: "725px",
               bottom: "1em",
               zIndex: "100",
             }}
