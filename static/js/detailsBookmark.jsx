@@ -4,7 +4,7 @@
 function HikeBookmark(props) {
   const hike_id = Number(document.querySelector("#hike_id").innerText);
 
-  // Check if user wants to delete or not
+  // Check if user wants to delete hike from list or not
   function deleteConfirm(event) {
     const validate = confirm("Do you want to remove this hike from this list?");
     if (!validate) {
@@ -14,7 +14,8 @@ function HikeBookmark(props) {
     }
   }
 
-  // Process deletion
+  // Process deletion of a hike from a list if user confirms
+  // Which will then run refreshLists() on parent component
   function removeExistingHikeFromList() {
     fetch(`/${props.bookmarks_list_id}/${props.hike_id}/remove-hike`, {
       method: "DELETE",
@@ -77,16 +78,15 @@ function BookmarksList(props) {
       });
   }
 
-  // Initial render of all hikes in the bookmarks list
+  // Set state of all hikes in the bookmarks list (runs one time at the start)
   React.useEffect(() => {
     getHikes();
   }, []);
 
-  // When all hikes are set, make an array of HikeBookmark Components
+  // Make an array of HikeBookmark Components (hikes on each bookmarks list)
   const allHikeBookmarks = [];
 
   // the following line will print out the hikes
-  // pay attention to what it is initially and what it is when the component re-renders
   console.log(`hikes: `, hikes);
 
   for (const currentHike of hikes) {
@@ -108,11 +108,13 @@ function BookmarksList(props) {
     );
   }
 
+  // this is a prop on removeExistingHikeFromList (to process deletion of a hike from a list)
+  // props.getBookmarksLists will run the function on parent component (gets most up to date lists)
   function refreshLists() {
     props.getBookmarksLists();
   }
 
-  // Check if user wants to delete or not
+  // Check if user wants to delete existing bookmarks list or not
   function deleteConfirm(event) {
     const validate = confirm("Do you want to delete this list?");
     if (!validate) {
@@ -122,7 +124,8 @@ function BookmarksList(props) {
     }
   }
 
-  // Process deletion
+  // Process deletion of a bookmarks list and all its hikes
+  // props.getBookmarksLists will run the function on parent component (gets most up to date lists)
   function deleteExistingBookmarksList() {
     fetch(`/delete-bookmarks-list/${props.bookmarks_list_id}`, {
       method: "DELETE",
@@ -392,11 +395,12 @@ function CreateBookmarksList(props) {
 
 function AddHikesToBookmarksList(props) {
   const session_login = document.querySelector("#login").innerText;
-  // Set Hike options
-  const [allHikesOptions, setAllHikesOptions] = React.useState("");
 
   console.log(props.bookmarks_list_id);
   console.log(props.hikes);
+
+  // Set Hike options
+  const [allHikesOptions, setAllHikesOptions] = React.useState("");
 
   function setHikesOptionsState() {
     fetch("/all_hikes.json").then((response) =>
@@ -674,6 +678,7 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
       });
   }
 
+  // Access getHikeBookmarksLists function from Footer component
   React.useImperativeHandle(ref, () => ({
     getHikeBookmarksLists() {
       fetch(`/hikes/${hike_id}/bookmarks.json`)
@@ -992,7 +997,9 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
                     >
-                      actions
+                      actions <i className="bi bi-bookmark-star"></i>{" "}
+                      <i className="bi bi-check-circle"></i>{" "}
+                      <i className="bi bi-chat-text"></i>
                     </button>
                     <ul className="dropdown-menu dropdown-menu-end">
                       <li>
@@ -1003,14 +1010,24 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
                           data-bs-target="#modal-add-bookmark"
                           onClick={setListOptionsState}
                         >
-                          <i
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="right"
-                            title="bookmark this hike"
-                            className="bi bi-bookmark-star"
-                          ></i>{" "}
-                          bookmark
+                          <i className="bi bi-bookmark-star"></i> bookmark this
+                          hike
                         </a>
+                      </li>
+                      <li>
+                        <a
+                          className="btn btn-sm dropdown-item"
+                          data-bs-toggle="offcanvas"
+                          href="#Bookmarks"
+                          role="button"
+                          aria-controls="Bookmarks"
+                          onClick={getHikeBookmarksLists}
+                        >
+                          <i className="bi bi-bookmark-star"></i> view bookmarks
+                        </a>
+                      </li>
+                      <li>
+                        <hr class="dropdown-divider" />
                       </li>
                       <li>
                         <a
@@ -1018,15 +1035,26 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
                           href=""
                           data-bs-toggle="modal"
                           data-bs-target="#modal-add-check-in"
+                          // onClick = {}
                         >
-                          <i
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="right"
-                            title="add a check in"
-                            className="bi bi-check-circle"
-                          ></i>{" "}
-                          check in
+                          <i className="bi bi-check-circle"></i> check in to
+                          this hike
                         </a>
+                      </li>
+                      <li>
+                        <a
+                          className="btn btn-sm dropdown-item"
+                          data-bs-toggle="offcanvas"
+                          href="#CheckIns"
+                          role="button"
+                          aria-controls="CheckIns"
+                          // onClick={getCheckIns}
+                        >
+                          <i className="bi bi-check-circle"></i> view check ins
+                        </a>
+                      </li>
+                      <li>
+                        <hr class="dropdown-divider" />
                       </li>
                       <li>
                         <a
@@ -1035,13 +1063,18 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
                           data-bs-toggle="modal"
                           data-bs-target="#modal-add-comment"
                         >
-                          <i
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="right"
-                            title="add a comment"
-                            className="bi bi-chat-text"
-                          ></i>{" "}
-                          comment
+                          <i className="bi bi-chat-text"></i> comment this hike
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          className="btn btn-sm dropdown-item"
+                          data-bs-toggle="offcanvas"
+                          href="#Comments"
+                          role="button"
+                          aria-controls="Comments"
+                        >
+                          <i className="bi bi-chat-text"></i> view comments
                         </a>
                       </li>
                     </ul>
@@ -1051,7 +1084,7 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
             </div>
 
             <div className="row g-0">
-              <div className="col-md-7">
+              <div className="col-md-5">
                 <div className="card-body">
                   {hikeDetails.description}
                   <ul className="no-bullets">
@@ -1104,23 +1137,27 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
                         <span id="resources">Resources:</span>
                       </strong>
                       <br />
-                      <a href="{{ hike_resource }}" target="_blank">
-                        {hikeDetails.resource}
+                      <a
+                        class="link-dark"
+                        href={hikeDetails.resources}
+                        target="_blank"
+                      >
+                        {hikeDetails.resources}
                       </a>
                     </li>
                   </ul>
                 </div>
               </div>
-              <div className="col-md-5">
+              <div className="col-md-7">
                 <div className="embed-google-map">
                   <iframe
                     width="100%"
-                    height="375"
+                    height="500"
                     frameBorder="0"
                     scrolling="no"
                     marginHeight="0"
                     marginWidth="0"
-                    src={`https://maps.google.com/maps?q=${hikeDetails.latitude},${hikeDetails.longitude}&t=&zoom=8&maptype=roadmap&ie=UTF8&iwloc=&output=embed`}
+                    src={`https://maps.google.com/maps?q=${hikeDetails.latitude},${hikeDetails.longitude}&t=&zoom=11&maptype=roadmap&ie=UTF8&iwloc=&output=embed`}
                   ></iframe>
                   {/* API MAP
                 <iframe
@@ -1128,7 +1165,7 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
                   height="300"
                   frameBorder="0"
                   style="border:0"
-                  src={`"https://www.google.com/maps/embed/v1/directions?key={{ GOOGLE_KEY }}&origin=Current+Location&destination={{ hikeDetails.latitude }},{{ hikeDetails.longitude }}&center={{ hikeDetails.latitude }},{{ hikeDetails.longitude }}&avoid=tolls&zoom=11"`}
+                  src={`"https://www.google.com/maps/embed/v1/directions?key={{ GOOGLE_KEY }}&origin=Current+Location&destination=${hikeDetails.latitude},${hikeDetails.longitude}&center=${hikeDetails.latitude},${hikeDetails.longitude}&avoid=tolls&zoom=11"`}
                   allowfullscreen
                 ></iframe> */}
                 </div>

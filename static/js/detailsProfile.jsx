@@ -421,7 +421,7 @@ function AddPetProfile(props) {
 }
 
 // comment container component
-function PetProfileContainer() {
+const PetProfileContainer = React.forwardRef((props, ref) => {
   const [petProfiles, setPetProfiles] = React.useState([]);
 
   function refreshPets() {
@@ -438,11 +438,16 @@ function PetProfileContainer() {
       });
   }
 
-  if (session_login === "True") {
-    React.useEffect(() => {
-      getPetProfiles();
-    }, []);
-  }
+  // Access getPetProfiles function from Footer component
+  React.useImperativeHandle(ref, () => ({
+    getPetProfiles() {
+      fetch("/pets.json")
+        .then((response) => response.json())
+        .then((data) => {
+          setPetProfiles(data.petProfiles);
+        });
+    },
+  }));
 
   const allPetProfiles = [];
   const allEditPetProfiles = [];
@@ -536,26 +541,26 @@ function PetProfileContainer() {
           <h3 className="offcanvas-title" id="ProfileLabel">
             Pet Profile
           </h3>
+          <a
+            className="btn btn-sm"
+            href=""
+            data-bs-toggle="modal"
+            data-bs-target="#modal-add-pet"
+          >
+            <i
+              data-bs-toggle="tooltip"
+              data-bs-placement="right"
+              title="add a pet profile"
+              className="fa-solid fa-paw"
+            ></i>{" "}
+            add a pet profile
+          </a>
         </div>
         <div className="offcanvas-body">
           {session_login !== "True" ? (
             <div>Please log in to add a pet profile.</div>
           ) : (
             <div>
-              <a
-                className="btn btn-sm"
-                href=""
-                data-bs-toggle="modal"
-                data-bs-target="#modal-add-pet"
-              >
-                <i
-                  data-bs-toggle="tooltip"
-                  data-bs-placement="right"
-                  title="add a pet profile"
-                  className="fa-solid fa-paw"
-                ></i>{" "}
-                add a pet profile
-              </a>
               <div style={{ padding: "0.5em" }}>{allPetProfiles}</div>
             </div>
           )}
@@ -579,4 +584,4 @@ function PetProfileContainer() {
       </div>
     </React.Fragment>
   );
-}
+});

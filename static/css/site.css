@@ -44,8 +44,6 @@ body > .welcome-page {
 
 /* BASE NAVBAR */
 
-
-
 /* DASHBOARD - NAV */
 
 .nav-pills .nav-link.active {
@@ -87,7 +85,7 @@ div.pet-profile.profile-info {
 }
 
 .pet-profile-img {
-  width: 7em;
+  width: 8em;
 }
 
 /* DASHBOARD - CHECK INS */

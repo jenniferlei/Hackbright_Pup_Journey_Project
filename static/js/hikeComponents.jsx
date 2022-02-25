@@ -1,9 +1,11 @@
 function FixedFooter(props) {
+  const PetProfileContainerRef = React.useRef();
   const HikeDetailsBookmarksListContainerRef = React.useRef();
   const HikeDetailsCheckInContainerRef = React.useRef();
 
   return (
     <React.Fragment>
+      <PetProfileContainer ref={PetProfileContainerRef} />
       <HikeDetailsBookmarksListContainer
         ref={HikeDetailsBookmarksListContainerRef}
       />
@@ -76,6 +78,9 @@ function FixedFooter(props) {
                     href="#Profile"
                     role="button"
                     aria-controls="Profile"
+                    onClick={() =>
+                      PetProfileContainerRef.current.getPetProfiles()
+                    }
                   >
                     <small>
                       <i
@@ -163,7 +168,6 @@ function FixedFooter(props) {
 function HikeDetailsEverything(props) {
   return (
     <React.Fragment>
-      <PetProfileContainer />
       <HikeDetailsCommentContainer />
       <FixedFooter />
     </React.Fragment>

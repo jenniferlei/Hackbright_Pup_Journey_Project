@@ -1042,7 +1042,7 @@ def get_hike(hike_id):
     # Populate the list of hike objects that fulfill the search criteria
     hike = crud_hikes.get_hike_by_id(hike_id)
  
-    hike_schema = HikeSchema(only=["area", "city", "state", "difficulty", "hike_id", "hike_name", "latitude", "longitude", "leash_rule", "miles", "parking", "resources"])
+    hike_schema = HikeSchema(exclude=["comments", "check_ins", "bookmarks_lists"])
     hike_json = hike_schema.dump(hike)
 
     return jsonify({"hike": hike_json})
@@ -1059,6 +1059,14 @@ def get_all_hikes():
     hikes_json = hikes_schema.dump(hikes)
 
     return jsonify({"hikes": hikes_json})
+
+
+@app.route("/map/<latitude>/<longitude>")
+def hike_google_maps_result(latitude, longitude):
+    """Return API"""
+    url = f"https://www.google.com/maps/embed/v1/directions?key={GOOGLE_KEY}&origin=Current+Location&destination={latitude},{longitude}&center={latitude},{longitude}&avoid=tolls&zoom=11"
+
+    pass
 
 
 if __name__ == "__main__":
