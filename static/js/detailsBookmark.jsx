@@ -167,6 +167,7 @@ function BookmarksList(props) {
                 className="btn btn-sm"
                 data-bs-toggle="modal"
                 data-bs-target={`#modal-add-hikes-${props.bookmarks_list_id}`}
+                onClick={props.parentSetHikesOptionState}
               >
                 <i
                   data-bs-toggle="tooltip"
@@ -393,7 +394,7 @@ function CreateBookmarksList(props) {
   );
 }
 
-function AddHikesToBookmarksList(props) {
+const AddMultHikesToExistingList = React.forwardRef((props, ref) => {
   const session_login = document.querySelector("#login").innerText;
 
   console.log(props.bookmarks_list_id);
@@ -442,12 +443,48 @@ function AddHikesToBookmarksList(props) {
     );
   }
 
-  if (session_login === "True") {
-    React.useEffect(() => {
-      setHikesOptionsState();
-    }, []);
-    // console.log(allHikesOptions);
-  }
+  // Access getHikeBookmarksLists function from Footer component
+  React.useImperativeHandle(ref, () => ({
+    setHikesOptionsState() {
+      fetch("/all_hikes.json").then((response) =>
+        response.json().then((jsonResponse) => {
+          const hikes = jsonResponse.hikes;
+          const allHikeOptions = [];
+
+          // go through each hike
+          // if hike is found in current bookmarks_list's hikes, add to list as true
+          // otherwise, add as false
+          hikes.map((responseHike) => {
+            let hikeOnList = false;
+            for (const propsHike of props.hikes) {
+              if (propsHike.hike_id === responseHike.hike_id) {
+                hikeOnList = true;
+              }
+            }
+
+            // if (props.hikes.map((a) => a.hike_id).includes(hike.hike_id)) {
+            //   hikeOnList = true;
+            // }
+
+            if (hikeOnList) {
+              allHikeOptions.push({
+                select: true,
+                hike_name: responseHike.hike_name,
+                hike_id: responseHike.hike_id,
+              });
+            } else {
+              allHikeOptions.push({
+                select: false,
+                hike_name: responseHike.hike_name,
+                hike_id: responseHike.hike_id,
+              });
+            }
+          });
+          setAllHikesOptions(allHikeOptions);
+        })
+      );
+    },
+  }));
 
   console.log("allHikesOptions", allHikesOptions);
 
@@ -558,18 +595,11 @@ function AddHikesToBookmarksList(props) {
       </div>
     </React.Fragment>
   );
-}
+});
 
-// Bookmarks Lists Container Component
-const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
+const AddHikeToNewOrExistingList = React.forwardRef((props, ref) => {
   const hike_id = document.querySelector("#hike_id").innerText;
   const session_login = document.querySelector("#login").innerText;
-
-  // Set States
-  const [bookmarksLists, setBookmarksLists] = React.useState([]);
-  const [bookmarksListsHeader, setBookmarksListsHeader] = React.useState(
-    "Bookmarks For This Hike"
-  );
 
   // For adding to existing list
   const [allBookmarksListOptions, setAllBookmarksListOptions] =
@@ -608,6 +638,42 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
     );
   }
 
+  // Access setListOptionsState function from HikeDetailsBookmarksListContainer component
+  React.useImperativeHandle(ref, () => ({
+    setListOptionsState() {
+      fetch("/user_bookmarks_lists.json").then((response) =>
+        response.json().then((jsonResponse) => {
+          const bookmarksLists = jsonResponse.bookmarksLists;
+          const allListOptions = [];
+
+          bookmarksLists.map((bookmarksList) => {
+            let hikeOnList = false;
+            for (const hike of bookmarksList.hikes) {
+              if (hike.hike_id === Number(hike_id)) {
+                hikeOnList = true;
+              }
+            }
+
+            if (hikeOnList) {
+              allListOptions.push({
+                select: true,
+                bookmarks_list_name: bookmarksList.bookmarks_list_name,
+                bookmarks_list_id: bookmarksList.bookmarks_list_id,
+              });
+            } else {
+              allListOptions.push({
+                select: false,
+                bookmarks_list_name: bookmarksList.bookmarks_list_name,
+                bookmarks_list_id: bookmarksList.bookmarks_list_id,
+              });
+            }
+          });
+          setAllBookmarksListOptions(allListOptions);
+        })
+      );
+    },
+  }));
+
   function addHikeExistingBookmarksList() {
     fetch(`/hikes/${hike_id}/add-hike-to-existing-list`, {
       method: "POST",
@@ -620,7 +686,7 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
       }),
     }).then((response) => {
       response.json().then((jsonResponse) => {
-        getBookmarksLists();
+        props.getBookmarksLists();
         console.log(jsonResponse);
       });
     });
@@ -641,109 +707,11 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
       }),
     }).then((response) => {
       response.json().then((jsonResponse) => {
-        getBookmarksLists();
+        props.getBookmarksLists();
         console.log(jsonResponse);
       });
     });
   }
-
-  function getBookmarksLists() {
-    if (
-      document.querySelector("#BookmarksLabel").innerText ===
-      "Bookmarks For This Hike"
-    ) {
-      getHikeBookmarksLists();
-    } else if (
-      document.querySelector("#BookmarksLabel").innerText === "All Bookmarks"
-    ) {
-      getUserBookmarksLists();
-    }
-  }
-
-  function getHikeBookmarksLists() {
-    fetch(`/hikes/${hike_id}/bookmarks.json`)
-      .then((response) => response.json())
-      .then((data) => {
-        setBookmarksLists(data.bookmarksLists);
-        setBookmarksListsHeader("Bookmarks For This Hike");
-      });
-  }
-
-  function getUserBookmarksLists() {
-    fetch("/user_bookmarks_lists.json")
-      .then((response) => response.json())
-      .then((data) => {
-        setBookmarksLists(data.bookmarksLists);
-        setBookmarksListsHeader("All Bookmarks");
-      });
-  }
-
-  // Access getHikeBookmarksLists function from Footer component
-  React.useImperativeHandle(ref, () => ({
-    getHikeBookmarksLists() {
-      fetch(`/hikes/${hike_id}/bookmarks.json`)
-        .then((response) => response.json())
-        .then((data) => {
-          setBookmarksLists(data.bookmarksLists);
-          setBookmarksListsHeader("Bookmarks For This Hike");
-        });
-    },
-  }));
-
-  const allBookmarksLists = [];
-  const allRenameBookmarksLists = [];
-  const allAddHikesToBookmarks = [];
-
-  // the following line will print out the value of cards
-  // pay attention to what it is initially and what it is when the component re-renders
-  console.log(`bookmarksLists: `, bookmarksLists);
-
-  for (const currentBookmarksList of bookmarksLists) {
-    allBookmarksLists.push(
-      <BookmarksList
-        key={currentBookmarksList.bookmarks_list_id}
-        bookmarks_list_name={currentBookmarksList.bookmarks_list_name}
-        bookmarks_list_id={currentBookmarksList.bookmarks_list_id}
-        hikes={currentBookmarksList.hikes}
-        getBookmarksLists={getBookmarksLists}
-      />
-    );
-
-    // allAddHikesToBookmarks.push(
-    //   <AddHikesToBookmarksList
-    //     key={currentBookmarksList.bookmarks_list_id}
-    //     bookmarks_list_name={currentBookmarksList.bookmarks_list_name}
-    //     bookmarks_list_id={currentBookmarksList.bookmarks_list_id}
-    //     hikes={currentBookmarksList.hikes}
-    //     getBookmarksLists={getBookmarksLists}
-    //   />
-    // );
-
-    allRenameBookmarksLists.push(
-      <RenameBookmarksList
-        key={currentBookmarksList.bookmarks_list_id}
-        bookmarks_list_name={currentBookmarksList.bookmarks_list_name}
-        bookmarks_list_id={currentBookmarksList.bookmarks_list_id}
-        getBookmarksLists={getBookmarksLists}
-      />
-    );
-  }
-
-  const [hikeDetails, setHikeDetails] = React.useState("");
-
-  // Get all hikes for the bookmarks list
-  function getHikeDetails() {
-    fetch(`/hikes/${hike_id}.json`)
-      .then((response) => response.json())
-      .then((data) => {
-        setHikeDetails(data.hike);
-      });
-  }
-
-  React.useEffect(() => {
-    getHikeDetails();
-  }, []);
-
   return (
     <React.Fragment>
       <div
@@ -864,10 +832,135 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
           </div>
         </div>
       </div>
+    </React.Fragment>
+  );
+});
 
+// Bookmarks Lists Container Component
+const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
+  const hike_id = document.querySelector("#hike_id").innerText;
+  const session_login = document.querySelector("#login").innerText;
+
+  const AddHikeToNewOrExistingListRef = React.useRef();
+  const AddMultHikesToExistingListRef = React.useRef();
+
+  // Set States
+  const [bookmarksLists, setBookmarksLists] = React.useState([]);
+  const [bookmarksListsHeader, setBookmarksListsHeader] = React.useState(
+    "Bookmarks For This Hike"
+  );
+
+  function getBookmarksLists() {
+    if (
+      document.querySelector("#BookmarksLabel").innerText ===
+      "Bookmarks For This Hike"
+    ) {
+      getHikeBookmarksLists();
+    } else if (
+      document.querySelector("#BookmarksLabel").innerText === "All Bookmarks"
+    ) {
+      getUserBookmarksLists();
+    }
+  }
+
+  function getHikeBookmarksLists() {
+    fetch(`/hikes/${hike_id}/bookmarks.json`)
+      .then((response) => response.json())
+      .then((data) => {
+        setBookmarksLists(data.bookmarksLists);
+        setBookmarksListsHeader("Bookmarks For This Hike");
+      });
+  }
+
+  function getUserBookmarksLists() {
+    fetch("/user_bookmarks_lists.json")
+      .then((response) => response.json())
+      .then((data) => {
+        setBookmarksLists(data.bookmarksLists);
+        setBookmarksListsHeader("All Bookmarks");
+      });
+  }
+
+  // Access getHikeBookmarksLists function from Footer component
+  React.useImperativeHandle(ref, () => ({
+    getHikeBookmarksLists() {
+      fetch(`/hikes/${hike_id}/bookmarks.json`)
+        .then((response) => response.json())
+        .then((data) => {
+          setBookmarksLists(data.bookmarksLists);
+          setBookmarksListsHeader("Bookmarks For This Hike");
+        });
+    },
+  }));
+
+  function parentSetHikesOptionState() {
+    AddMultHikesToExistingListRef.current.setHikesOptionsState();
+  }
+
+  const allBookmarksLists = [];
+  const allRenameBookmarksLists = [];
+  const allAddMultHikesToExistingList = [];
+
+  // the following line will print out the value of cards
+  // pay attention to what it is initially and what it is when the component re-renders
+  console.log(`bookmarksLists: `, bookmarksLists);
+
+  for (const currentBookmarksList of bookmarksLists) {
+    allBookmarksLists.push(
+      <BookmarksList
+        key={currentBookmarksList.bookmarks_list_id}
+        bookmarks_list_name={currentBookmarksList.bookmarks_list_name}
+        bookmarks_list_id={currentBookmarksList.bookmarks_list_id}
+        hikes={currentBookmarksList.hikes}
+        getBookmarksLists={getBookmarksLists}
+        parentSetHikesOptionState={parentSetHikesOptionState}
+      />
+    );
+
+    allAddMultHikesToExistingList.push(
+      <AddMultHikesToExistingList
+        key={currentBookmarksList.bookmarks_list_id}
+        bookmarks_list_name={currentBookmarksList.bookmarks_list_name}
+        bookmarks_list_id={currentBookmarksList.bookmarks_list_id}
+        hikes={currentBookmarksList.hikes}
+        getBookmarksLists={getBookmarksLists}
+      />
+    );
+
+    allRenameBookmarksLists.push(
+      <RenameBookmarksList
+        key={currentBookmarksList.bookmarks_list_id}
+        bookmarks_list_name={currentBookmarksList.bookmarks_list_name}
+        bookmarks_list_id={currentBookmarksList.bookmarks_list_id}
+        getBookmarksLists={getBookmarksLists}
+      />
+    );
+  }
+
+  const [hikeDetails, setHikeDetails] = React.useState("");
+
+  // Get all hikes for the bookmarks list
+  function getHikeDetails() {
+    fetch(`/hikes/${hike_id}.json`)
+      .then((response) => response.json())
+      .then((data) => {
+        setHikeDetails(data.hike);
+      });
+  }
+
+  React.useEffect(() => {
+    getHikeDetails();
+  }, []);
+
+  return (
+    <React.Fragment>
+      <AddHikeToNewOrExistingList
+        ref={AddHikeToNewOrExistingListRef}
+        getBookmarksLists={getBookmarksLists}
+      />
       <CreateBookmarksList getBookmarksLists={getBookmarksLists} />
       {allRenameBookmarksLists}
-      {/* {allAddHikesToBookmarks} */}
+      {allAddMultHikesToExistingList}
       <div
         className="offcanvas offcanvas-end"
         data-bs-keyboard="true"
@@ -910,7 +1003,9 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
                       href=""
                       data-bs-toggle="modal"
                       data-bs-target="#modal-add-bookmark"
-                      onClick={setListOptionsState}
+                      onClick={() =>
+                        AddHikeToNewOrExistingListRef.current.setListOptionsState()
+                      }
                     >
                       bookmark this hike
                     </a>
@@ -1008,7 +1103,9 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
                           href=""
                           data-bs-toggle="modal"
                           data-bs-target="#modal-add-bookmark"
-                          onClick={setListOptionsState}
+                          onClick={() =>
+                            AddHikeToNewOrExistingListRef.current.setListOptionsState()
+                          }
                         >
                           <i className="bi bi-bookmark-star"></i> bookmark this
                           hike
@@ -1027,7 +1124,7 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
                         </a>
                       </li>
                       <li>
-                        <hr class="dropdown-divider" />
+                        <hr className="dropdown-divider" />
                       </li>
                       <li>
                         <a
@@ -1054,7 +1151,7 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
                         </a>
                       </li>
                       <li>
-                        <hr class="dropdown-divider" />
+                        <hr className="dropdown-divider" />
                       </li>
                       <li>
                         <a
@@ -1138,7 +1235,7 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
                       </strong>
                       <br />
                       <a
-                        class="link-dark"
+                        className="link-dark"
                         href={hikeDetails.resources}
                         target="_blank"
                       >
