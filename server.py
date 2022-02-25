@@ -963,8 +963,8 @@ def get_bookmarks_hikes_json(bookmarks_list_id):
     bookmark_schema = BookmarksListSchema()
     bookmark_json = bookmark_schema.dump(hikes_by_bookmark)
 
-    hikes_schema = HikeSchema(many=True, only=["area", "city", "state", "difficulty", "hike_id", "hike_name", "leash_rule", "miles", "parking"])
-    hikes_json = hikes_schema.dump(hikes_by_bookmark.hikes)
+    hikes_schema = HikeSchema(many=True, exclude=["comments", "check_ins", "bookmarks_lists"])
+    hikes_json = hikes_schema.dump(sorted(hikes_by_bookmark.hikes, key=lambda x: x.hike_name))
 
     bookmark_json["hikes"] = hikes_json
 
@@ -981,7 +981,7 @@ def get_hike_bookmarks_json(hike_id):
     bookmarks_schema = BookmarksListSchema(many=True)
     bookmarks_json = bookmarks_schema.dump(bookmarks_by_hike)
 
-    hikes_schema = HikeSchema(many=True, only=["area", "city", "state", "difficulty", "hike_id", "hike_name", "leash_rule", "miles", "parking"])
+    hikes_schema = HikeSchema(many=True, exclude=["comments", "check_ins", "bookmarks_lists"])
 
     for idx, bookmark in enumerate(bookmarks_by_hike):
         hikes_json = hikes_schema.dump(bookmark.hikes)
@@ -1003,7 +1003,7 @@ def get_user_bookmarks_lists():
     bookmarks_schema = BookmarksListSchema(many=True)
     bookmarks_json = bookmarks_schema.dump(bookmarks_by_user)
 
-    hikes_schema = HikeSchema(many=True, only=["area", "city", "state", "difficulty", "hike_id", "hike_name", "leash_rule", "miles", "parking"])
+    hikes_schema = HikeSchema(many=True, exclude=["comments", "check_ins", "bookmarks_lists"])
 
     # for bookmark in bookmarks_json:
     #     for bookmarks_list in sorted_bookmarks_by_user:
@@ -1055,7 +1055,7 @@ def get_all_hikes():
     # Populate the list of hike objects that fulfill the search criteria
     hikes = crud_hikes.get_hikes()
  
-    hikes_schema = HikeSchema(many=True, only=["area", "city", "state", "difficulty", "hike_id", "hike_name", "leash_rule", "miles", "parking"])
+    hikes_schema = HikeSchema(many=True, exclude=["comments", "check_ins", "bookmarks_lists"])
     hikes_json = hikes_schema.dump(hikes)
 
     return jsonify({"hikes": hikes_json})

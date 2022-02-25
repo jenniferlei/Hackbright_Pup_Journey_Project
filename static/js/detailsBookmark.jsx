@@ -66,7 +66,7 @@ function HikeBookmark(props) {
 }
 
 // Bookmarks List Component
-function BookmarksList(props) {
+const BookmarksList = React.forwardRef((props, ref) => {
   const [hikes, setHikes] = React.useState([]);
 
   // Get all hikes for the bookmarks list
@@ -167,13 +167,13 @@ function BookmarksList(props) {
                 className="btn btn-sm"
                 data-bs-toggle="modal"
                 data-bs-target={`#modal-add-hikes-${props.bookmarks_list_id}`}
-                onClick={props.parentSetHikesOptionState}
               >
                 <i
                   data-bs-toggle="tooltip"
                   data-bs-placement="right"
                   title="add hikes to list"
                   className="bi bi-plus"
+                  onClick={props.parentSetHikesOptionState}
                 ></i>
               </button>
               <label className="sr-only">Rename List</label>
@@ -217,7 +217,7 @@ function BookmarksList(props) {
       </div>
     </React.Fragment>
   );
-}
+});
 
 function RenameBookmarksList(props) {
   // Process renaming bookmarks list name
@@ -403,6 +403,12 @@ const AddMultHikesToExistingList = React.forwardRef((props, ref) => {
   // Set Hike options
   const [allHikesOptions, setAllHikesOptions] = React.useState("");
 
+  const [isLoading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    setHikesOptionsState();
+  }, [isLoading]);
+
   function setHikesOptionsState() {
     fetch("/all_hikes.json").then((response) =>
       response.json().then((jsonResponse) => {
@@ -439,6 +445,7 @@ const AddMultHikesToExistingList = React.forwardRef((props, ref) => {
           }
         });
         setAllHikesOptions(allHikeOptions);
+        setLoading(false);
       })
     );
   }
@@ -481,12 +488,13 @@ const AddMultHikesToExistingList = React.forwardRef((props, ref) => {
             }
           });
           setAllHikesOptions(allHikeOptions);
+          setLoading(false);
         })
       );
     },
   }));
 
-  console.log("allHikesOptions", allHikesOptions);
+  console.log("AllHikeOptions...", allHikesOptions);
 
   function addHikesToBookmarksList() {
     fetch(`/${props.bookmarks_list_id}/add-hikes`, {
@@ -503,7 +511,6 @@ const AddMultHikesToExistingList = React.forwardRef((props, ref) => {
         setHikesOptionsState();
         props.getBookmarksLists();
         console.log(jsonResponse);
-        console.log("allHikesOptions", allHikesOptions);
       });
     });
   }
@@ -541,7 +548,10 @@ const AddMultHikesToExistingList = React.forwardRef((props, ref) => {
                 <div style={{ height: "50vh", overflow: "auto" }}>
                   {allHikesOptions !== ""
                     ? allHikesOptions.map((hikeOption) => (
-                        <div className="form-check">
+                        <div
+                          className="form-check"
+                          key={`add-hike-${hikeOption.hike_id}-to-list-${props.bookmarks_list_id}`}
+                        >
                           <input
                             className="form-check-input"
                             type="checkbox"
@@ -843,6 +853,7 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
 
   const AddHikeToNewOrExistingListRef = React.useRef();
   const AddMultHikesToExistingListRef = React.useRef();
+  const BookmarksListRef = React.useRef();
 
   // Set States
   const [bookmarksLists, setBookmarksLists] = React.useState([]);
@@ -914,6 +925,7 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
         hikes={currentBookmarksList.hikes}
         getBookmarksLists={getBookmarksLists}
         parentSetHikesOptionState={parentSetHikesOptionState}
+        ref={BookmarksListRef}
       />
     );
 
@@ -924,6 +936,7 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
         bookmarks_list_id={currentBookmarksList.bookmarks_list_id}
         hikes={currentBookmarksList.hikes}
         getBookmarksLists={getBookmarksLists}
+        ref={AddMultHikesToExistingListRef}
       />
     );
 
