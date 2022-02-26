@@ -19,7 +19,7 @@ function CheckIn(props) {
     }).then((response) => {
       response.json().then((jsonResponse) => {
         // console.log(jsonResponse);
-        props.refreshCheckIns();
+        props.getCheckIns();
       });
     });
   }
@@ -30,22 +30,14 @@ function CheckIn(props) {
         <div className="clearfix">
           <div className="float-start">
             <small>
-              {props.pets_on_hike.map((pet) => `${pet.pet_name} `)}
-              <br></br>
-              <a className="link-dark" href={`/hikes/${props.hike_id}`}>
-                {props.hike_name}
-              </a>
-              <br></br>
-              {`hiked on ${props.date_hiked} | ${props.miles_completed} miles`}
-              {props.total_time !== null ? (
-                <React.Fragment>
-                  &nbsp;| {props.total_time} hours
-                </React.Fragment>
-              ) : null}
-              <br></br>
-              {props.notes !== null && props.notes !== "" ? (
-                <React.Fragment>Notes: {props.notes}</React.Fragment>
-              ) : null}
+              {props.pets_on_hike.map((pet) => (
+                <span
+                  key={`pet-id-${pet.pet_id}-check-in-id-${props.check_in_id}`}
+                >
+                  <i className="bi bi-check"></i>&nbsp;
+                  {pet.pet_name}&nbsp;
+                </span>
+              ))}
             </small>
           </div>
 
@@ -82,6 +74,22 @@ function CheckIn(props) {
               </small>
             </button>
           </div>
+        </div>
+        <div>
+          <small>
+            <a className="link-dark" href={`/hikes/${props.hike_id}`}>
+              {props.hike_name}
+            </a>
+            <br></br>
+            {`Hiked on ${props.date_hiked} | ${props.miles_completed} miles`}
+            {props.total_time !== null ? (
+              <React.Fragment>&nbsp;| {props.total_time} hours</React.Fragment>
+            ) : null}
+            <br></br>
+            {props.notes !== null && props.notes !== "" ? (
+              <React.Fragment>Notes: {props.notes}</React.Fragment>
+            ) : null}
+          </small>
         </div>
       </div>
     </React.Fragment>
@@ -159,7 +167,7 @@ function EditCheckIn(props) {
       })
       .then((jsonResponse) => {
         // console.log(jsonResponse);
-        props.refreshCheckIns();
+        props.getCheckIns();
         setPetStates();
       });
   }
@@ -407,7 +415,7 @@ function AddCheckIn(props) {
       }),
     }).then((response) => {
       response.json().then((jsonResponse) => {
-        props.refreshCheckIns();
+        props.getCheckIns();
         // console.log(jsonResponse);
       });
     });
@@ -557,29 +565,52 @@ function AddCheckIn(props) {
 
 // comment container component
 const HikeDetailsCheckInContainer = React.forwardRef((props, ref) => {
-  const [checkIns, setCheckIns] = React.useState([]);
-
-  function refreshCheckIns() {
-    getCheckIns();
-  }
-
   const session_login = document.querySelector("#login").innerText;
   const hike_id = document.querySelector("#hike_id").innerText;
 
+  const [checkIns, setCheckIns] = React.useState([]);
+  const [checkInsHeader, setCheckInsHeader] = React.useState(
+    "Check Ins For This Hike"
+  );
+
   function getCheckIns() {
+    if (
+      document.querySelector("#CheckInsLabel").innerText ===
+      "Check Ins For This Hike"
+    ) {
+      getHikeCheckIns();
+    } else if (
+      document.querySelector("#CheckInsLabel").innerText === "All Check Ins"
+    ) {
+      getUserCheckIns();
+    }
+  }
+
+  function getHikeCheckIns() {
     fetch(`/hikes/${hike_id}/user_check_ins.json`)
       .then((response) => response.json())
       .then((data) => {
         setCheckIns(data.checkIns);
+        setCheckInsHeader("Check Ins For This Hike");
+      });
+  }
+
+  function getUserCheckIns() {
+    fetch(`/user_check_ins.json`)
+      .then((response) => response.json())
+      .then((data) => {
+        setCheckIns(data.checkIns);
+        setCheckInsHeader("All Check Ins");
       });
   }
 
   React.useImperativeHandle(ref, () => ({
-    getCheckIns() {
+    getHikeCheckIns() {
       fetch(`/hikes/${hike_id}/user_check_ins.json`)
         .then((response) => response.json())
         .then((data) => {
           setCheckIns(data.checkIns);
+          setCheckInsHeader("Check Ins For This Hike");
         });
     },
   }));
@@ -599,7 +630,7 @@ const HikeDetailsCheckInContainer = React.forwardRef((props, ref) => {
       <CheckIn
         key={currentCheckIn.check_in_id}
         hike_id={currentCheckIn.hike_id}
-        hike_name={currentCheckIn.hike_name}
+        hike_name={currentCheckIn.hike["hike_name"]}
         check_in_id={currentCheckIn.check_in_id}
         date_hiked={date_hiked_formatted}
         miles_completed={currentCheckIn.miles_completed}
@@ -607,7 +638,7 @@ const HikeDetailsCheckInContainer = React.forwardRef((props, ref) => {
         notes={currentCheckIn.notes}
         pets_on_hike={currentCheckIn.pets}
         pets_not_on_hike={currentCheckIn.pets_not_on_hike}
-        refreshCheckIns={refreshCheckIns}
+        getCheckIns={getCheckIns}
       />
     );
     allEditCheckIns.push(
@@ -621,18 +652,18 @@ const HikeDetailsCheckInContainer = React.forwardRef((props, ref) => {
         notes={currentCheckIn.notes}
         pets_on_hike={currentCheckIn.pets}
         pets_not_on_hike={currentCheckIn.pets_not_on_hike}
-        refreshCheckIns={refreshCheckIns}
+        getCheckIns={getCheckIns}
       />
     );
   }
 
   return (
     <React.Fragment>
-      <AddCheckIn refreshCheckIns={refreshCheckIns} />
+      <AddCheckIn getCheckIns={getCheckIns} />
       {allEditCheckIns}
       <div
         className="offcanvas offcanvas-end"
-        style={{ width: "450px" }}
+        style={{ width: "650px" }}
         data-bs-keyboard="true"
         data-bs-scroll="true"
         data-bs-backdrop="true"
@@ -642,40 +673,83 @@ const HikeDetailsCheckInContainer = React.forwardRef((props, ref) => {
       >
         <div className="offcanvas-header">
           <h3 className="offcanvas-title" id="CheckInsLabel">
-            Check Ins
+            {checkInsHeader}
           </h3>
-          View All
+          {session_login === "True" ? (
+            <div className="d-flex float-end">
+              <div className="btn-group mt-1">
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-dark dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  actions <i className="bi bi-check-circle"></i>
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <a
+                      className="btn btn-sm dropdown-item"
+                      href=""
+                      data-bs-toggle="modal"
+                      data-bs-target="#modal-add-check-in"
+                    >
+                      check in to this hike
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              &nbsp;&nbsp;
+              <div className="btn-group mt-1">
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-dark dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  view <i className="bi bi-eye"></i>
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <a
+                      className="btn btn-sm dropdown-item"
+                      onClick={getUserCheckIns}
+                    >
+                      view all check ins
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      className="btn btn-sm dropdown-item"
+                      onClick={getHikeCheckIns}
+                    >
+                      view check ins for this hike
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          ) : null}
         </div>
+
+        {session_login === "True" &&
+        checkInsHeader === "Check Ins For This Hike" ? (
+          <div className="ms-4">
+            You have this hike on the following check ins:
+          </div>
+        ) : null}
         <div className="offcanvas-body">
           {session_login !== "True" ? (
             <div>Please log in to add a check in.</div>
           ) : (
-            <div>
-              <a
-                className="btn btn-sm"
-                href=""
-                data-bs-toggle="modal"
-                data-bs-target="#modal-add-check-in"
-              >
-                <i
-                  data-bs-toggle="tooltip"
-                  data-bs-placement="right"
-                  title="add a check in"
-                  className="bi bi-check-circle"
-                ></i>{" "}
-                add a check in
-              </a>
-              <div style={{ padding: "0.5em" }}>
-                These are the check ins for this hike:
-                {allCheckIns}
-              </div>
-            </div>
+            <div>{allCheckIns}</div>
           )}
+
           <div
             className="offcanvas-footer"
             style={{
               position: "fixed",
-              right: "405px",
+              right: "605px",
               bottom: "1em",
               zIndex: "100",
             }}
@@ -691,5 +765,4 @@ const HikeDetailsCheckInContainer = React.forwardRef((props, ref) => {
       </div>
     </React.Fragment>
   );
-}
-)
+});

@@ -1046,9 +1046,7 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
           {session_login !== "True" ? (
             <div>Please log in to add a bookmark.</div>
           ) : (
-            <React.Fragment>
-              <div>{allBookmarksLists}</div>
-            </React.Fragment>
+            <div>{allBookmarksLists}</div>
           )}
           <div
             className="offcanvas-footer"

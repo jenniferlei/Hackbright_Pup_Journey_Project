@@ -45,9 +45,9 @@ def get_check_ins_by_hike_id(hike_id):
     """Return all check ins for a given hike id"""
 
     # get list of user's check in objects
-    check_ins = db.session.query(CheckIn).filter_by(hike_id=hike_id).order_by(func.lower(CheckIn.date_hiked).desc()).all()
+    check_ins = db.session.query(CheckIn).filter_by(hike_id=hike_id).order_by(CheckIn.date_hiked.desc()).all()
 
-    return sorted_check_ins
+    return check_ins
 
 
 def get_check_ins_by_user_id_hike_id(user_id, hike_id):

@@ -123,7 +123,7 @@ function FixedFooter(props) {
                     role="button"
                     aria-controls="CheckIns"
                     onClick={() =>
-                      HikeDetailsCheckInContainerRef.current.getCheckIns()
+                      HikeDetailsCheckInContainerRef.current.getHikeCheckIns()
                     }
                   >
                     <small>
@@ -174,28 +174,9 @@ function HikeDetailsEverything(props) {
   );
 }
 
-function AllHikesEverything(props) {
-  return (
-    <React.Fragment>
-      <PetProfileContainer />
-      {/* <AllHikesBookmarksListContainer />
-      <AllHikesCheckInContainer />
-      <AllHikesCommentContainer /> */}
-      <FixedFooter />
-    </React.Fragment>
-  );
-}
-
 if (document.getElementById("hikeDetailsRoot") !== null) {
   ReactDOM.render(
     <HikeDetailsEverything />,
     document.getElementById("hikeDetailsRoot")
-  );
-}
-
-if (document.getElementById("allHikesRoot") !== null) {
-  ReactDOM.render(
-    <AllHikesEverything />,
-    document.getElementById("allHikesRoot")
   );
 }

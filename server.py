@@ -175,6 +175,7 @@ def search_box():
 
     return render_template(
         "all_hikes.html",
+        user=user,
         search_hikes=search_hikes,
         hikes=hikes,
         states=states,
@@ -823,48 +824,77 @@ def get_check_in_json(check_in_id):
     return jsonify({"checkIn": check_in_json})
 
 
-@app.route("/hikes/<hike_id>/user_check_ins.json")
-def get_user_hike_check_ins_json(hike_id):
-    """Return a JSON response for a hike's check ins."""
-    logged_in_email = session.get("user_email")
-    user = (db.session.query(User).filter(User.email == logged_in_email)
-                                 .options(db.joinedload('pets'))
-                                 .first())
+# @app.route("/hikes/<hike_id>/user_check_ins.json")
+# def get_user_hike_check_ins_json(hike_id):
+#     """Return a JSON response for a hike's check ins."""
+#     logged_in_email = session.get("user_email")
+#     user = (db.session.query(User).filter(User.email == logged_in_email)
+#                                  .options(db.joinedload('pets'))
+#                                  .first())
 
-    # sorted list of check in objects
-    check_ins = crud_check_ins.get_check_ins_by_user_id_hike_id(user.user_id, hike_id)
+#     # sorted list of check in objects
+#     check_ins = crud_check_ins.get_check_ins_by_user_id_hike_id(user.user_id, hike_id)
 
-    all_check_ins = []
+#     all_check_ins = []
     
-    for check_in in check_ins:
-        pets_not_checked_in = []
-        pets_checked_in = []
-        for pet in sorted(user.pets, key=lambda x: x.pet_name.lower()):
-            if pet not in check_in.pets:
-                pets_not_checked_in.append({"pet_id": pet.pet_id, "pet_name": pet.pet_name})
-            else:
-                pets_checked_in.append({"pet_id": pet.pet_id, "pet_name": pet.pet_name})
-        all_check_ins.append(
-            {"check_in_id": check_in.check_in_id,
-            "date_hiked": check_in.date_hiked,
-            "hike_id": check_in.hike_id,
-            "hike_name": check_in.hike.hike_name,
-            "miles_completed": check_in.miles_completed,
-            "notes": check_in.notes,
-            "pets": pets_checked_in,
-            "pets_not_on_hike": pets_not_checked_in,
-            "total_time": check_in.total_time})
+#     for check_in in check_ins:
+#         pets_not_checked_in = []
+#         pets_checked_in = []
+#         for pet in sorted(user.pets, key=lambda x: x.pet_name.lower()):
+#             if pet not in check_in.pets:
+#                 pets_not_checked_in.append({"pet_id": pet.pet_id, "pet_name": pet.pet_name})
+#             else:
+#                 pets_checked_in.append({"pet_id": pet.pet_id, "pet_name": pet.pet_name})
+#         all_check_ins.append(
+#             {"check_in_id": check_in.check_in_id,
+#             "date_hiked": check_in.date_hiked,
+#             "hike_id": check_in.hike_id,
+#             "hike_name": check_in.hike.hike_name,
+#             "miles_completed": check_in.miles_completed,
+#             "notes": check_in.notes,
+#             "pets": pets_checked_in,
+#             "pets_not_on_hike": pets_not_checked_in,
+#             "total_time": check_in.total_time})
 
-    return jsonify({"checkIns": all_check_ins})
+#     return jsonify({"checkIns": all_check_ins})
 
 
-@app.route("/hikes/<hike_id>/check_ins.json")
+@app.route("/hikes/<hike_id>/user_check_ins.json")
 def get_hike_check_ins_json(hike_id):
     """Return a JSON response for a hike's check ins."""
-    check_ins = crud_check_ins.get_check_ins_by_hike_id(hike_id)
+    logged_in_email = session.get("user_email")
+    user = crud_users.get_user_by_email(logged_in_email)
+
+    check_ins = crud_check_ins.get_check_ins_by_user_id_hike_id(user.user_id, hike_id)
 
     check_ins_schema = CheckInSchema(many=True)
     check_ins_json = check_ins_schema.dump(check_ins)
+
+    pets_schema = PetSchema(many=True, exclude=["check_ins"])
+    
+    for idx, check_in in enumerate(check_ins):
+        pets_json = pets_schema.dump(sorted(check_in.pets, key=lambda x: x.pet_name.lower()))
+        check_ins_json[idx]["pets"] = pets_json
+
+    return jsonify({"checkIns": check_ins_json})
+
+
+@app.route("/user_check_ins.json")
+def get_user_check_ins_json():
+    """Return a JSON response for a user's check ins."""
+    logged_in_email = session.get("user_email")
+
+    user = crud_users.get_user_by_email(logged_in_email)
+    check_ins = crud_check_ins.get_check_ins_by_user_id(user.user_id)
+    sorted_check_ins = sorted(check_ins, key=lambda x: x.date_hiked, reverse=True)
+
+    check_ins_schema = CheckInSchema(many=True, only=["check_in_id","date_hiked","hike_id","miles_completed","notes","pets","total_time","hike.hike_name"])
+    check_ins_json = check_ins_schema.dump(sorted_check_ins)
+    pets_schema = PetSchema(many=True, exclude=["check_ins"])
+
+    for idx, check_in in enumerate(sorted_check_ins):
+        pets_json = pets_schema.dump(sorted(check_in.pets, key=lambda x: x.pet_name.lower()))
+        check_ins_json[idx]["pets"] = pets_json
 
     return jsonify({"checkIns": check_ins_json})
 
