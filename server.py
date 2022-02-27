@@ -714,7 +714,7 @@ def register_user():
     """Create a new user."""
     full_name = request.form.get("full_name")
     email = request.form.get("email")
-    password = request.form.get("password")
+    password = request.form.get("new-password")
 
     user = crud_users.get_user_by_email(email)
     if user:
@@ -734,7 +734,7 @@ def register_user():
 def process_login():
     """Process user login"""
     email = request.form.get("email")
-    password = request.form.get("password")
+    password = request.form.get("current-password")
 
     user = crud_users.get_user_by_email(email)
     if not user or user.password != password:
@@ -779,10 +779,26 @@ def login_session_json():
 
 
 @app.route("/hikes/<hike_id>/comments.json")
-def get_comments_json(hike_id):
+def get_hike_comments_json(hike_id):
     """Return a JSON response for a hike's comments."""
     
     comments = crud_comments.get_comment_by_hike_id(hike_id)
+
+    sorted_comments = sorted(comments, key=lambda x: x.date_created, reverse=True)
+
+    comments_schema = CommentSchema(many=True)
+    comments_json = comments_schema.dump(sorted_comments)
+
+    return jsonify({"comments": comments_json})
+
+
+@app.route("/user_comments.json")
+def get_user_comments_json():
+    """Return a JSON response for all user's comments."""
+    
+    logged_in_email = session.get("user_email")
+    user = crud_users.get_user_by_email(logged_in_email)
+    comments = crud_comments.get_comment_by_user_id(user.user_id)
 
     sorted_comments = sorted(comments, key=lambda x: x.date_created, reverse=True)
 

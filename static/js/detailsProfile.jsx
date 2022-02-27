@@ -26,7 +26,7 @@ function PetProfile(props) {
 
   return (
     <React.Fragment>
-      <div className="card mb-3" style={{ maxWidth: "540px" }}>
+      <div className="card ms-4 mb-2" style={{ maxWidth: "540px" }}>
         <div className="row g-0">
           <div className="col-md-4">
             {props.pet_img_URL !== null ? (
@@ -529,7 +529,7 @@ const PetProfileContainer = React.forwardRef((props, ref) => {
       {allEditPetProfiles}
       <div
         className="offcanvas offcanvas-end"
-        style={{ width: "450px" }}
+        style={{ width: "650px" }}
         data-bs-keyboard="true"
         data-bs-scroll="true"
         data-bs-backdrop="true"
@@ -568,7 +568,7 @@ const PetProfileContainer = React.forwardRef((props, ref) => {
             className="offcanvas-footer"
             style={{
               position: "fixed",
-              right: "405px",
+              right: "613px",
               bottom: "1em",
               zIndex: "100",
             }}

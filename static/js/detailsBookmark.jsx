@@ -117,13 +117,14 @@ const BookmarksList = React.forwardRef((props, ref) => {
       response.json().then((jsonResponse) => {
         console.log(jsonResponse);
         props.getBookmarksLists();
+        props.parentSetListOptionsState();
       });
     });
   }
 
   return (
     <React.Fragment>
-      <div className="card mt-1">
+      <div className="card ms-4 mb-1">
         <div className="card-header">
           <div className="clearfix">
             <div className="float-start">
@@ -312,6 +313,7 @@ function CreateBookmarksList(props) {
       .then((jsonResponse) => {
         console.log(jsonResponse);
         props.getBookmarksLists();
+        props.parentSetListOptionsState();
       });
   }
 
@@ -594,6 +596,11 @@ const AddHikeToNewOrExistingList = React.forwardRef((props, ref) => {
   // For adding to existing list
   const [allBookmarksListOptions, setAllBookmarksListOptions] =
     React.useState("");
+  const [isLoading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    setListOptionsState();
+  }, [isLoading]);
 
   function setListOptionsState() {
     fetch("/user_bookmarks_lists.json").then((response) =>
@@ -623,7 +630,10 @@ const AddHikeToNewOrExistingList = React.forwardRef((props, ref) => {
             });
           }
         });
-        setAllBookmarksListOptions(allListOptions);
+        const copyAllListOptions = allListOptions.slice();
+        setAllBookmarksListOptions(copyAllListOptions);
+        console.log("allListOptions", copyAllListOptions);
+        setLoading(false);
       })
     );
   }
@@ -658,7 +668,10 @@ const AddHikeToNewOrExistingList = React.forwardRef((props, ref) => {
               });
             }
           });
-          setAllBookmarksListOptions(allListOptions);
+          const copyAllListOptions = allListOptions.slice();
+          setAllBookmarksListOptions(copyAllListOptions);
+          console.log("allListOptions", copyAllListOptions);
+          setLoading(false);
         })
       );
     },
@@ -676,7 +689,7 @@ const AddHikeToNewOrExistingList = React.forwardRef((props, ref) => {
       }),
     }).then((response) => {
       response.json().then((jsonResponse) => {
-        props.getBookmarksLists();
+        props.parentGetBookmarksLists();
         console.log(jsonResponse);
       });
     });
@@ -697,7 +710,7 @@ const AddHikeToNewOrExistingList = React.forwardRef((props, ref) => {
       }),
     }).then((response) => {
       response.json().then((jsonResponse) => {
-        props.getBookmarksLists();
+        props.parentGetBookmarksLists();
         console.log(jsonResponse);
       });
     });
@@ -930,27 +943,23 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
     );
   }
 
-  const [hikeDetails, setHikeDetails] = React.useState("");
+  // const [hikeDetails, setHikeDetails] = React.useState("");
 
-  // Get all hikes for the bookmarks list
-  function getHikeDetails() {
-    fetch(`/hikes/${hike_id}.json`)
-      .then((response) => response.json())
-      .then((data) => {
-        setHikeDetails(data.hike);
-      });
-  }
+  // // Get all hikes for the bookmarks list
+  // function getHikeDetails() {
+  //   fetch(`/hikes/${hike_id}.json`)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       setHikeDetails(data.hike);
+  //     });
+  // }
 
-  React.useEffect(() => {
-    getHikeDetails();
-  }, []);
+  // React.useEffect(() => {
+  //   getHikeDetails();
+  // }, []);
 
   return (
     <React.Fragment>
-      <AddHikeToNewOrExistingList
-        ref={AddHikeToNewOrExistingListRef}
-        getBookmarksLists={getBookmarksLists}
-      />
       <CreateBookmarksList getBookmarksLists={getBookmarksLists} />
       {allRenameBookmarksLists}
       {allAddMultHikesToExistingList}
@@ -962,7 +971,7 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
         tabIndex="-1"
         id="Bookmarks"
         aria-labelledby="BookmarksLabel"
-        style={{ width: "770px" }}
+        style={{ width: "790px" }}
       >
         <div className="offcanvas-header">
           <h3 className="offcanvas-title" id="BookmarksLabel">
@@ -996,9 +1005,7 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
                       href=""
                       data-bs-toggle="modal"
                       data-bs-target="#modal-add-bookmark"
-                      onClick={() =>
-                        AddHikeToNewOrExistingListRef.current.setListOptionsState()
-                      }
+                      onClick={props.parentSetListOptionsState}
                     >
                       bookmark this hike
                     </a>
@@ -1052,7 +1059,7 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
             className="offcanvas-footer"
             style={{
               position: "fixed",
-              right: "725px",
+              right: "757px",
               bottom: "1em",
               zIndex: "100",
             }}
@@ -1067,7 +1074,7 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
         </div>
       </div>
 
-      <div className="container-fluid">
+      {/* <div className="container-fluid">
         <div className="d-flex justify-content-start">
           <div className="card col mt-4" style={{ width: "100vw" }}>
             <div className="card-header">
@@ -1247,7 +1254,7 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
                     marginWidth="0"
                     src={`https://maps.google.com/maps?q=${hikeDetails.latitude},${hikeDetails.longitude}&t=&zoom=11&maptype=roadmap&ie=UTF8&iwloc=&output=embed`}
                   ></iframe>
-                  {/* API MAP
+                  API MAP
                 <iframe
                   width="500"
                   height="300"
@@ -1255,13 +1262,13 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
                   style="border:0"
                   src={`"https://www.google.com/maps/embed/v1/directions?key={{ GOOGLE_KEY }}&origin=Current+Location&destination=${hikeDetails.latitude},${hikeDetails.longitude}&center=${hikeDetails.latitude},${hikeDetails.longitude}&avoid=tolls&zoom=11"`}
                   allowfullscreen
-                ></iframe> */}
+                ></iframe>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </React.Fragment>
   );
 });

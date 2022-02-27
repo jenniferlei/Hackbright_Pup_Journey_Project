@@ -16,15 +16,16 @@ def create_comment(user, hike, body, date_created, edit, date_edited):
     return comment
 
 
-def edit_comment():
-    """Edit a comment."""
-    pass
+def get_comment_by_user_id(user_id):
+    """Return all comments by user_id."""
+
+    return db.session.query(Comment).filter_by(user_id=user_id).all()
 
 
 def get_comment_by_hike_id(hike_id):
     """Return all comments by hike_id."""
 
-    return db.session.query(Comment).filter_by(hike_id=hike_id)
+    return db.session.query(Comment).filter_by(hike_id=hike_id).all()
 
 
 def get_comment_by_comment_id(comment_id):

@@ -26,7 +26,7 @@ function CheckIn(props) {
 
   return (
     <React.Fragment>
-      <div className="card card-body mt-1">
+      <div className="card card-body ms-4 mb-1">
         <div className="clearfix">
           <div className="float-start">
             <small>
@@ -749,7 +749,7 @@ const HikeDetailsCheckInContainer = React.forwardRef((props, ref) => {
             className="offcanvas-footer"
             style={{
               position: "fixed",
-              right: "605px",
+              right: "613px",
               bottom: "1em",
               zIndex: "100",
             }}

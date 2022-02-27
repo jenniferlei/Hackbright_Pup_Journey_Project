@@ -19,24 +19,29 @@ function Comment(props) {
     }).then((response) => {
       response.json().then((jsonResponse) => {
         // console.log(jsonResponse);
-        props.deleteComment();
+        props.getComments();
       });
     });
   }
 
   return (
     <React.Fragment>
-      <div className="card mt-1">
+      <div className="card ms-4 mb-1">
         <div className="card-header">
           <div className="clearfix">
             <div className="float-start">
-              {props.full_name}&nbsp;
+              {props.full_name}&nbsp;<i className="bi bi-chat-square-text"></i>
+              &nbsp;
+              <small>
+                <a className="link-dark" href={`/hikes/${props.hike_id}`}>
+                  {props.hike_name}
+                </a>
+              </small>
               <small className="text-muted">
                 <br></br>
                 posted {props.date_created}
-                <br></br>
                 {props.edit == true ? (
-                  <span>(edited {props.date_edited})</span>
+                  <span> (edited {props.date_edited})</span>
                 ) : null}
               </small>
             </div>
@@ -102,7 +107,7 @@ function EditComment(props) {
       })
       .then((jsonResponse) => {
         // console.log(jsonResponse);
-        props.editComment();
+        props.getComments();
       });
   }
   return (
@@ -168,12 +173,6 @@ function EditComment(props) {
 }
 
 function AddComment(props) {
-  // You’ll need an AJAX POST request to submit data to the server.
-  // In order to access the user’s form data, you’ll access the component’s state.
-  // To get what is currently typed in the name field, you can use the state value name.
-  // To get what is currently typed in the skill field, you can use the state value skill.
-  // Remember, the back-end of this feature is already implemented for you. There is a route called /add-card.
-  // Review it if you need help configuring your form data correctly.
   const hike_id = document.querySelector("#hike_id").innerText;
   const add_comment_url = `/hikes/${hike_id}/add-comment`;
   const session_login = document.querySelector("#login").innerText;
@@ -181,8 +180,7 @@ function AddComment(props) {
   const [comment_body, setCommentBody] = React.useState("");
 
   // Add a POST request to hit the server /add-card endpoint and add a new card.
-  // Make sure you pass in the data it is expecting. When this request finishes,
-  // show an alert letting the user know they successfully added the card.
+
   function addNewComment() {
     fetch(add_comment_url, {
       method: "POST",
@@ -202,6 +200,8 @@ function AddComment(props) {
         const edit = commentAdded.edit;
         const session_login = jsonResponse.login;
         const session_user_id = commentAdded.user_id;
+        const hike_name = commentAdded.hike.hike_name;
+        const hike_id = commentAdded.hike_id;
         props.addComment(
           comment_id,
           comment_body,
@@ -211,7 +211,9 @@ function AddComment(props) {
           date_edited,
           edit,
           session_login,
-          session_user_id
+          session_user_id,
+          hike_name,
+          hike_id
         );
         // console.log(jsonResponse);
       });
@@ -284,7 +286,7 @@ function AddComment(props) {
 }
 
 // comment container component
-function HikeDetailsCommentContainer() {
+const HikeDetailsCommentContainer = React.forwardRef((props, ref) => {
   const [comments, setComments] = React.useState([]);
 
   function addComment(
@@ -296,7 +298,9 @@ function HikeDetailsCommentContainer() {
     date_edited,
     edit,
     session_login,
-    session_user_id
+    session_user_id,
+    hike_name,
+    hike_id
   ) {
     const newComment = {
       comment_id: comment_id,
@@ -308,40 +312,66 @@ function HikeDetailsCommentContainer() {
       edit: edit,
       session_login: session_login,
       session_user_id: session_user_id,
+      hike: { hike_name: hike_name },
+      hike_id: hike_id,
     }; // equivalent to { cardId: cardId, skill: skill, name: name, imgUrl: imgUrl }
     const currentComments = [...comments]; // makes a copy of cards. similar to doing currentCards = cards[:] in Python
     // [...currentCards, newCard] is an array containing all elements in currentCards followed by newCard
     setComments([newComment, ...currentComments]);
   }
 
-  // Use getComments() to set comments to all current comments
-  function editComment() {
-    getComments();
-  }
-
-  // Use getComments() to set comments to all current comments
-  function deleteComment() {
-    getComments();
-  }
-
-  // We’re going to use a GET request to get our card data,
-  // and then we’ll pass it to the setCards function to actually update the state of our component.
-  // Let’s make an HTTP request to our server for the cards we should display.
-  // To load initial data for a react component from the server, it’s typical to used a hook called useEffect.
-  // This hook takes a function (a callback) as an argument, and it runs that function every time the component renders,
-  // though we also have the ability to control when it happens if we want it to happen less often than that.
   const hike_id = document.querySelector("#hike_id").innerText;
-  const hike_json_url = `/hikes/${hike_id}/comments.json`;
-
-  function getComments() {
-    fetch(hike_json_url)
-      .then((response) => response.json())
-      .then((data) => setComments(data.comments));
-  }
 
   React.useEffect(() => {
     getComments();
   }, []);
+
+  const [commentsHeader, setCommentsHeader] = React.useState(
+    "Comments For This Hike"
+  );
+
+  function getComments() {
+    if (
+      document.querySelector("#CommentsLabel").innerText ===
+      "Comments For This Hike"
+    ) {
+      getHikeComments();
+    } else if (
+      document.querySelector("#CommentsLabel").innerText ===
+      "Your Comments for All Hikes"
+    ) {
+      getUserComments();
+    }
+  }
+
+  function getHikeComments() {
+    fetch(`/hikes/${hike_id}/comments.json`)
+      .then((response) => response.json())
+      .then((data) => {
+        setComments(data.comments);
+        setCommentsHeader("Comments For This Hike");
+      });
+  }
+
+  function getUserComments() {
+    fetch(`/user_comments.json`)
+      .then((response) => response.json())
+      .then((data) => {
+        setComments(data.comments);
+        setCommentsHeader("Your Comments for All Hikes");
+      });
+  }
+
+  React.useImperativeHandle(ref, () => ({
+    getHikeComments() {
+      fetch(`/hikes/${hike_id}/comments.json`)
+        .then((response) => response.json())
+        .then((data) => {
+          setComments(data.comments);
+          setCommentsHeader("Comments For This Hike");
+        });
+    },
+  }));
 
   const allComments = [];
   const allEditComments = [];
@@ -360,6 +390,7 @@ function HikeDetailsCommentContainer() {
       <Comment
         key={currentComment.comment_id}
         hike_id={currentComment.hike_id}
+        hike_name={currentComment.hike.hike_name}
         comment_id={currentComment.comment_id}
         full_name={currentComment.user.full_name}
         user_id={currentComment.user_id}
@@ -369,7 +400,7 @@ function HikeDetailsCommentContainer() {
         comment_body={currentComment.body}
         session_login={document.querySelector("#login").innerText}
         session_user_id={Number(document.querySelector("#user_id").innerText)}
-        deleteComment={deleteComment}
+        getComments={getComments}
       />
     );
 
@@ -384,7 +415,7 @@ function HikeDetailsCommentContainer() {
         date_edited={date_edited_formatted}
         edit={currentComment.edit}
         comment_body={currentComment.body}
-        editComment={editComment}
+        getComments={getComments}
       />
     );
   }
@@ -397,6 +428,7 @@ function HikeDetailsCommentContainer() {
       {allEditComments}
       <div
         className="offcanvas offcanvas-end"
+        style={{ width: "650px" }}
         data-bs-keyboard="true"
         data-bs-scroll="true"
         data-bs-backdrop="true"
@@ -406,35 +438,78 @@ function HikeDetailsCommentContainer() {
       >
         <div className="offcanvas-header">
           <h3 className="offcanvas-title" id="CommentsLabel">
-            Comments
+            {commentsHeader}
           </h3>
+
+          {session_login === "True" ? (
+            <div className="d-flex float-end">
+              <div className="btn-group mt-1">
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-dark dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  actions <i className="bi bi-chat-text"></i>
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <a
+                      className="btn btn-sm dropdown-item"
+                      href=""
+                      data-bs-toggle="modal"
+                      data-bs-target="#modal-add-comment"
+                    >
+                      add a comment
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              &nbsp;&nbsp;
+              <div className="btn-group mt-1">
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-dark dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  view <i className="bi bi-eye"></i>
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <a
+                      className="btn btn-sm dropdown-item"
+                      onClick={getUserComments}
+                    >
+                      view all comments
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      className="btn btn-sm dropdown-item"
+                      onClick={getHikeComments}
+                    >
+                      view comments for this hike
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          ) : null}
         </div>
+
         <div className="offcanvas-body">
           {session_login !== "True" ? (
             <div>Please log in to add a comment.</div>
           ) : (
-            <a
-              className="btn btn-sm"
-              href=""
-              data-bs-toggle="modal"
-              data-bs-target="#modal-add-comment"
-            >
-              <i
-                data-bs-toggle="tooltip"
-                data-bs-placement="right"
-                title="add a comment"
-                className="bi bi-chat-text"
-              ></i>
-              &nbsp;add a comment
-            </a>
+            <div>{allComments}</div>
           )}
 
-          <div style={{ padding: "0.5em" }}>{allComments}</div>
           <div
             className="offcanvas-footer"
             style={{
               position: "fixed",
-              right: "355px",
+              right: "613px",
               bottom: "1em",
               zIndex: "100",
             }}
@@ -450,4 +525,4 @@ function HikeDetailsCommentContainer() {
       </div>
     </React.Fragment>
   );
-}
+});
