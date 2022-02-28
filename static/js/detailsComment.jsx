@@ -30,7 +30,7 @@ function Comment(props) {
         <div className="card-header">
           <div className="clearfix">
             <div className="float-start">
-              {props.full_name}&nbsp;<i className="bi bi-chat-square-text"></i>
+              {props.full_name}&nbsp;<i className="bi bi-chat-text"></i>
               &nbsp;
               <small>
                 <a className="link-dark" href={`/hikes/${props.hike_id}`}>
@@ -244,7 +244,7 @@ function AddComment(props) {
             </div>
             <div className="modal-body">
               {session_login !== "True" ? (
-                <div>Please log in to add a check in.</div>
+                <div>Please log in to add a comment.</div>
               ) : (
                 <div>
                   <div className="mb-3">
@@ -501,9 +501,8 @@ const HikeDetailsCommentContainer = React.forwardRef((props, ref) => {
         <div className="offcanvas-body">
           {session_login !== "True" ? (
             <div>Please log in to add a comment.</div>
-          ) : (
-            <div>{allComments}</div>
-          )}
+          ) : null}
+          <div>{allComments}</div>
 
           <div
             className="offcanvas-footer"

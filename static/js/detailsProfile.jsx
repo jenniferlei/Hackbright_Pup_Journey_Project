@@ -203,7 +203,6 @@ function EditPetProfile(props) {
                   onChange={(event) => setPetName(event.target.value)}
                   className="form-control"
                   placeholder="Name"
-                  required
                 />
               </div>
 
@@ -219,7 +218,6 @@ function EditPetProfile(props) {
                   <option value="male">male</option>
                 </select>
               </div>
-
               <div className="mb-3">
                 <label htmlFor="birthday"> Birthday </label>
                 <input
@@ -229,7 +227,6 @@ function EditPetProfile(props) {
                   className="form-control"
                 />
               </div>
-
               <div className="mb-3">
                 <label htmlFor="breed">Breed</label>
                 <input
@@ -240,7 +237,6 @@ function EditPetProfile(props) {
                   placeholder="Breed"
                 />
               </div>
-
               <div className="mb-3">
                 <label htmlFor="my_file">Image</label>
                 <input

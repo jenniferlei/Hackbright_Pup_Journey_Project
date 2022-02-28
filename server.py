@@ -1113,6 +1113,25 @@ def hike_google_maps_result(latitude, longitude):
 
     pass
 
+@app.route("/<state>/city_area.json")
+def get_city_area(state):
+    """Return cities and areas for a state"""
+    hikes_by_state = (db.session.query(Hike)
+                        .filter_by(state=state)
+                        .all())
+
+    areas = set()
+    cities = set()
+
+    for hike in hikes_by_state:
+        areas.add(hike.area)
+        cities.add(hike.city)
+
+    areas = sorted(list(areas))
+    cities = sorted(list(cities))
+
+    return jsonify({"areas": areas, "cities": cities})
+
 
 if __name__ == "__main__":
     # DebugToolbarExtension(app)
