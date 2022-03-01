@@ -1058,19 +1058,53 @@ def get_user_bookmarks_lists():
     return jsonify({"bookmarksLists": bookmarks_json})
 
 
-@app.route("/search_results.json")
+# @app.route("/search_results.json")
+# def search_results():
+#     """Search for hikes"""
+
+#     keyword = request.args.get("keyword", "")
+#     difficulties = request.args.getlist("difficulty")
+#     leash_rules = request.args.getlist("leash_rule")
+#     areas = request.args.getlist("area")
+#     cities = request.args.getlist("city")
+#     state = request.args.get("state", "")
+#     length_min = request.args.get("length_min", "")
+#     length_max = request.args.get("length_max", "")
+#     park = request.args.getlist("parking")
+
+#     # Populate the list of hike objects that fulfill the search criteria
+#     search_hikes = crud_hikes.get_hikes_by_advanced_search(keyword, difficulties, leash_rules, areas, cities, state, length_min, length_max, park)
+ 
+#     hikes_schema = HikeSchema(many=True)
+#     hikes_json = hikes_schema.dump(hikes)
+
+#     return jsonify({"hikes": hikes_json})
+
+
+@app.route("/hikes/advanced_search.json?keyword=<keyword>&difficulty=<difficulty>&leash_rules=<leash_rules>&length_min=<length_min>&length_max=<length_max>&parking=<parking>&state=<state>&city=<city>&area=<area>")
 def search_results():
     """Search for hikes"""
 
     keyword = request.args.get("keyword", "")
-    difficulties = request.args.getlist("difficulty")
-    leash_rules = request.args.getlist("leash_rule")
-    areas = request.args.getlist("area")
-    cities = request.args.getlist("city")
+    difficulties = request.args.get("difficulty")
+    leash_rules = request.args.get("leash_rule")
+    areas = request.args.get("area")
+    cities = request.args.get("city")
     state = request.args.get("state", "")
     length_min = request.args.get("length_min", "")
     length_max = request.args.get("length_max", "")
-    park = request.args.getlist("parking")
+    parking = request.args.get("parking")
+
+    print("keyword: ", keyword)
+    print("difficulties: ", difficulties)
+    print("leash_rules: ", leash_rules)
+    print("areas: ", areas)
+    print("cities: ", cities)
+    print("state: ", state)
+    print("length_min: ", length_min)
+    print("length_max: ", length_max)
+    print("parking: ", parking)
+
 
     # Populate the list of hike objects that fulfill the search criteria
     search_hikes = crud_hikes.get_hikes_by_advanced_search(keyword, difficulties, leash_rules, areas, cities, state, length_min, length_max, park)
@@ -1078,7 +1112,8 @@ def search_results():
     hikes_schema = HikeSchema(many=True)
     hikes_json = hikes_schema.dump(hikes)
 
-    return jsonify({"hikes": hikes_json})
+    return jsonify({"results": hikes_json})
+
 
 @app.route("/hikes/<hike_id>.json")
 def get_hike(hike_id):
