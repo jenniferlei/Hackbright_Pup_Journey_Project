@@ -460,7 +460,7 @@ const HikeDetailsCommentContainer = React.forwardRef((props, ref) => {
                       data-bs-toggle="modal"
                       data-bs-target="#modal-add-comment"
                     >
-                      add a comment
+                      add a comment for this hike
                     </a>
                   </li>
                 </ul>

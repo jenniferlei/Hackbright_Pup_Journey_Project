@@ -598,9 +598,11 @@ const AddHikeToNewOrExistingList = React.forwardRef((props, ref) => {
     React.useState("");
   const [isLoading, setLoading] = React.useState(true);
 
-  React.useEffect(() => {
-    setListOptionsState();
-  }, [isLoading]);
+  if (session_login === "True") {
+    React.useEffect(() => {
+      setListOptionsState();
+    }, [isLoading]);
+  }
 
   function setListOptionsState() {
     fetch("/user_bookmarks_lists.json").then((response) =>
@@ -641,39 +643,41 @@ const AddHikeToNewOrExistingList = React.forwardRef((props, ref) => {
   // Access setListOptionsState function from HikeDetailsBookmarksListContainer component
   React.useImperativeHandle(ref, () => ({
     setListOptionsState() {
-      fetch("/user_bookmarks_lists.json").then((response) =>
-        response.json().then((jsonResponse) => {
-          const bookmarksLists = jsonResponse.bookmarksLists;
-          const allListOptions = [];
+      if (session_login === "True") {
+        fetch("/user_bookmarks_lists.json").then((response) =>
+          response.json().then((jsonResponse) => {
+            const bookmarksLists = jsonResponse.bookmarksLists;
+            const allListOptions = [];
 
-          bookmarksLists.map((bookmarksList) => {
-            let hikeOnList = false;
-            for (const hike of bookmarksList.hikes) {
-              if (hike.hike_id === Number(hike_id)) {
-                hikeOnList = true;
+            bookmarksLists.map((bookmarksList) => {
+              let hikeOnList = false;
+              for (const hike of bookmarksList.hikes) {
+                if (hike.hike_id === Number(hike_id)) {
+                  hikeOnList = true;
+                }
               }
-            }
 
-            if (hikeOnList) {
-              allListOptions.push({
-                select: true,
-                bookmarks_list_name: bookmarksList.bookmarks_list_name,
-                bookmarks_list_id: bookmarksList.bookmarks_list_id,
-              });
-            } else {
-              allListOptions.push({
-                select: false,
-                bookmarks_list_name: bookmarksList.bookmarks_list_name,
-                bookmarks_list_id: bookmarksList.bookmarks_list_id,
-              });
-            }
-          });
-          const copyAllListOptions = allListOptions.slice();
-          setAllBookmarksListOptions(copyAllListOptions);
-          console.log("allListOptions", copyAllListOptions);
-          setLoading(false);
-        })
-      );
+              if (hikeOnList) {
+                allListOptions.push({
+                  select: true,
+                  bookmarks_list_name: bookmarksList.bookmarks_list_name,
+                  bookmarks_list_id: bookmarksList.bookmarks_list_id,
+                });
+              } else {
+                allListOptions.push({
+                  select: false,
+                  bookmarks_list_name: bookmarksList.bookmarks_list_name,
+                  bookmarks_list_id: bookmarksList.bookmarks_list_id,
+                });
+              }
+            });
+            const copyAllListOptions = allListOptions.slice();
+            setAllBookmarksListOptions(copyAllListOptions);
+            console.log("allListOptions", copyAllListOptions);
+            setLoading(false);
+          })
+        );
+      }
     },
   }));
 
@@ -888,12 +892,14 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
   // Access getHikeBookmarksLists function from Footer component
   React.useImperativeHandle(ref, () => ({
     getHikeBookmarksLists() {
-      fetch(`/hikes/${hike_id}/bookmarks.json`)
-        .then((response) => response.json())
-        .then((data) => {
-          setBookmarksLists(data.bookmarksLists);
-          setBookmarksListsHeader("Bookmarks For This Hike");
-        });
+      if (session_login === "True") {
+        fetch(`/hikes/${hike_id}/bookmarks.json`)
+          .then((response) => response.json())
+          .then((data) => {
+            setBookmarksLists(data.bookmarksLists);
+            setBookmarksListsHeader("Bookmarks For This Hike");
+          });
+      }
     },
   }));
 

@@ -1,50 +1,21 @@
 "use strict";
 
-function SearchResult(props) {
-  return (
-    <React.Fragment>
-      <li>
-        <a className="link-dark" href={`/hikes/${props.hike_id}`}>
-          {props.hike_name}
-        </a>
-        <br></br>
-        <small>
-          {props.difficulty} | {props.miles} miles | {props.city}, {props.state}{" "}
-          | {props.area} | {props.leash_rule} | {props.parking}
-        </small>
-      </li>
-    </React.Fragment>
-  );
-}
-
 function SearchOffCanvas(props) {
   const stateOptions = ["California"];
+  const parkingOptions = [
+    "Fee (Adventure Pass)",
+    "Fee (Lot/Area)",
+    "Free (Lot/Area) or Fee (Adventure Pass)",
+    "Free (Lot/Area)",
+    "Free (Road/Street)",
+    "Restricted",
+    "Weekend/Holiday Fee, Weekday Free (Lot/Area)",
+  ];
+  const difficultyOptions = ["easy", "moderate", "hard"];
 
-  const [keyword, setKeyword] = React.useState("");
-  const [difficultyOptions, setDifficultyOptions] = React.useState([
-    { select: false, difficulty: "easy" },
-    { select: false, difficulty: "moderate" },
-    { select: false, difficulty: "hard" },
-  ]);
-  const [leashRuleChoice, setLeashRuleChoice] = React.useState([]);
-  const [minLengthChoice, setMinLengthChoice] = React.useState("");
-  const [maxLengthChoice, setMaxLengthChoice] = React.useState("");
   const [stateChoice, setStateChoice] = React.useState("");
   const [cityOptions, setCityOptions] = React.useState([]);
   const [areaOptions, setAreaOptions] = React.useState([]);
-  const [parkingOptions, setParkingOptions] = React.useState([
-    { select: false, parking: "Fee (Adventure Pass)" },
-    { select: false, parking: "Fee (Lot/Area)" },
-    { select: false, parking: "Free (Lot/Area) or Fee (Adventure Pass)" },
-    { select: false, parking: "Free (Lot/Area)" },
-    { select: false, parking: "Free (Road/Street)" },
-    { select: false, parking: "Restricted" },
-    {
-      select: false,
-      parking: "Weekend/Holiday Fee, Weekday Free (Lot/Area)",
-    },
-  ]);
-  const [results, setResults] = React.useState("");
 
   const setCityAreaOptions = (state) => {
     fetch(`/${state}/city_area.json`)
@@ -83,47 +54,6 @@ function SearchOffCanvas(props) {
     }
   };
 
-  // const zipcode = document.querySelector("#zipcode-field").value;
-  // const urlRequest = `/hikes/advanced_search?keyword=${}&difficulty=${}&length_min=${}&length_max=${}&state=`;
-
-  // fetch(urlRequest)
-  //   .then((response) => response.json())
-  //   .then((weather) => {
-  //     document.querySelector("#weather-info").innerHTML = weather["forecast"];
-  //   });
-
-  // function searchResults() {
-  //   fetch(
-  //     `/hikes/advanced_search.json?keyword=${keyword}&difficulty=${difficultyOptions}&leash_rules=${leashRuleChoice}&length_min=${minLengthChoice}&length_max=${maxLengthChoice}&parking=${parkingOptions}&state=${stateChoice}&city=${cityOptions}&area=${areaOptions}`
-  //   )
-  //     .then((response) => {
-  //       response.json();
-  //     })
-  //     .then((jsonResponse) => {
-  //       const { results } = jsonResponse.results;
-  //       setResults(results);
-  //       console.log(results);
-  //     });
-  // }
-
-  const allSearchResults = [];
-
-  for (const currentResult of results) {
-    allSearchResults.push(
-      <SearchResult
-        key={currentResult.hike_id}
-        hike_id={currentResult.hike_id}
-        hike_name={currentResult.hike_name}
-        difficulty={currentResult.difficulty}
-        miles={currentResult.miles}
-        city={currentResult.city}
-        state={currentResult.state}
-        leash_rule={currentResult.leash_rule}
-        parking={currentResult.parking}
-      />
-    );
-  }
-
   return (
     <React.Fragment>
       <div
@@ -156,9 +86,7 @@ function SearchOffCanvas(props) {
                   id="search-keyword"
                   className="form-control"
                   type="text"
-                  value={keyword}
-                  onChange={(event) => setKeyword(event.target.value)}
-                  placeholder="keyword"
+                  name="keyword"
                 ></input>
                 <label className="form-label" htmlFor="search-keyword">
                   <small className="form-text text-muted">Keyword</small>
@@ -172,35 +100,19 @@ function SearchOffCanvas(props) {
                   </label>
                 </div>
                 {difficultyOptions.map((difficultyOption) => (
-                  <div
-                    className="form-check col"
-                    key={difficultyOption.difficulty}
-                  >
+                  <div className="form-check col" key={difficultyOption}>
                     <input
                       className="form-check-input"
                       type="checkbox"
-                      id={difficultyOption.difficulty}
-                      value={difficultyOption.difficulty}
-                      checked={difficultyOption.select}
-                      onChange={(event) => {
-                        let checked = event.target.checked;
-                        setDifficultyOptions(
-                          difficultyOptions.map((data) => {
-                            if (
-                              difficultyOption.difficulty === data.difficulty
-                            ) {
-                              data.select = checked;
-                            }
-                            return data;
-                          })
-                        );
-                      }}
+                      id={difficultyOption}
+                      name="difficulty"
+                      value={difficultyOption}
                     />
                     <label
                       className="form-check-label"
-                      htmlFor={difficultyOption.difficulty}
+                      htmlFor={difficultyOption}
                     >
-                      {difficultyOption.difficulty}
+                      {difficultyOption}
                     </label>
                   </div>
                 ))}
@@ -217,6 +129,7 @@ function SearchOffCanvas(props) {
                     <input
                       className="form-check-input"
                       type="checkbox"
+                      name="leash_rules"
                       value="On leash"
                       id="search-on-leash"
                     />
@@ -234,6 +147,7 @@ function SearchOffCanvas(props) {
                     <input
                       className="form-check-input"
                       type="checkbox"
+                      name="leash_rules"
                       value="Off leash"
                       id="search-off-leash"
                     />
@@ -247,23 +161,22 @@ function SearchOffCanvas(props) {
                 </div>
               </div>
 
-              {/* <div className="row mt-2"></div> */}
               <div className="row g-2 mt-2">
                 <div className="col">
                   <label className="form-label">
-                    <strong>Length (Miles)</strong>
+                    <strong>Length</strong>
                   </label>
+                  <br></br>
+                  <strong>(Miles)</strong>
                 </div>
                 <div className="form-floating col">
                   <input
                     type="number"
                     step={0.1}
                     min={0}
-                    placeholder={0}
                     className="form-control input-sm"
                     id="search-length-min"
-                    value={minLengthChoice}
-                    onChange={(event) => setMinLengthChoice(event.target.value)}
+                    name="length_min"
                   />
                   <label className="form-label" htmlFor="search-length-min">
                     <small className="form-text text-muted">min</small>
@@ -275,11 +188,9 @@ function SearchOffCanvas(props) {
                     type="number"
                     step={0.1}
                     min={0}
-                    placeholder={0}
                     className="form-control"
                     id="search-length-max"
-                    value={maxLengthChoice}
-                    onChange={(event) => setMaxLengthChoice(event.target.value)}
+                    name="length_max"
                   />
                   <label className="form-label" htmlFor="search-length-max">
                     <small className="form-text text-muted">max</small>
@@ -289,7 +200,7 @@ function SearchOffCanvas(props) {
 
               <div className="mt-2">
                 <label className="form-label" htmlFor="search-parking">
-                  Parking
+                  <strong>Parking</strong>
                 </label>
                 <div
                   style={{
@@ -301,30 +212,19 @@ function SearchOffCanvas(props) {
                   }}
                 >
                   {parkingOptions.map((parkingOption) => (
-                    <div className="form-check" key={parkingOption.parking}>
+                    <div className="form-check" key={parkingOption}>
                       <input
                         className="form-check-input"
                         type="checkbox"
-                        id={parkingOption.parking}
-                        value={parkingOption.parking}
-                        checked={parkingOption.select}
-                        onChange={(event) => {
-                          let checked = event.target.checked;
-                          setParkingOptions(
-                            parkingOptions.map((data) => {
-                              if (parkingOption.parking === data.parking) {
-                                data.select = checked;
-                              }
-                              return data;
-                            })
-                          );
-                        }}
+                        name="parking"
+                        id={parkingOption}
+                        value={parkingOption}
                       />
                       <label
                         className="form-check-label"
-                        htmlFor={parkingOption.parking}
+                        htmlFor={parkingOption}
                       >
-                        {parkingOption.parking}
+                        {parkingOption}
                       </label>
                     </div>
                   ))}
@@ -332,7 +232,9 @@ function SearchOffCanvas(props) {
               </div>
 
               <div className="row mt-2">
-                <label className="form-label">Location</label>
+                <label className="form-label">
+                  <strong>Location</strong>
+                </label>
               </div>
               <div className="form-floating row ms-1 me-1">
                 <select
@@ -344,6 +246,7 @@ function SearchOffCanvas(props) {
                   <option value=""></option>
                   {stateOptions.map((stateOption) => (
                     <option
+                      name="state"
                       value={`${stateOption}`}
                       key={`state-${stateOption}`}
                     >
@@ -352,13 +255,13 @@ function SearchOffCanvas(props) {
                   ))}
                 </select>
                 <label className="form-label" htmlFor="search-state">
-                  State
+                  <strong>State</strong>
                 </label>
               </div>
 
               <div className="row mt-2">
                 <label className="form-label" htmlFor="search-city">
-                  City
+                  <strong>City</strong>
                 </label>
                 {cityOptions.length < 1 ? (
                   <small className="text-muted">
@@ -381,19 +284,8 @@ function SearchOffCanvas(props) {
                               className="form-check-input"
                               type="checkbox"
                               id={cityOption.city}
+                              name="city"
                               value={cityOption.city}
-                              checked={cityOption.select}
-                              onChange={(event) => {
-                                let checked = event.target.checked;
-                                setCityOptions(
-                                  cityOptions.map((data) => {
-                                    if (cityOption.city === data.city) {
-                                      data.select = checked;
-                                    }
-                                    return data;
-                                  })
-                                );
-                              }}
                             />
                             <label
                               className="form-check-label"
@@ -409,7 +301,7 @@ function SearchOffCanvas(props) {
               </div>
               <div className="row mt-2">
                 <label className="form-label" htmlFor="search-area">
-                  Area
+                  <strong>Area</strong>
                 </label>
                 {areaOptions.length < 1 ? (
                   <small className="text-muted">
@@ -432,19 +324,8 @@ function SearchOffCanvas(props) {
                               className="form-check-input"
                               type="checkbox"
                               id={areaOption.area}
+                              name="area"
                               value={areaOption.area}
-                              checked={areaOption.select}
-                              onChange={(event) => {
-                                let checked = event.target.checked;
-                                setAreaOptions(
-                                  areaOptions.map((data) => {
-                                    if (areaOption.area === data.area) {
-                                      data.select = checked;
-                                    }
-                                    return data;
-                                  })
-                                );
-                              }}
                             />
                             <label
                               className="form-check-label"
@@ -464,7 +345,6 @@ function SearchOffCanvas(props) {
                   className="btn btn-sm btn-outline-dark btn-block"
                   type="submit"
                   data-bs-dismiss="offcanvas"
-                  onSubmit={searchResults}
                 >
                   Submit
                 </button>

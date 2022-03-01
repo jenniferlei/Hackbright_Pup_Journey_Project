@@ -606,12 +606,14 @@ const HikeDetailsCheckInContainer = React.forwardRef((props, ref) => {
 
   React.useImperativeHandle(ref, () => ({
     getHikeCheckIns() {
-      fetch(`/hikes/${hike_id}/user_check_ins.json`)
-        .then((response) => response.json())
-        .then((data) => {
-          setCheckIns(data.checkIns);
-          setCheckInsHeader("Check Ins For This Hike");
-        });
+      if (session_login === "True") {
+        fetch(`/hikes/${hike_id}/user_check_ins.json`)
+          .then((response) => response.json())
+          .then((data) => {
+            setCheckIns(data.checkIns);
+            setCheckInsHeader("Check Ins For This Hike");
+          });
+      }
     },
   }));
 

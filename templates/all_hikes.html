@@ -4,168 +4,6 @@
 {% block body %}
 
 <div id="allHikesRoot"></div>
-<!-- OFF CANVAS SEARCH -->
-<!-- <div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="true" tabindex="-1" id="Search" aria-labelledby="SearchLabel">
-  <div class="offcanvas-header">
-    <h3 class="offcanvas-title" id="SearchLabel">Search</h3>
-    <div style="float:right">
-      <small><a class="link-dark" href="/hikes">View all hikes</a></small>
-    </div>
-
-  </div>
-  <div class="offcanvas-body" style="position:relative">
-    <div style="padding:0.5em">
-    <form method="GET" action="/hikes/advanced_search">
-        <div class="form-floating row mt-2">
-          <input id="search-keyword"
-                  class="form-control"
-                  type="text"
-                  name="keyword"
-                  placeholder="keyword"
-          ></input>
-          <label class="form-label" for="search-keyword"><small class="form-text text-muted">Keyword</small></label>
-        </div>
-
-        <div class="row mt-3"><label class="form-label">Difficulty</label></div>
-        <div class="row">
-
-          {% for difficulty in ['easy', 'moderate', 'hard'] %}
-          <div class="col">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="difficulty" value="{{ difficulty }}" id="search-difficulty-{{ difficulty }}">
-              <label class="form-check-label" for="search-difficulty-{{ difficulty }}">
-                {{ difficulty }}
-              </label>
-            </div>
-          </div>
-          {% endfor %}
-
-        </div>
-
-        <div class="row mt-3"><label class="form-label">Leash Rule</label></div>
-        <div class="row">
-
-          <div class="col">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="leash_rule" value="On leash" id="search-on-leash">
-              <label class="form-check-label" for="search-on-leash">
-                on leash
-              </label>
-            </div>
-          </div>
-
-          <div class="col">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="leash_rule" value="Off leash" id="search-off-leash">
-              <label class="form-check-label" for="search-off-leash">
-                off leash
-              </label>
-            </div>
-          </div>
-
-        </div>
-
-        <div class="row mt-3"><label class="form-label">Length (Miles)</label></div>
-        <div class="row g-2">
-          
-          <div class="form-floating col">
-            <input type="number"
-                    step=0
-                    min=0
-                    name="length_min"
-                    placeholder=0
-                    class="form-control input-sm"
-                    id="search-length-min">
-            <label class="form-label" for="search-length-min"><small class="form-text text-muted">min</small></label>
-          </div>
-
-          <div class="form-floating col">
-            <input type="number"
-                    step=0
-                    min=0
-                    name="length_max"
-                    placeholder=0
-                    class="form-control"
-                    id="search-length-max">
-            <label class="form-label" for="search-length-max"><small class="form-text text-muted">max</small></label>
-          </div>
-        </div>
-
-        <div class="accordion accordion-flush" id="accordionSearchBar">
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="flush-headingOne">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                <small>Filter by Location</small>
-              </button>
-            </h2>
-            <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-              <div class="accordion-body">
-                <div class="form-floating row mt-2">
-                  <select id="search-state"
-                          class="form-select"
-                          name="state"
-                          aria-label="search-state">
-                    <option value=""></option>
-                    {% for state in states|sort() %}
-                    <option value="{{ state }}">{{ state }}</option>
-                    {% endfor %}
-                  </select>
-                  <label class="form-label" for="search-state">State</label>
-                </div>
-
-                <div class="row g-2 mt-2">
-                  <div class="col">
-                    <label class="form-label" for="search-city">City</label>
-                    <select class="form-control choices-multiple" name="city" multiple>
-                      {% for city in cities|sort() %}
-                      <option value="{{ city }}">{{ city }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                  <div class="col">
-                    <label class="form-label" for="search-area">Area</label>
-                    <select class="form-control choices-multiple" name="area" multiple>
-                      {% for area in areas|sort() %}
-                      <option value="{{ area }}">{{ area }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="flush-headingTwo">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
-                <small>Filter by Parking</small>
-              </button>
-            </h2>
-            <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
-              <div class="accordion-body">
-                <div class="mt-3"><label class="form-label" for="search-parking">Parking</label></div>
-
-
-                
-                <select class="form-control choices-multiple" name="parking" multiple>
-                  {% for park in parking|sort() %}
-                  <option value="{{ park }}">{{ park }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
-          <button class="btn btn-sm btn-outline-dark btn-block mt-4" type="submit">Submit</button>
-        </div>
-
-      </form>
-    </div>
-    <button type="button" class="btn-close text-reset" style="bottom:1em; right:1em; position:absolute; float:right" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-  </div>
-</div> -->
-<!-- END OFF CANVAS SEARCH -->
 
 <div class="container-fluid">
 
@@ -179,12 +17,24 @@
         <div class="clearfix">
 
           <div class="d-flex float-start"><h3>Hikes</h3></div>
-          <div class="d-flex float-end"><input class="form-control me-2 input-sm" type="search" placeholder="Search" aria-label="Search">
-            </input><button class="btn btn-sm me-2" type="submit"><small><i data-bs-toggle="tooltip" data-bs-placement="right" title="search" class="bi bi-search"></i></small></button>
-            <a class="btn btn-sm" data-bs-toggle="offcanvas" href="#offcanvasSearch" role="button" aria-controls="offcanvasSearch">
-              <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="filter" class="bi bi-sliders"></i></small>
+          <div class="d-flex float-end">
+
+            <form method="GET" action="/hikes/search" class="d-flex">
+              <input class="form-control me-2 input-sm"
+                      type="search"
+                      name="search_term"
+                      placeholder="Search"
+                      aria-label="Search">
+              </input>
+              <button class="btn btn-sm me-2"
+                      role="button"
+                      type="submit">
+                <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="search" class="bi bi-search"></i></small>
+              </button>
+            </form>
+            <a class="btn btn-sm" data-bs-toggle="offcanvas" href="#Search" role="button" aria-controls="Search">
+              <small><i data-bs-toggle="tooltip" data-bs-placement="right" title="advanced search" class="bi bi-sliders"></i></small>
             </a>
-    
 
           </div>
         </div>
@@ -193,13 +43,11 @@
       <div class="card-body">
         <div class="all-hikes-container">
           <ul class="no-bullets">
-            {% for hike in search_hikes|sort(attribute='hike_name') %}
+            {% for hike in search_hikes %}
               <li>
                 <a class="link-dark" href="/hikes/{{ hike.hike_id }}">{{ hike.hike_name }}</a>
                 <br><small>{{ hike.difficulty }} | {{ hike.miles }} miles | {{ hike.city }}, {{ hike.state }} | {{ hike.area }} | {{ hike.leash_rule }} | {{ hike.parking }}</small>
               </li>
-
-
             {% endfor %}
           </ul>
         </div>

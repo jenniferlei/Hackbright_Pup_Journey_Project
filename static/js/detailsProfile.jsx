@@ -427,21 +427,25 @@ const PetProfileContainer = React.forwardRef((props, ref) => {
   const session_login = document.querySelector("#login").innerText;
 
   function getPetProfiles() {
-    fetch("/pets.json")
-      .then((response) => response.json())
-      .then((data) => {
-        setPetProfiles(data.petProfiles);
-      });
-  }
-
-  // Access getPetProfiles function from Footer component
-  React.useImperativeHandle(ref, () => ({
-    getPetProfiles() {
+    if (session_login === "True") {
       fetch("/pets.json")
         .then((response) => response.json())
         .then((data) => {
           setPetProfiles(data.petProfiles);
         });
+    }
+  }
+
+  // Access getPetProfiles function from Footer component
+  React.useImperativeHandle(ref, () => ({
+    getPetProfiles() {
+      if (session_login === "True") {
+        fetch("/pets.json")
+          .then((response) => response.json())
+          .then((data) => {
+            setPetProfiles(data.petProfiles);
+          });
+      }
     },
   }));
 
@@ -537,20 +541,22 @@ const PetProfileContainer = React.forwardRef((props, ref) => {
           <h3 className="offcanvas-title" id="ProfileLabel">
             Pet Profile
           </h3>
-          <a
-            className="btn btn-sm"
-            href=""
-            data-bs-toggle="modal"
-            data-bs-target="#modal-add-pet"
-          >
-            <i
-              data-bs-toggle="tooltip"
-              data-bs-placement="right"
-              title="add a pet profile"
-              className="fa-solid fa-paw"
-            ></i>{" "}
-            add a pet profile
-          </a>
+          {session_login === "True" ? (
+            <a
+              className="btn btn-sm"
+              href=""
+              data-bs-toggle="modal"
+              data-bs-target="#modal-add-pet"
+            >
+              <i
+                data-bs-toggle="tooltip"
+                data-bs-placement="right"
+                title="add a pet profile"
+                className="fa-solid fa-paw"
+              ></i>{" "}
+              add a pet profile
+            </a>
+          ) : null}
         </div>
         <div className="offcanvas-body">
           {session_login !== "True" ? (
