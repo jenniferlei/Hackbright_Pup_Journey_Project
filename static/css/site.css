@@ -194,15 +194,34 @@ ul.no-bullets {
 
 /* FIXED RIGHT SIDEBAR PROFILES */
 /* The sidebar menu */
+.side-bar-menu {
+  width: 4.5rem;
+  height: 100%;
+  z-index: 1;
+  border: 1px solid #ced4da;
+}
+
+/* The sidebar profiles */
 .side-bar-profiles {
   height: 100%; /* Full-height: remove this if you want "auto" height */
-  width: 580px; /* Set the width of the sidebar */
+  width: 450px; /* Set the width of the sidebar */
   position: fixed; /* Fixed Sidebar (stay in place on scroll) */
-  z-index: 100; /* Stay on top */
+  z-index: 1; /* Stay on top */
   top: 0; /* Stay at the top */
   right: 0;
   border: 1px solid #ced4da;
   overflow-x: hidden; /* Disable horizontal scroll */
-  padding-top: 40px;
-  padding-bottom: 40px;
+  padding-top: 70px;
+  padding-bottom: 50px;
+}
+
+.dashboard-container {
+  height: 100% -70px; /* Full-height: remove this if you want "auto" height */
+  width: 100% - 470px; /* Set the width of the sidebar */
+  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+  z-index: 1000; /* Stay on top */
+  border: 1px solid #ced4da;
+  overflow-x: hidden; /* Disable horizontal scroll */
+  top: 70px;
+  left: 90px;
 }

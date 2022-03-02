@@ -429,6 +429,10 @@ const PetProfileContainer = React.forwardRef((props, ref) => {
 
   const session_login = document.querySelector("#login").innerText;
 
+  React.useEffect(() => {
+    getPetProfiles();
+  }, []);
+
   function getPetProfiles() {
     if (session_login === "True") {
       fetch("/pets.json")
@@ -438,8 +442,6 @@ const PetProfileContainer = React.forwardRef((props, ref) => {
         });
     }
   }
-
-  React.useEffect(getPetProfiles, []);
 
   const allPetProfiles = [];
   const allEditPetProfiles = [];
@@ -520,12 +522,16 @@ const PetProfileContainer = React.forwardRef((props, ref) => {
       <AddPetProfile refreshPets={refreshPets} />
       {allEditPetProfiles}
       <div className="side-bar-profiles d-flex flex-column flex-shrink-0 bg-light">
-        <div className="header">
-          <h3 className="title" id="ProfileLabel">
+        <div className="header clearfix">
+          <h3
+            className="title float-start"
+            id="ProfileLabel"
+            style={{ marginLeft: "1em" }}
+          >
             Pet Profile
           </h3>
           <a
-            className="btn btn-sm"
+            className="btn btn-sm float-end"
             href=""
             data-bs-toggle="modal"
             data-bs-target="#modal-add-pet"
