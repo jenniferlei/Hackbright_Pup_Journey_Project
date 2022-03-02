@@ -3,7 +3,7 @@
 
 {% block body %}
 
-<div id="allHikesRoot"></div>
+<div id="root"></div>
 
 <div class="container-fluid">
 
@@ -62,13 +62,12 @@
 <div hidden id="login">True</div>
 {% else %}
 <div hidden id="login">False</div>
-<div hidden id="user_id">None</div>
 {% endif %}
 
 
 {% endblock %}
 {% block js %}
-<script src="/static/js/allHikesProfile.jsx" type="text/jsx"></script>
+<script src="/static/js/petProfile.jsx" type="text/jsx"></script>
 <script src="/static/js/allHikesComment.jsx" type="text/jsx"></script>
 <script src="/static/js/allHikesBookmark.jsx" type="text/jsx"></script>
 <script src="/static/js/allHikesCheckIn.jsx" type="text/jsx"></script>

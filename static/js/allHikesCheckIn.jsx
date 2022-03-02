@@ -394,10 +394,6 @@ function AddCheckIn(props) {
 
     addNewCheckIn();
   }
-  // Add a POST request to hit the server /add-card endpoint and add a new card.
-  // Make sure you pass in the data it is expecting. When this request finishes,
-  // show an alert letting the user know they successfully added the card.
-  const hike_id = document.querySelector("#hike_id").innerText;
 
   function addNewCheckIn() {
     fetch(`/hikes/${hike_id}/add-check-in`, {
@@ -566,54 +562,24 @@ function AddCheckIn(props) {
 // comment container component
 const HikeDetailsCheckInContainer = React.forwardRef((props, ref) => {
   const session_login = document.querySelector("#login").innerText;
-  const hike_id = document.querySelector("#hike_id").innerText;
 
   const [checkIns, setCheckIns] = React.useState([]);
-  const [checkInsHeader, setCheckInsHeader] = React.useState(
-    "Check Ins For This Hike"
-  );
 
   function getCheckIns() {
-    if (
-      document.querySelector("#CheckInsLabel").innerText ===
-      "Check Ins For This Hike"
-    ) {
-      getHikeCheckIns();
-    } else if (
-      document.querySelector("#CheckInsLabel").innerText === "All Check Ins"
-    ) {
-      getUserCheckIns();
-    }
-  }
-
-  function getHikeCheckIns() {
-    fetch(`/hikes/${hike_id}/user_check_ins.json`)
-      .then((response) => response.json())
-      .then((data) => {
-        setCheckIns(data.checkIns);
-        setCheckInsHeader("Check Ins For This Hike");
-      });
-  }
-
-  function getUserCheckIns() {
     fetch(`/user_check_ins.json`)
       .then((response) => response.json())
       .then((data) => {
         setCheckIns(data.checkIns);
-        setCheckInsHeader("All Check Ins");
       });
   }
 
   React.useImperativeHandle(ref, () => ({
-    getHikeCheckIns() {
-      if (session_login === "True") {
-        fetch(`/hikes/${hike_id}/user_check_ins.json`)
-          .then((response) => response.json())
-          .then((data) => {
-            setCheckIns(data.checkIns);
-            setCheckInsHeader("Check Ins For This Hike");
-          });
-      }
+    getCheckIns() {
+      fetch(`/user_check_ins.json`)
+        .then((response) => response.json())
+        .then((data) => {
+          setCheckIns(data.checkIns);
+        });
     },
   }));
 
@@ -675,7 +641,7 @@ const HikeDetailsCheckInContainer = React.forwardRef((props, ref) => {
       >
         <div className="offcanvas-header">
           <h3 className="offcanvas-title" id="CheckInsLabel">
-            {checkInsHeader}
+            All Check Ins
           </h3>
           {session_login === "True" ? (
             <div className="d-flex float-end">
@@ -696,36 +662,7 @@ const HikeDetailsCheckInContainer = React.forwardRef((props, ref) => {
                       data-bs-toggle="modal"
                       data-bs-target="#modal-add-check-in"
                     >
-                      check in to this hike
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              &nbsp;&nbsp;
-              <div className="btn-group mt-1">
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-dark dropdown-toggle"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  view <i className="bi bi-eye"></i>
-                </button>
-                <ul className="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <a
-                      className="btn btn-sm dropdown-item"
-                      onClick={getUserCheckIns}
-                    >
-                      view all check ins
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      className="btn btn-sm dropdown-item"
-                      onClick={getHikeCheckIns}
-                    >
-                      view check ins for this hike
+                      add a check in
                     </a>
                   </li>
                 </ul>
@@ -734,12 +671,6 @@ const HikeDetailsCheckInContainer = React.forwardRef((props, ref) => {
           ) : null}
         </div>
 
-        {session_login === "True" &&
-        checkInsHeader === "Check Ins For This Hike" ? (
-          <div className="ms-4">
-            You have this hike on the following check ins:
-          </div>
-        ) : null}
         <div className="offcanvas-body">
           {session_login !== "True" ? (
             <div>Please log in to add a check in.</div>

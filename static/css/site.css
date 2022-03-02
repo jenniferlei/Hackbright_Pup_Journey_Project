@@ -191,3 +191,18 @@ ul.no-bullets {
   width: 100%;
   /* The width is the width of the web page */
 }
+
+/* FIXED RIGHT SIDEBAR PROFILES */
+/* The sidebar menu */
+.side-bar-profiles {
+  height: 100%; /* Full-height: remove this if you want "auto" height */
+  width: 580px; /* Set the width of the sidebar */
+  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+  z-index: 100; /* Stay on top */
+  top: 0; /* Stay at the top */
+  right: 0;
+  border: 1px solid #ced4da;
+  overflow-x: hidden; /* Disable horizontal scroll */
+  padding-top: 40px;
+  padding-bottom: 40px;
+}

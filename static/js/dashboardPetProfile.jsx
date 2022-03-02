@@ -218,6 +218,7 @@ function EditPetProfile(props) {
                   <option value="male">male</option>
                 </select>
               </div>
+
               <div className="mb-3">
                 <label htmlFor="birthday"> Birthday </label>
                 <input
@@ -227,6 +228,7 @@ function EditPetProfile(props) {
                   className="form-control"
                 />
               </div>
+
               <div className="mb-3">
                 <label htmlFor="breed">Breed</label>
                 <input
@@ -237,6 +239,7 @@ function EditPetProfile(props) {
                   placeholder="Breed"
                 />
               </div>
+
               <div className="mb-3">
                 <label htmlFor="my_file">Image</label>
                 <input
@@ -436,18 +439,7 @@ const PetProfileContainer = React.forwardRef((props, ref) => {
     }
   }
 
-  // Access getPetProfiles function from Footer component
-  React.useImperativeHandle(ref, () => ({
-    getPetProfiles() {
-      if (session_login === "True") {
-        fetch("/pets.json")
-          .then((response) => response.json())
-          .then((data) => {
-            setPetProfiles(data.petProfiles);
-          });
-      }
-    },
-  }));
+  React.useEffect(getPetProfiles, []);
 
   const allPetProfiles = [];
   const allEditPetProfiles = [];
@@ -527,62 +519,27 @@ const PetProfileContainer = React.forwardRef((props, ref) => {
     <React.Fragment>
       <AddPetProfile refreshPets={refreshPets} />
       {allEditPetProfiles}
-      <div
-        className="offcanvas offcanvas-end"
-        style={{ width: "650px" }}
-        data-bs-keyboard="true"
-        data-bs-scroll="true"
-        data-bs-backdrop="true"
-        tabIndex="-1"
-        id="Profile"
-        aria-labelledby="ProfileLabel"
-      >
-        <div className="offcanvas-header">
-          <h3 className="offcanvas-title" id="ProfileLabel">
+      <div className="side-bar-profiles d-flex flex-column flex-shrink-0 bg-light">
+        <div className="header">
+          <h3 className="title" id="ProfileLabel">
             Pet Profile
           </h3>
-          {session_login === "True" ? (
-            <a
-              className="btn btn-sm"
-              href=""
-              data-bs-toggle="modal"
-              data-bs-target="#modal-add-pet"
-            >
-              <i
-                data-bs-toggle="tooltip"
-                data-bs-placement="right"
-                title="add a pet profile"
-                className="fa-solid fa-paw"
-              ></i>{" "}
-              add a pet profile
-            </a>
-          ) : null}
-        </div>
-        <div className="offcanvas-body">
-          {session_login !== "True" ? (
-            <div>Please log in to add a pet profile.</div>
-          ) : (
-            <div>
-              <div style={{ padding: "0.5em" }}>{allPetProfiles}</div>
-            </div>
-          )}
-          <div
-            className="offcanvas-footer"
-            style={{
-              position: "fixed",
-              right: "613px",
-              bottom: "1em",
-              zIndex: "100",
-            }}
+          <a
+            className="btn btn-sm"
+            href=""
+            data-bs-toggle="modal"
+            data-bs-target="#modal-add-pet"
           >
-            <button
-              type="button"
-              className="btn-close text-reset"
-              data-bs-dismiss="offcanvas"
-              aria-label="Close"
-            ></button>
-          </div>
+            <i
+              data-bs-toggle="tooltip"
+              data-bs-placement="right"
+              title="add a pet profile"
+              className="fa-solid fa-paw"
+            ></i>{" "}
+            add a pet profile
+          </a>
         </div>
+        <div style={{ padding: "0.5em" }}>{allPetProfiles}</div>
       </div>
     </React.Fragment>
   );

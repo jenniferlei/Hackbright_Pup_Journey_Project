@@ -162,12 +162,12 @@ function SearchOffCanvas(props) {
               </div>
 
               <div className="row g-2 mt-2">
-                <div className="col">
+                <div className="col" style={{ verticalAlign: "middle" }}>
                   <label className="form-label">
                     <strong>Length</strong>
                   </label>
                   <br></br>
-                  <strong>(Miles)</strong>
+                  <strong>(miles)</strong>
                 </div>
                 <div className="form-floating col">
                   <input
@@ -255,88 +255,98 @@ function SearchOffCanvas(props) {
                   ))}
                 </select>
                 <label className="form-label" htmlFor="search-state">
-                  <strong>State</strong>
+                  State
                 </label>
               </div>
 
               <div className="row mt-2">
-                <label className="form-label" htmlFor="search-city">
-                  <strong>City</strong>
-                </label>
                 {cityOptions.length < 1 ? (
-                  <small className="text-muted">
-                    Select state to see all city options
-                  </small>
-                ) : (
-                  <div
-                    style={{
-                      border: "1px solid #ced4da",
-                      borderRadius: "5px",
-                      paddingLeft: "1em",
-                      height: "10vh",
-                      overflow: "auto",
-                    }}
-                  >
-                    {cityOptions !== ""
-                      ? cityOptions.map((cityOption) => (
-                          <div className="form-check" key={cityOption.city}>
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id={cityOption.city}
-                              name="city"
-                              value={cityOption.city}
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor={cityOption.city}
-                            >
-                              {cityOption.city}
-                            </label>
-                          </div>
-                        ))
-                      : null}
+                  <div>
+                    <strong>City</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <small className="text-muted">
+                      Select state to see all city options
+                    </small>
                   </div>
+                ) : (
+                  <React.Fragment>
+                    <label className="form-label" htmlFor="search-city">
+                      <strong>City</strong>
+                    </label>
+                    <div
+                      style={{
+                        border: "1px solid #ced4da",
+                        borderRadius: "5px",
+                        paddingLeft: "1em",
+                        height: "10vh",
+                        overflow: "auto",
+                      }}
+                    >
+                      {cityOptions !== ""
+                        ? cityOptions.map((cityOption) => (
+                            <div className="form-check" key={cityOption.city}>
+                              <input
+                                className="form-check-input"
+                                type="checkbox"
+                                id={cityOption.city}
+                                name="city"
+                                value={cityOption.city}
+                              />
+                              <label
+                                className="form-check-label"
+                                htmlFor={cityOption.city}
+                              >
+                                {cityOption.city}
+                              </label>
+                            </div>
+                          ))
+                        : null}
+                    </div>
+                  </React.Fragment>
                 )}
               </div>
               <div className="row mt-2">
-                <label className="form-label" htmlFor="search-area">
-                  <strong>Area</strong>
-                </label>
                 {areaOptions.length < 1 ? (
-                  <small className="text-muted">
-                    Select state to see all area options
-                  </small>
-                ) : (
-                  <div
-                    style={{
-                      border: "1px solid #ced4da",
-                      borderRadius: "5px",
-                      paddingLeft: "1em",
-                      height: "10vh",
-                      overflow: "auto",
-                    }}
-                  >
-                    {areaOptions !== ""
-                      ? areaOptions.map((areaOption) => (
-                          <div className="form-check" key={areaOption.area}>
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id={areaOption.area}
-                              name="area"
-                              value={areaOption.area}
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor={areaOption.area}
-                            >
-                              {areaOption.area}
-                            </label>
-                          </div>
-                        ))
-                      : null}
+                  <div>
+                    <strong>Area</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <small className="text-muted">
+                      Select state to see all area options
+                    </small>
                   </div>
+                ) : (
+                  <React.Fragment>
+                    <label className="form-label" htmlFor="search-area">
+                      <strong>Area</strong>
+                    </label>
+                    <div
+                      style={{
+                        border: "1px solid #ced4da",
+                        borderRadius: "5px",
+                        paddingLeft: "1em",
+                        height: "10vh",
+                        overflow: "auto",
+                      }}
+                    >
+                      {areaOptions !== ""
+                        ? areaOptions.map((areaOption) => (
+                            <div className="form-check" key={areaOption.area}>
+                              <input
+                                className="form-check-input"
+                                type="checkbox"
+                                id={areaOption.area}
+                                name="area"
+                                value={areaOption.area}
+                              />
+                              <label
+                                className="form-check-label"
+                                htmlFor={areaOption.area}
+                              >
+                                {areaOption.area}
+                              </label>
+                            </div>
+                          ))
+                        : null}
+                    </div>
+                  </React.Fragment>
                 )}
               </div>
 

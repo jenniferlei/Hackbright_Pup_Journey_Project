@@ -718,7 +718,7 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
             style={{
               position: "fixed",
               right: "757px",
-              bottom: "1em",
+              bottom: "10px",
               zIndex: "100",
             }}
           >

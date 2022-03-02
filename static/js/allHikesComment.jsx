@@ -46,8 +46,7 @@ function Comment(props) {
               </small>
             </div>
 
-            {props.session_login === "True" &&
-            Number(props.session_user_id) === Number(props.user_id) ? (
+            {props.session_login === "True" ? (
               <div className="d-flex float-end">
                 <a
                   href=""
@@ -172,203 +171,31 @@ function EditComment(props) {
   );
 }
 
-function AddComment(props) {
-  const hike_id = document.querySelector("#hike_id").innerText;
-  const add_comment_url = `/hikes/${hike_id}/add-comment`;
-  const session_login = document.querySelector("#login").innerText;
-
-  const [comment_body, setCommentBody] = React.useState("");
-
-  // Add a POST request to hit the server /add-card endpoint and add a new card.
-
-  function addNewComment() {
-    fetch(add_comment_url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({ comment_body }),
-    }).then((response) => {
-      response.json().then((jsonResponse) => {
-        const commentAdded = jsonResponse.commentAdded; // same as commentAdded = jsonResponse.commentAdded
-        const comment_id = commentAdded.comment_id;
-        const full_name = commentAdded.user.full_name;
-        const user_id = commentAdded.user_id;
-        const date_created = commentAdded.date_created;
-        const date_edited = commentAdded.date_edited;
-        const edit = commentAdded.edit;
-        const session_login = jsonResponse.login;
-        const session_user_id = commentAdded.user_id;
-        const hike_name = commentAdded.hike.hike_name;
-        const hike_id = commentAdded.hike_id;
-        props.addComment(
-          comment_id,
-          comment_body,
-          full_name,
-          user_id,
-          date_created,
-          date_edited,
-          edit,
-          session_login,
-          session_user_id,
-          hike_name,
-          hike_id
-        );
-        // console.log(jsonResponse);
-      });
-    });
-  }
-
-  return (
-    <React.Fragment>
-      <div
-        className="modal fade"
-        id="modal-add-comment"
-        tabIndex="-1"
-        aria-labelledby="modal-add-comment-label"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="modal-add-comment-label">
-                Add a Comment
-              </h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div className="modal-body">
-              {session_login !== "True" ? (
-                <div>Please log in to add a comment.</div>
-              ) : (
-                <div>
-                  <div className="mb-3">
-                    <textarea
-                      name="body"
-                      rows="3"
-                      className="form-control"
-                      placeholder="Enter your comment here"
-                      value={comment_body}
-                      onChange={(event) => setCommentBody(event.target.value)}
-                      required
-                    ></textarea>
-                  </div>
-                  <div className="modal-footer">
-                    <button
-                      className="btn btn-sm btn-outline-dark btn-block"
-                      type="submit"
-                      data-bs-dismiss="modal"
-                      onClick={addNewComment}
-                    >
-                      Submit
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-secondary btn-block"
-                      data-bs-dismiss="modal"
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>
-  );
-}
-
 // comment container component
 const HikeDetailsCommentContainer = React.forwardRef((props, ref) => {
+  const session_login = document.querySelector("#login").innerText;
   const [comments, setComments] = React.useState([]);
 
-  function addComment(
-    comment_id,
-    comment_body,
-    full_name,
-    user_id,
-    date_created,
-    date_edited,
-    edit,
-    session_login,
-    session_user_id,
-    hike_name,
-    hike_id
-  ) {
-    const newComment = {
-      comment_id: comment_id,
-      body: comment_body,
-      user: { full_name: full_name },
-      user_id: user_id,
-      date_created: date_created,
-      date_edited: date_edited,
-      edit: edit,
-      session_login: session_login,
-      session_user_id: session_user_id,
-      hike: { hike_name: hike_name },
-      hike_id: hike_id,
-    }; // equivalent to { cardId: cardId, skill: skill, name: name, imgUrl: imgUrl }
-    const currentComments = [...comments]; // makes a copy of cards. similar to doing currentCards = cards[:] in Python
-    // [...currentCards, newCard] is an array containing all elements in currentCards followed by newCard
-    setComments([newComment, ...currentComments]);
+  if (session_login === "True") {
+    React.useEffect(() => {
+      getComments();
+    }, []);
   }
-
-  const hike_id = document.querySelector("#hike_id").innerText;
-
-  React.useEffect(() => {
-    getComments();
-  }, []);
-
-  const [commentsHeader, setCommentsHeader] = React.useState(
-    "Comments For This Hike"
-  );
 
   function getComments() {
-    if (
-      document.querySelector("#CommentsLabel").innerText ===
-      "Comments For This Hike"
-    ) {
-      getHikeComments();
-    } else if (
-      document.querySelector("#CommentsLabel").innerText ===
-      "Your Comments for All Hikes"
-    ) {
-      getUserComments();
-    }
-  }
-
-  function getHikeComments() {
-    fetch(`/hikes/${hike_id}/comments.json`)
-      .then((response) => response.json())
-      .then((data) => {
-        setComments(data.comments);
-        setCommentsHeader("Comments For This Hike");
-      });
-  }
-
-  function getUserComments() {
     fetch(`/user_comments.json`)
       .then((response) => response.json())
       .then((data) => {
         setComments(data.comments);
-        setCommentsHeader("Your Comments for All Hikes");
       });
   }
 
   React.useImperativeHandle(ref, () => ({
-    getHikeComments() {
-      fetch(`/hikes/${hike_id}/comments.json`)
+    getComments() {
+      fetch(`/user_comments.json`)
         .then((response) => response.json())
         .then((data) => {
           setComments(data.comments);
-          setCommentsHeader("Comments For This Hike");
         });
     },
   }));
@@ -399,7 +226,6 @@ const HikeDetailsCommentContainer = React.forwardRef((props, ref) => {
         edit={currentComment.edit}
         comment_body={currentComment.body}
         session_login={document.querySelector("#login").innerText}
-        session_user_id={Number(document.querySelector("#user_id").innerText)}
         getComments={getComments}
       />
     );
@@ -420,11 +246,8 @@ const HikeDetailsCommentContainer = React.forwardRef((props, ref) => {
     );
   }
 
-  const session_login = document.querySelector("#login").innerText;
-
   return (
     <React.Fragment>
-      <AddComment addComment={addComment} />
       {allEditComments}
       <div
         className="offcanvas offcanvas-end"
@@ -438,71 +261,16 @@ const HikeDetailsCommentContainer = React.forwardRef((props, ref) => {
       >
         <div className="offcanvas-header">
           <h3 className="offcanvas-title" id="CommentsLabel">
-            {commentsHeader}
+            Your Comments For All Hikes
           </h3>
-
-          {session_login === "True" ? (
-            <div className="d-flex float-end">
-              <div className="btn-group mt-1">
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-dark dropdown-toggle"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  actions <i className="bi bi-chat-text"></i>
-                </button>
-                <ul className="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <a
-                      className="btn btn-sm dropdown-item"
-                      href=""
-                      data-bs-toggle="modal"
-                      data-bs-target="#modal-add-comment"
-                    >
-                      add a comment for this hike
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              &nbsp;&nbsp;
-              <div className="btn-group mt-1">
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-dark dropdown-toggle"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  view <i className="bi bi-eye"></i>
-                </button>
-                <ul className="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <a
-                      className="btn btn-sm dropdown-item"
-                      onClick={getUserComments}
-                    >
-                      view all comments
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      className="btn btn-sm dropdown-item"
-                      onClick={getHikeComments}
-                    >
-                      view comments for this hike
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          ) : null}
         </div>
 
         <div className="offcanvas-body">
           {session_login !== "True" ? (
-            <div>Please log in to add a comment.</div>
-          ) : null}
-          <div>{allComments}</div>
+            <div>Please log in to view your comments.</div>
+          ) : (
+            <div>{allComments}</div>
+          )}
 
           <div
             className="offcanvas-footer"
