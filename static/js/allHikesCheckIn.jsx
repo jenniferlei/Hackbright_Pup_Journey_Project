@@ -344,6 +344,8 @@ function EditCheckIn(props) {
 function AddCheckIn(props) {
   const session_login = document.querySelector("#login").innerText;
 
+  const [allHikeOptions, setHikePetOptions] = React.useState([]);
+  const [hikeId, setHikeId] = React.useState("");
   const [allPetOptions, setAllPetOptions] = React.useState([]);
   const [dateHiked, setDateHiked] = React.useState("");
   const [milesCompleted, setMilesCompleted] = React.useState("");
@@ -396,13 +398,14 @@ function AddCheckIn(props) {
   }
 
   function addNewCheckIn() {
-    fetch(`/hikes/${hike_id}/add-check-in`, {
+    fetch("/add-check-in", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
       body: JSON.stringify({
+        hikeId,
         allPetOptions, // this will return a list of dictionary objects
         dateHiked,
         milesCompleted,
@@ -446,6 +449,24 @@ function AddCheckIn(props) {
                 <div>Please log in to add a check in.</div>
               ) : (
                 <div>
+                  <div className="mb-3">
+                    <label>Hike</label>&nbsp;
+                    <small className="text-muted">*</small>
+                    <select
+                      id="hike-check-in"
+                      className="form-select"
+                      aria-label="hike-check-in"
+                      onChange={(event) => setHikeId(event.target.value)}
+                    >
+                      <option value=""></option>
+                      {allHikeOptions.map((hike) => (
+                        <option value={hike.hike_id} key={hike.hike_id}>
+                          {hike.hike_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
                   <div className="mb-3">
                     <label>Pets</label>&nbsp;
                     <small className="text-muted">*</small>

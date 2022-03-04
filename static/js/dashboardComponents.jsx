@@ -103,6 +103,14 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
   const [checkIns, setCheckIns] = React.useState([]);
   const [bookmarksLists, setBookmarksLists] = React.useState([]);
 
+  React.useEffect(() => {
+    getCheckIns();
+  }, []);
+
+  function refreshProfiles() {
+    props.parentGetPetProfiles();
+  }
+
   function getCheckIns() {
     fetch(`/user_check_ins.json`)
       .then((response) => response.json())
@@ -110,6 +118,8 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
         setCheckIns(data.checkIns);
       });
   }
+
+  console.log("checkIns", checkIns);
 
   function getBookmarksLists() {
     fetch("/user_bookmarks_lists.json")
@@ -142,6 +152,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
       setGraphDisplay(false);
       setCheckInsDisplay(true);
       setBookmarksDisplay(false);
+      getCheckIns();
       document.getElementById("display-map").style.display = "none";
     },
     displayBookmarks() {
@@ -160,7 +171,66 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
   const allRenameBookmarksLists = [];
   const allAddMultHikesToExistingList = [];
 
+  let checkInsHikeCounts = [];
+  let initial_miles = 0;
+
+  let total_miles = checkIns.reduce(function (previousValue, currentValue) {
+    return previousValue + currentValue.miles_completed;
+  }, initial_miles);
+
+  // checkIns.forEach((checkIn) => {
+  //   // Checking if there is any object in checkInsHikeCounts
+  //   // which contains the key value
+  //   if (
+  //     checkInsHikeCounts.some((hikeCount) => {
+  //       return hikeCount["hike_id"] == checkIn["hike_id"];
+  //     })
+  //   ) {
+  //     // If yes! then increase the occurrence by 1
+  //     checkInsHikeCounts.forEach((hikeCount) => {
+  //       if (hikeCount["hike_id"] === checkIn["hike_id"]) {
+  //         hikeCount["occurrence"]++;
+  //       }
+  //     });
+  //   } else {
+  //     // If not! Then create a new object initialize
+  //     // it with the present iteration key's value and
+  //     // set the occurrence to 1
+  //     let newHikeCountObj = {};
+  //     newHikeCountObj["hike_id"] = checkIn["hike_id"];
+  //     newHikeCountObj["occurrence"] = 1;
+  //     // newHikeCountObj["hike_name"] = checkIn["hike"]["hike_name"];
+  //     checkInsHikeCounts.push(newHikeCountObj);
+  //   }
+  // });
+
+  // console.log("checkInsHikeCounts", checkInsHikeCounts);
+
   for (const currentCheckIn of checkIns) {
+    if (
+      checkInsHikeCounts.some((hikeCount) => {
+        return hikeCount["hike_id"] == currentCheckIn["hike_id"];
+      })
+    ) {
+      // If yes! then increase the occurrence by 1
+      checkInsHikeCounts.forEach((hikeCount) => {
+        if (hikeCount["hike_id"] === currentCheckIn["hike_id"]) {
+          hikeCount["occurrence"]++;
+        }
+      });
+    } else {
+      // If not! Then create a new object initialize
+      // it with the present iteration key's value and
+      // set the occurrence to 1
+      let newHikeCountObj = {};
+      newHikeCountObj["hike_id"] = currentCheckIn["hike_id"];
+      newHikeCountObj["occurrence"] = 1;
+      newHikeCountObj["hike_name"] = currentCheckIn["hike"]["hike_name"];
+      checkInsHikeCounts.push(newHikeCountObj);
+    }
+
+    console.log("checkInsHikeCounts", checkInsHikeCounts);
+
     const date_hiked = new Date(currentCheckIn.date_hiked);
     const date_hiked_formatted = date_hiked.toLocaleDateString();
 
@@ -177,6 +247,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
         pets_on_hike={currentCheckIn.pets}
         pets_not_on_hike={currentCheckIn.pets_not_on_hike}
         getCheckIns={getCheckIns}
+        refreshProfiles={refreshProfiles}
       />
     );
     allEditCheckIns.push(
@@ -191,6 +262,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
         pets_on_hike={currentCheckIn.pets}
         pets_not_on_hike={currentCheckIn.pets_not_on_hike}
         getCheckIns={getCheckIns}
+        refreshProfiles={refreshProfiles}
       />
     );
   }
@@ -229,9 +301,22 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
     );
   }
 
+  checkInsHikeCounts.sort((a, b) => {
+    let fa = a.hike_name.toLowerCase(),
+      fb = b.hike_name.toLowerCase();
+
+    if (fa < fb) {
+      return -1;
+    }
+    if (fa > fb) {
+      return 1;
+    }
+    return 0;
+  });
+
   return (
     <React.Fragment>
-      <AddCheckIn getCheckIns={getCheckIns} />
+      <AddCheckIn getCheckIns={getCheckIns} refreshProfiles={refreshProfiles} />
       {allEditCheckIns}
       {allRenameBookmarksLists}
       {allAddMultHikesToExistingList}
@@ -269,7 +354,19 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
               <div class="col-md-6">
                 <div class="card-body">
                   <h5 class="card-title">Your Visited Hikes</h5>
-                  <p class="card-text">List of Hike Names here</p>
+                  <p class="card-text">
+                    {checkInsHikeCounts.map((hikeCount) => (
+                      <React.Fragment>
+                        <br></br>
+                        You hiked{" "}
+                        <a href={`/hikes/${hikeCount.hike_id}`}>
+                          {hikeCount.hike_name}
+                        </a>{" "}
+                        {hikeCount.occurrence}{" "}
+                        {hikeCount.occurrence > 1 ? "times" : "time"}
+                      </React.Fragment>
+                    ))}
+                  </p>
                   <p class="card-text">
                     Add option to view by month, year, all time
                   </p>
@@ -399,7 +496,8 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
                   <div class="card-body">
                     <h5 class="card-title">Title TBD</h5>
                     <p class="card-text">
-                      Some stats (miles walked, num of hikes done)
+                      You have done {checkIns.length} hikes
+                      <br></br>and walked {total_miles} miles!
                     </p>
                     <p class="card-text">Add option to view by month, year</p>
                   </div>
@@ -427,7 +525,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
             </div>
 
             <div>
-              <div></div>
+              <div>{allCheckIns}</div>
             </div>
           </React.Fragment>
         ) : null}
@@ -552,6 +650,11 @@ function SideBarMenu(props) {
 
 function DashboardEverythingContainer(props) {
   const DashboardMainContainerRef = React.useRef();
+  const PetProfileContainerRef = React.useRef();
+
+  function parentGetPetProfiles() {
+    PetProfileContainerRef.current.getPetProfiles();
+  }
 
   function parentDisplayMap() {
     DashboardMainContainerRef.current.displayMap();
@@ -568,7 +671,10 @@ function DashboardEverythingContainer(props) {
 
   return (
     <React.Fragment>
-      <DashboardMainContainer ref={DashboardMainContainerRef} />
+      <DashboardMainContainer
+        parentGetPetProfiles={parentGetPetProfiles}
+        ref={DashboardMainContainerRef}
+      />
       <SideBarMenu
         parentDisplayMap={parentDisplayMap}
         parentDisplayGraph={parentDisplayGraph}
@@ -576,7 +682,7 @@ function DashboardEverythingContainer(props) {
         parentDisplayBookmarks={parentDisplayBookmarks}
       />
       <SearchOffCanvas />
-      <PetProfileContainer />
+      <PetProfileContainer ref={PetProfileContainerRef} />
       <Footer />
     </React.Fragment>
   );

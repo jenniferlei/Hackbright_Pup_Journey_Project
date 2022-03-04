@@ -310,6 +310,53 @@ def add_hike_check_in(hike_id):
     return jsonify({"checkInAdded": check_in_json})
 
 
+@app.route("/add-check-in", methods=["POST"])
+def add_check_in():
+    """Add check in for a hike."""
+
+    # logged_in_email = session.get("user_email")
+    # user = crud_users.get_user_by_email(logged_in_email)
+    hike_id = request.get_json().get("hikeId")
+    pets_checked = request.get_json().get("allPetOptions") # list of objects (select, pet_name, pet_id)
+    date_hiked = request.get_json().get("dateHiked")
+    miles_completed = request.get_json().get("milesCompleted")
+    total_time = request.get_json().get("totalTime")
+    notes = request.get_json().get("notes")
+
+    hike = crud_hikes.get_hike_by_id(hike_id)
+
+    if total_time == "":
+        total_time = None
+
+    pets_to_check_in = []
+    pets_not_checked_in = []
+
+    for pet in pets_checked:
+        select, _, pet_id = pet
+        pet_obj = crud_pets.get_pet_by_id(pet[pet_id])
+        if pet[select] is True:
+            pets_to_check_in.append(pet_obj)
+        else:
+            pets_not_checked_in.append(pet_obj)
+
+    check_in = crud_check_ins.create_check_in(
+        hike,
+        pets_to_check_in,
+        date_hiked,
+        miles_completed,
+        total_time,
+        notes
+    )
+
+    db.session.add(check_in)
+    db.session.commit()
+
+    check_in_schema = CheckInSchema()
+    check_in_json = check_in_schema.dump(check_in)
+
+    return jsonify({"checkInAdded": check_in_json})
+
+
 @app.route("/edit-check-in/<check_in_id>", methods=["POST"])
 def edit_check_in(check_in_id):
     """Edit a check in"""

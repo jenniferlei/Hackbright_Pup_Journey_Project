@@ -19,7 +19,7 @@ function PetProfile(props) {
     }).then((response) => {
       response.json().then((jsonResponse) => {
         // console.log(jsonResponse);
-        props.refreshPets();
+        props.getPetProfiles();
       });
     });
   }
@@ -167,7 +167,7 @@ function EditPetProfile(props) {
         response.json();
       })
       .then((jsonResponse) => {
-        props.refreshPets();
+        props.getPetProfiles();
         console.log(jsonResponse);
       });
   }
@@ -307,7 +307,7 @@ function AddPetProfile(props) {
       body: formData,
     }).then((response) => {
       response.json().then((jsonResponse) => {
-        props.refreshPets();
+        props.getPetProfiles();
         console.log(jsonResponse);
       });
     });
@@ -423,10 +423,6 @@ function AddPetProfile(props) {
 const PetProfileContainer = React.forwardRef((props, ref) => {
   const [petProfiles, setPetProfiles] = React.useState([]);
 
-  function refreshPets() {
-    getPetProfiles();
-  }
-
   const session_login = document.querySelector("#login").innerText;
 
   React.useEffect(() => {
@@ -442,6 +438,18 @@ const PetProfileContainer = React.forwardRef((props, ref) => {
         });
     }
   }
+
+  React.useImperativeHandle(ref, () => ({
+    getPetProfiles() {
+      if (session_login === "True") {
+        fetch("/pets.json")
+          .then((response) => response.json())
+          .then((data) => {
+            setPetProfiles(data.petProfiles);
+          });
+      }
+    },
+  }));
 
   const allPetProfiles = [];
   const allEditPetProfiles = [];
@@ -474,7 +482,7 @@ const PetProfileContainer = React.forwardRef((props, ref) => {
           pet_img_URL={currentPetProfile.pet_imgURL}
           check_ins={currentPetProfile.check_ins}
           total_miles={total_miles}
-          refreshPets={refreshPets}
+          getPetProfiles={getPetProfiles}
         />
       );
       allEditPetProfiles.push(
@@ -485,7 +493,7 @@ const PetProfileContainer = React.forwardRef((props, ref) => {
           gender={currentPetProfile.gender}
           birthday={birthday_formatted}
           breed={currentPetProfile.breed}
-          refreshPets={refreshPets}
+          getPetProfiles={getPetProfiles}
         />
       );
     } else {
@@ -500,7 +508,7 @@ const PetProfileContainer = React.forwardRef((props, ref) => {
           pet_img_URL={currentPetProfile.pet_imgURL}
           check_ins={currentPetProfile.check_ins}
           total_miles={total_miles}
-          refreshPets={refreshPets}
+          getPetProfiles={getPetProfiles}
         />
       );
       allEditPetProfiles.push(
@@ -511,7 +519,7 @@ const PetProfileContainer = React.forwardRef((props, ref) => {
           gender={currentPetProfile.gender}
           birthday={currentPetProfile.birthday}
           breed={currentPetProfile.breed}
-          refreshPets={refreshPets}
+          getPetProfiles={getPetProfiles}
         />
       );
     }
@@ -519,7 +527,7 @@ const PetProfileContainer = React.forwardRef((props, ref) => {
 
   return (
     <React.Fragment>
-      <AddPetProfile refreshPets={refreshPets} />
+      <AddPetProfile getPetProfiles={getPetProfiles} />
       {allEditPetProfiles}
       <div className="side-bar-profiles d-flex flex-column flex-shrink-0 bg-light">
         <div className="header clearfix">

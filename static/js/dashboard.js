@@ -29,15 +29,15 @@ function validateCheckIn() {
 }
 
 //////////// SHOW DIFF FORM FOR CHART BASED ON SELECTION ////////////
-document.querySelector("div.chart-form").hide();
+// document.querySelector("div.chart-form").hide();
 
-document.querySelector(document).ready(function () {
-  document.querySelector('input[name="chart-view"]').click(function () {
-    var formvalue = $(this).val();
-    document.querySelector("div.chart-form").hide();
-    document.querySelector("#show-" + formvalue).show();
-  });
-});
+// document.querySelector(document).ready(function () {
+//   document.querySelector('input[name="chart-view"]').click(function () {
+//     var formvalue = $(this).val();
+//     document.querySelector("div.chart-form").hide();
+//     document.querySelector("#show-" + formvalue).show();
+//   });
+// });
 
 //////////// MAP ////////////
 // We use a function declaration for initMap because we actually *do* need
