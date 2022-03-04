@@ -216,12 +216,12 @@ ul.no-bullets {
 }
 
 .dashboard-container {
-  height: 100% -70px; /* Full-height: remove this if you want "auto" height */
-  width: 100% - 470px; /* Set the width of the sidebar */
-  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
-  z-index: 1000; /* Stay on top */
-  border: 1px solid #ced4da;
-  overflow-x: hidden; /* Disable horizontal scroll */
+  height: calc(100vh - 140px);
+  width: calc(100vw - 560px);
+  position: fixed;
+  z-index: 1;
+  /* border: 1px solid #ced4da; */
+  overflow-x: hidden;
   top: 70px;
   left: 90px;
 }

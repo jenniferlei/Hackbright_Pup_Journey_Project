@@ -156,7 +156,7 @@ function HikeDetails(props) {
                     >
                       <small>
                         <i className="bi bi-chevron-double-up"></i>
-                        &nbsp;Actions
+                        &nbsp;Quick Actions
                       </small>
                     </a>
                     <ul className="dropdown-menu">

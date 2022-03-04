@@ -80,7 +80,7 @@ function initMap() {
 
   for (const marker of markers) {
     const markerInfo = `
-      <h1>${marker.title}</h1>
+      <h6>${marker.title}</h6>
       <p>
         Located at: <code>${marker.position.lat()}</code>,
         <code>${marker.position.lng()}</code>
