@@ -222,6 +222,7 @@ ul.no-bullets {
   z-index: 1;
   /* border: 1px solid #ced4da; */
   overflow-x: hidden;
+  overflow-y: hidden;
   top: 70px;
   left: 90px;
 }

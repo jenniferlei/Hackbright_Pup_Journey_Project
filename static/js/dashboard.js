@@ -1,33 +1,5 @@
 "use strict";
 
-// TOOLTIP //
-var tooltipTriggerList = [].slice.call(
-  document.querySelectorAll('[data-bs-toggle="tooltip"]')
-);
-var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-  return new bootstrap.Tooltip(tooltipTriggerEl);
-});
-
-//////////// MAKE SURE AT LEAST ONE CHECKBOX IS CHECKED WHEN ADDING A PET ////////////
-function validateCheckIn() {
-  const petCheckBoxes = document.querySelectorAll(
-    "input[name=add-check-in-pet_id]"
-  );
-  const atLeastOneChecked = false;
-  for (let i = 0; i < petCheckBoxes.length; i++) {
-    if (petCheckBoxes[i].checked) {
-      atLeastOneChecked = true;
-      break;
-    }
-  }
-  if (atLeastOneChecked === false) {
-    alert("Please add a pet to the check in");
-    return false;
-  }
-
-  return true;
-}
-
 //////////// SHOW DIFF FORM FOR CHART BASED ON SELECTION ////////////
 // document.querySelector("div.chart-form").hide();
 
@@ -207,11 +179,12 @@ function getDashboardGraph() {
           "input[name=chart-view]:checked"
         ).value;
 
-        if (view === "month-view") {
+        if (view === "chart-month-view") {
           const month =
-            document.querySelector("select[name=month-view-month]").value - 1;
+            document.querySelector("select[name=chart-month-view-month]")
+              .value - 1;
           const year = document.querySelector(
-            "select[name=month-view-year]"
+            "select[name=chart-month-view-year]"
           ).value;
           myLineChart.options.scales.x.min = new Date(year, month, 1, 0, 0);
           myLineChart.options.scales.x.max =
@@ -219,7 +192,7 @@ function getDashboardGraph() {
           myLineChart.update();
         } else {
           const year = document.querySelector(
-            "select[name=year-view-year]"
+            "select[name=chart-year-view-year]"
           ).value;
           myLineChart.options.scales.x.min = new Date(year, 0);
           myLineChart.options.scales.x.max = new Date(year, 11, 31);

@@ -1,7 +1,5 @@
 "use strict";
 
-function DashboardMap(props) {}
-
 function FooterNavItemOffCanvas(props) {
   return (
     <li className="nav-item">
@@ -178,34 +176,6 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
     return previousValue + currentValue.miles_completed;
   }, initial_miles);
 
-  // checkIns.forEach((checkIn) => {
-  //   // Checking if there is any object in checkInsHikeCounts
-  //   // which contains the key value
-  //   if (
-  //     checkInsHikeCounts.some((hikeCount) => {
-  //       return hikeCount["hike_id"] == checkIn["hike_id"];
-  //     })
-  //   ) {
-  //     // If yes! then increase the occurrence by 1
-  //     checkInsHikeCounts.forEach((hikeCount) => {
-  //       if (hikeCount["hike_id"] === checkIn["hike_id"]) {
-  //         hikeCount["occurrence"]++;
-  //       }
-  //     });
-  //   } else {
-  //     // If not! Then create a new object initialize
-  //     // it with the present iteration key's value and
-  //     // set the occurrence to 1
-  //     let newHikeCountObj = {};
-  //     newHikeCountObj["hike_id"] = checkIn["hike_id"];
-  //     newHikeCountObj["occurrence"] = 1;
-  //     // newHikeCountObj["hike_name"] = checkIn["hike"]["hike_name"];
-  //     checkInsHikeCounts.push(newHikeCountObj);
-  //   }
-  // });
-
-  // console.log("checkInsHikeCounts", checkInsHikeCounts);
-
   for (const currentCheckIn of checkIns) {
     if (
       checkInsHikeCounts.some((hikeCount) => {
@@ -314,6 +284,26 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
     return 0;
   });
 
+  function viewMapForm() {
+    if (document.getElementById("map-month-view").checked) {
+      document.getElementById("map-show-month-view").style.display = "block";
+      document.getElementById("map-show-year-view").style.display = "none";
+    } else if (document.getElementById("map-year-view").checked) {
+      document.getElementById("map-show-month-view").style.display = "none";
+      document.getElementById("map-show-year-view").style.display = "block";
+    }
+  }
+
+  function viewGraphForm() {
+    if (document.getElementById("chart-month-view").checked) {
+      document.getElementById("chart-show-month-view").style.display = "block";
+      document.getElementById("chart-show-year-view").style.display = "none";
+    } else if (document.getElementById("chart-year-view").checked) {
+      document.getElementById("chart-show-month-view").style.display = "none";
+      document.getElementById("chart-show-year-view").style.display = "block";
+    }
+  }
+
   return (
     <React.Fragment>
       <AddCheckIn getCheckIns={getCheckIns} refreshProfiles={refreshProfiles} />
@@ -324,8 +314,8 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
       <div className="dashboard-container d-flex flex-column flex-shrink-0">
         <div id="display-map">
           <div className="clearfix" style={{ width: "100%" }}>
-            <h3 class="float-start" id="MapLabel">
-              Where We've Been <i class="bi bi-map"></i>
+            <h3 className="float-start" id="MapLabel">
+              Where We've Been <i className="bi bi-map"></i>
             </h3>
             <div className="float-end">
               <a
@@ -340,21 +330,135 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
           </div>
 
           <div
-            class="card"
+            className="card"
             style={{
               border: "0",
               width: "100%",
               height: "calc(100vh - 190px)",
             }}
           >
-            <div class="row g-0" style={{ height: "100%" }}>
-              <div class="col-md-6">
+            <div className="row g-0" style={{ height: "100%" }}>
+              <div className="col-md-6">
                 <div id="dashboard-map" style={{ height: "100%" }}></div>
               </div>
-              <div class="col-md-6">
-                <div class="card-body">
-                  <h5 class="card-title">Your Visited Hikes</h5>
-                  <p class="card-text">
+              <div
+                className="col-md-6"
+                style={{ height: "100%", overflowY: "auto" }}
+              >
+                <div className="card-body">
+                  {/* view by starts here */}
+
+                  <div>
+                    <div className="row">
+                      <div className="d-flex">
+                        View by&nbsp;&nbsp;
+                        <input
+                          type="radio"
+                          className="btn-check"
+                          name="map-view"
+                          value="map-month-view"
+                          id="map-month-view"
+                          autocomplete="off"
+                          onClick={viewMapForm}
+                          checked
+                        />
+                        <label
+                          className="btn btn-outline-dark btn-sm"
+                          for="map-month-view"
+                        >
+                          month
+                        </label>
+                        &nbsp;
+                        <input
+                          type="radio"
+                          className="btn-check"
+                          name="map-view"
+                          value="map-year-view"
+                          id="map-year-view"
+                          autocomplete="off"
+                          onClick={viewMapForm}
+                        />
+                        <label
+                          className="btn btn-outline-dark btn-sm"
+                          for="map-year-view"
+                        >
+                          year
+                        </label>
+                      </div>
+                    </div>
+                    <div id="map-show-month-view" className="mt-1 map-form">
+                      <div className="d-flex">
+                        <div>
+                          <select
+                            className="form-select btn-sm"
+                            name="map-month-view-month"
+                            aria-label="map-month-view-select-month"
+                          >
+                            <option value={1}>Jan</option>
+                            <option value={2}>Feb</option>
+                            <option value={3}>Mar</option>
+                            <option value={4}>Apr</option>
+                            <option value={5}>May</option>
+                            <option value={6}>Jun</option>
+                            <option value={7}>Jul</option>
+                            <option value={8}>Aug</option>
+                            <option value={9}>Sep</option>
+                            <option value={10}>Oct</option>
+                            <option value={11}>Nov</option>
+                            <option value={12}>Dec</option>
+                          </select>
+                        </div>
+                        &nbsp;
+                        <div>
+                          <select
+                            className="form-select btn-sm"
+                            name="map-month-view-year"
+                            aria-label="map-month-view-select-year"
+                          >
+                            <option value="2022">2022</option>
+                          </select>
+                        </div>
+                        &nbsp;
+                        <button
+                          className="map-view-submit btn btn-sm btn-outline-dark"
+                          type="submit"
+                          name="view"
+                          value="month"
+                        >
+                          Submit
+                        </button>
+                      </div>
+                    </div>
+                    <div
+                      id="map-show-year-view"
+                      className="mt-1 map-form"
+                      style={{ display: "none" }}
+                    >
+                      <div className="d-flex">
+                        <div>
+                          <select
+                            className="form-select btn-sm"
+                            name="map-year-view-year"
+                            aria-label="map-year-view-select-year"
+                          >
+                            <option value="2022">2022</option>
+                          </select>
+                        </div>
+                        &nbsp;
+                        <button
+                          className="map-view-submit btn btn-sm btn-outline-dark"
+                          type="submit"
+                          name="view"
+                          value="year"
+                        >
+                          Submit
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  {/* view by ends here */}
+                  <h5 className="mt-4 card-title">Your Visited Hikes</h5>
+                  <p className="card-text">
                     {checkInsHikeCounts.map((hikeCount) => (
                       <React.Fragment>
                         <br></br>
@@ -367,8 +471,12 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
                       </React.Fragment>
                     ))}
                   </p>
-                  <p class="card-text">
-                    Add option to view by month, year, all time
+                  <p className="card-text">
+                    TO DOS
+                    <br></br>Need to refresh map and graph when
+                    adding/editing/deleting check in
+                    <br></br>Make react components more reusable
+                    <br></br>Add some tests
                   </p>
                 </div>
               </div>
@@ -378,96 +486,9 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
         {graphDisplay === true ? (
           <React.Fragment>
             <div className="clearfix" style={{ width: "100%" }}>
-              <h3 class="float-start" id="GraphLabel">
+              <h3 className="float-start" id="GraphLabel">
                 How Far We've Traveled&nbsp;🐾
               </h3>
-              <div class="d-flex">
-                View by&nbsp;&nbsp;
-                <input
-                  type="radio"
-                  class="btn-check"
-                  name="chart-view"
-                  value="month-view"
-                  id="month-view"
-                  autocomplete="off"
-                  checked
-                />
-                <label class="btn btn-outline-dark btn-sm" for="month-view">
-                  month
-                </label>
-                &nbsp;
-                <input
-                  type="radio"
-                  class="btn-check"
-                  name="chart-view"
-                  value="year-view"
-                  id="year-view"
-                  autocomplete="off"
-                />
-                <label class="btn btn-outline-dark btn-sm" for="year-view">
-                  year
-                </label>
-                &nbsp;&nbsp;
-                <div id="show-month-view" class="chart-form">
-                  <div class="d-flex">
-                    <select
-                      class="form-select btn-sm"
-                      name="month-view-month"
-                      aria-label="month-view-select-month"
-                    >
-                      <option value={1}>Jan</option>
-                      <option value={2}>Feb</option>
-                      <option value={3}>Mar</option>
-                      <option value={4}>Apr</option>
-                      <option value={5}>May</option>
-                      <option value={6}>Jun</option>
-                      <option value={7}>Jul</option>
-                      <option value={8}>Aug</option>
-                      <option value={9}>Sep</option>
-                      <option value={10}>Oct</option>
-                      <option value={11}>Nov</option>
-                      <option value={12}>Dec</option>
-                    </select>
-                    &nbsp;
-                    <select
-                      class="form-select btn-sm"
-                      name="month-view-year"
-                      aria-label="month-view-select-year"
-                    >
-                      <option value="2022">2022</option>
-                    </select>
-                    &nbsp;
-                    <button
-                      class="chart-view-submit btn btn-sm btn-outline-dark"
-                      type="submit"
-                      name="view"
-                      value="month"
-                    >
-                      Submit
-                    </button>
-                  </div>
-                </div>
-                <div id="show-year-view" class="chart-form">
-                  <div class="d-flex">
-                    <select
-                      class="form-select btn-sm"
-                      name="year-view-year"
-                      aria-label="year-view-select-year"
-                    >
-                      <option value="2022">2022</option>
-                    </select>
-                    &nbsp;
-                    <button
-                      class="chart-view-submit btn btn-sm btn-outline-dark"
-                      type="submit"
-                      name="view"
-                      value="year"
-                    >
-                      Submit
-                    </button>
-                  </div>
-                </div>
-              </div>
               <div className="float-end">
                 <a
                   className="btn btn-sm dropdown-item"
@@ -481,25 +502,138 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
             </div>
 
             <div
-              class="card"
+              className="card"
               style={{
                 border: "0",
                 width: "100%",
                 height: "calc(100vh - 174px)",
               }}
             >
-              <div class="row g-0" style={{ height: "100%" }}>
-                <div class="col-md-8" style={{ height: "100%" }}>
+              <div className="row g-0" style={{ height: "100%" }}>
+                <div className="col-md-8" style={{ height: "100%" }}>
                   <canvas id="check-in-graph"></canvas>
                 </div>
-                <div class="col-md-4">
-                  <div class="card-body">
-                    <h5 class="card-title">Title TBD</h5>
-                    <p class="card-text">
-                      You have done {checkIns.length} hikes
+                <div className="col-md-4">
+                  <div className="card-body">
+                    {/* view by starts here */}
+
+                    <div>
+                      <div className="row">
+                        <div className="d-flex">
+                          View by&nbsp;&nbsp;
+                          <input
+                            type="radio"
+                            className="btn-check"
+                            name="chart-view"
+                            value="chart-month-view"
+                            id="chart-month-view"
+                            autocomplete="off"
+                            onClick={viewGraphForm}
+                            checked
+                          />
+                          <label
+                            className="btn btn-outline-dark btn-sm"
+                            for="chart-month-view"
+                          >
+                            month
+                          </label>
+                          &nbsp;
+                          <input
+                            type="radio"
+                            className="btn-check"
+                            name="chart-view"
+                            value="chart-year-view"
+                            id="chart-year-view"
+                            autocomplete="off"
+                            onClick={viewGraphForm}
+                          />
+                          <label
+                            className="btn btn-outline-dark btn-sm"
+                            for="chart-year-view"
+                          >
+                            year
+                          </label>
+                        </div>
+                      </div>
+                      <div
+                        id="chart-show-month-view"
+                        className="mt-1 chart-form"
+                      >
+                        <div className="d-flex">
+                          <div>
+                            <select
+                              className="form-select btn-sm"
+                              name="chart-month-view-month"
+                              aria-label="chart-month-view-select-month"
+                            >
+                              <option value={1}>Jan</option>
+                              <option value={2}>Feb</option>
+                              <option value={3}>Mar</option>
+                              <option value={4}>Apr</option>
+                              <option value={5}>May</option>
+                              <option value={6}>Jun</option>
+                              <option value={7}>Jul</option>
+                              <option value={8}>Aug</option>
+                              <option value={9}>Sep</option>
+                              <option value={10}>Oct</option>
+                              <option value={11}>Nov</option>
+                              <option value={12}>Dec</option>
+                            </select>
+                          </div>
+                          &nbsp;
+                          <div>
+                            <select
+                              className="form-select btn-sm"
+                              name="chart-month-view-year"
+                              aria-label="chart-month-view-select-year"
+                            >
+                              <option value="2022">2022</option>
+                            </select>
+                          </div>
+                          &nbsp;
+                          <button
+                            className="chart-view-submit btn btn-sm btn-outline-dark"
+                            type="submit"
+                            name="view"
+                            value="month"
+                          >
+                            Submit
+                          </button>
+                        </div>
+                      </div>
+                      <div
+                        id="chart-show-year-view"
+                        className="mt-1 chart-form"
+                        style={{ display: "none" }}
+                      >
+                        <div className="d-flex">
+                          <div>
+                            <select
+                              className="form-select btn-sm"
+                              name="chart-year-view-year"
+                              aria-label="chart-year-view-select-year"
+                            >
+                              <option value="2022">2022</option>
+                            </select>
+                          </div>
+                          &nbsp;
+                          <button
+                            className="chart-view-submit btn btn-sm btn-outline-dark"
+                            type="submit"
+                            name="view"
+                            value="year"
+                          >
+                            Submit
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    {/* view by ends here */}
+                    <h5 className="mt-4 card-title">Title TBD</h5>
+                    <p className="card-text">
+                      You have checked in to {checkIns.length} hikes
                       <br></br>and walked {total_miles} miles!
                     </p>
-                    <p class="card-text">Add option to view by month, year</p>
                   </div>
                 </div>
               </div>
@@ -509,7 +643,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
         {checkInsDisplay === true ? (
           <React.Fragment>
             <div className="clearfix" style={{ width: "100%" }}>
-              <h3 class="float-start" id="CheckInsLabel">
+              <h3 className="float-start" id="CheckInsLabel">
                 Check Ins
               </h3>
               <div className="float-end">
@@ -524,7 +658,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
               </div>
             </div>
 
-            <div>
+            <div style={{ height: "100%", overflowY: "auto" }}>
               <div>{allCheckIns}</div>
             </div>
           </React.Fragment>
@@ -532,7 +666,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
         {bookmarksDisplay === true ? (
           <React.Fragment>
             <div className="clearfix" style={{ width: "100%" }}>
-              <h3 class="float-start" id="BookmarksLabel">
+              <h3 className="float-start" id="BookmarksLabel">
                 Bookmarks
               </h3>
               <div className="float-end">
@@ -547,7 +681,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
               </div>
             </div>
 
-            <div>
+            <div style={{ height: "100%", overflowY: "auto" }}>
               <div>{allBookmarksLists}</div>
             </div>
           </React.Fragment>
@@ -597,7 +731,7 @@ function SideBarMenu(props) {
               href="#"
               className="nav-link py-3 border-bottom"
               title="Where We've Been"
-              data-bs-custom-class="custom-tooltip"
+              data-bs-custom-className="custom-tooltip"
               data-bs-toggle="tooltip"
               data-bs-placement="right"
               onClick={props.parentDisplayMap}
@@ -610,7 +744,7 @@ function SideBarMenu(props) {
               href="#"
               className="nav-link py-3 border-bottom"
               title="How Far We've Traveled"
-              data-bs-custom-class="custom-tooltip"
+              data-bs-custom-className="custom-tooltip"
               data-bs-toggle="tooltip"
               data-bs-placement="right"
               onClick={props.parentDisplayGraph}
