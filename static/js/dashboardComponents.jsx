@@ -1,5 +1,157 @@
 "use strict";
 
+const DashboardGraph = React.forwardRef((props, ref) => {
+  const [mychart, setMyChart] = React.useState(null);
+
+  React.useEffect(() => {
+    initGraph();
+  }, []);
+
+  function initGraph() {
+    fetch("/check-ins-by-pets.json")
+      .then((response) => response.json())
+      .then((responseJson) => {
+        const { petCheckIns } = responseJson;
+
+        const all_data = [];
+
+        for (const petCheckIn of petCheckIns) {
+          const label = petCheckIn.pet_name;
+          const data = petCheckIn.data.map((checkIn) => ({
+            x: checkIn.date_hiked,
+            y: checkIn.miles_completed,
+          }));
+
+          const lineColor = randomColor();
+
+          all_data.push({
+            label: label,
+            data: data,
+            fill: false,
+            lineTension: 0.4,
+            radius: 6,
+            borderColor: lineColor,
+            backgroundColor: lineColor,
+          });
+        }
+
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = date.getMonth();
+
+        const myLineChart = new Chart(
+          document.querySelector("#check-in-graph"),
+          {
+            type: "line",
+            data: {
+              datasets: all_data,
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: true, position: "bottom" },
+              },
+
+              scales: {
+                x: {
+                  type: "time",
+                  min: new Date(year, month, 1, 0, 0),
+                  max: new Date(year, month + 1, 1, 0, 0) - 1,
+                  time: {
+                    tooltipFormat: "LLLL dd", // Luxon format string
+                    unit: "day",
+                  },
+                  display: true,
+                  title: {
+                    display: true,
+                    text: "Date",
+                  },
+                },
+
+                y: {
+                  min: 0,
+                  suggestedMax: 20,
+                  display: true,
+                  ticks: {
+                    stepSize: 1,
+                  },
+                  title: {
+                    display: true,
+                    text: "Miles",
+                  },
+                },
+              },
+            },
+          }
+        );
+
+        setMyChart(myLineChart);
+      });
+  }
+
+  React.useImperativeHandle(ref, () => ({
+    updateGraphData() {
+      fetch("/check-ins-by-pets.json")
+        .then((response) => response.json())
+        .then((responseJson) => {
+          const { petCheckIns } = responseJson;
+
+          const all_data = [];
+
+          for (const petCheckIn of petCheckIns) {
+            const label = petCheckIn.pet_name;
+            const data = petCheckIn.data.map((checkIn) => ({
+              x: checkIn.date_hiked,
+              y: checkIn.miles_completed,
+            }));
+
+            const lineColor = randomColor();
+
+            all_data.push({
+              label: label,
+              data: data,
+              fill: false,
+              lineTension: 0.4,
+              radius: 6,
+              borderColor: lineColor,
+              backgroundColor: lineColor,
+            });
+          }
+
+          mychart.data.datasets = all_data;
+          mychart.update();
+        });
+    },
+    updateGraphView() {
+      const view = document.querySelector(
+        "input[name=chart-view]:checked"
+      ).value;
+
+      if (view === "chart-month-view") {
+        const month =
+          document.querySelector("select[name=chart-month-view-month]").value -
+          1;
+        const year = document.querySelector(
+          "select[name=chart-month-view-year]"
+        ).value;
+        mychart.options.scales.x.min = new Date(year, month, 1, 0, 0);
+        mychart.options.scales.x.max = new Date(year, month + 1, 1, 0, 0) - 1;
+        mychart.update();
+      } else {
+        const year = document.querySelector(
+          "select[name=chart-year-view-year]"
+        ).value;
+        mychart.options.scales.x.min = new Date(year, 0);
+        mychart.options.scales.x.max = new Date(year, 11, 31);
+        mychart.update();
+      }
+      props.updateGraphInfo();
+    },
+  }));
+  return <canvas id="check-in-graph"></canvas>;
+});
+
 function FooterNavItemOffCanvas(props) {
   return (
     <li className="nav-item">
@@ -94,7 +246,12 @@ function Footer(props) {
 const DashboardMainContainer = React.forwardRef((props, ref) => {
   const BookmarksListRef = React.useRef();
   const AddMultHikesToExistingListRef = React.useRef();
+  const DashboardGraphRef = React.useRef();
   const [graphDisplay, setGraphDisplay] = React.useState(false);
+  const [graphHeader, setGraphHeader] = React.useState("");
+  const [graphCheckIns, setGraphCheckIns] = React.useState([]);
+  const [graphCheckInsTotalMiles, setGraphCheckInsTotalMiles] =
+    React.useState("");
   const [checkInsDisplay, setCheckInsDisplay] = React.useState(false);
   const [bookmarksDisplay, setBookmarksDisplay] = React.useState(false);
 
@@ -102,7 +259,40 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
   const [bookmarksLists, setBookmarksLists] = React.useState([]);
 
   React.useEffect(() => {
-    getCheckIns();
+    fetch(`/user_check_ins.json`)
+      .then((response) => response.json())
+      .then((data) => {
+        setCheckIns(data.checkIns);
+        const { checkIns } = data;
+
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const monthName = date.toLocaleString("default", { month: "long" });
+        const startDate = new Date(year, month, 1, 0, 0);
+        const endDate = new Date(year, month + 1, 1, 0, 0) - 1;
+
+        let initCheckIns = [];
+        for (const checkIn of checkIns) {
+          const dateHiked = new Date(checkIn["date_hiked"]);
+          if (dateHiked > startDate && dateHiked < endDate) {
+            initCheckIns.push(checkIn);
+          }
+        }
+
+        let initMiles = 0;
+
+        let totalMiles = initCheckIns.reduce(function (
+          previousValue,
+          currentValue
+        ) {
+          return previousValue + currentValue.miles_completed;
+        },
+        initMiles);
+        setGraphHeader(`${monthName} ${year}`);
+        setGraphCheckIns(initCheckIns);
+        setGraphCheckInsTotalMiles(totalMiles);
+      });
   }, []);
 
   function refreshProfiles() {
@@ -127,6 +317,80 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
       });
   }
 
+  function updateGraphInfo() {
+    const view = document.querySelector("input[name=chart-view]:checked").value;
+
+    if (view === "chart-month-view") {
+      const date = new Date(
+        document.querySelector("select[name=chart-month-view-year]").value,
+        document.querySelector("select[name=chart-month-view-month]").value - 1,
+        1,
+        0,
+        0
+      );
+      const month = date.toLocaleString("default", { month: "long" });
+      const year = date.getFullYear();
+      const startDate = new Date(year, month, 1, 0, 0);
+      const endDate = new Date(year, month + 1, 1, 0, 0) - 1;
+
+      let graphCheckIns = [];
+      for (const checkIn of checkIns) {
+        const dateHiked = new Date(checkIn["date_hiked"]);
+        if (dateHiked > startDate && dateHiked < endDate) {
+          graphCheckIns.push(checkIn);
+        }
+      }
+
+      let initMiles = 0;
+
+      let totalMiles = graphCheckIns.reduce(function (
+        previousValue,
+        currentValue
+      ) {
+        return previousValue + currentValue.miles_completed;
+      },
+      initMiles);
+      setGraphHeader(`${month} ${year}`);
+      setGraphCheckIns(graphCheckIns);
+      setGraphCheckInsTotalMiles(totalMiles);
+    } else {
+      const year = document.querySelector(
+        "select[name=chart-year-view-year]"
+      ).value;
+      const startDate = new Date(year, 0);
+      const endDate = new Date(year, 11, 31);
+
+      let graphCheckIns = [];
+      for (const checkIn of checkIns) {
+        const dateHiked = new Date(checkIn["date_hiked"]);
+        if (dateHiked > startDate && dateHiked < endDate) {
+          graphCheckIns.push(checkIn);
+        }
+      }
+
+      let initMiles = 0;
+
+      let totalMiles = graphCheckIns.reduce(function (
+        previousValue,
+        currentValue
+      ) {
+        return previousValue + currentValue.miles_completed;
+      },
+      initMiles);
+      setGraphHeader(`${year}`);
+      setGraphCheckIns(graphCheckIns);
+      setGraphCheckInsTotalMiles(totalMiles);
+    }
+  }
+
+  function parentGetGraphData() {
+    DashboardGraphRef.current.updateGraphData();
+  }
+
+  function parentUpdateGraphView() {
+    DashboardGraphRef.current.updateGraphView();
+  }
+
   function parentSetHikesOptionState() {
     AddMultHikesToExistingListRef.current.setHikesOptionsState();
   }
@@ -143,7 +407,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
       setGraphDisplay(true);
       setCheckInsDisplay(false);
       setBookmarksDisplay(false);
-      getDashboardGraph();
+      // getDashboardGraph();
       document.getElementById("display-map").style.display = "none";
     },
     displayCheckIns() {
@@ -170,11 +434,6 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
   const allAddMultHikesToExistingList = [];
 
   let checkInsHikeCounts = [];
-  let initial_miles = 0;
-
-  let total_miles = checkIns.reduce(function (previousValue, currentValue) {
-    return previousValue + currentValue.miles_completed;
-  }, initial_miles);
 
   for (const currentCheckIn of checkIns) {
     if (
@@ -306,7 +565,11 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
 
   return (
     <React.Fragment>
-      <AddCheckIn getCheckIns={getCheckIns} refreshProfiles={refreshProfiles} />
+      <AddCheckIn
+        getCheckIns={getCheckIns}
+        refreshProfiles={refreshProfiles}
+        parentGetGraphData={parentGetGraphData}
+      />
       {allEditCheckIns}
       {allRenameBookmarksLists}
       {allAddMultHikesToExistingList}
@@ -511,7 +774,11 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
             >
               <div className="row g-0" style={{ height: "100%" }}>
                 <div className="col-md-8" style={{ height: "100%" }}>
-                  <canvas id="check-in-graph"></canvas>
+                  {/* <canvas id="check-in-graph"></canvas> */}
+                  <DashboardGraph
+                    ref={DashboardGraphRef}
+                    updateGraphInfo={updateGraphInfo}
+                  />
                 </div>
                 <div className="col-md-4">
                   <div className="card-body">
@@ -529,7 +796,6 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
                             id="chart-month-view"
                             autocomplete="off"
                             onClick={viewGraphForm}
-                            checked
                           />
                           <label
                             className="btn btn-outline-dark btn-sm"
@@ -596,6 +862,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
                             type="submit"
                             name="view"
                             value="month"
+                            onClick={parentUpdateGraphView}
                           >
                             Submit
                           </button>
@@ -618,10 +885,11 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
                           </div>
                           &nbsp;
                           <button
-                            className="chart-view-submit btn btn-sm btn-outline-dark"
+                            className="btn btn-sm btn-outline-dark"
                             type="submit"
                             name="view"
                             value="year"
+                            onClick={parentUpdateGraphView}
                           >
                             Submit
                           </button>
@@ -629,10 +897,10 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
                       </div>
                     </div>
                     {/* view by ends here */}
-                    <h5 className="mt-4 card-title">Title TBD</h5>
+                    <h5 className="mt-4 card-title">{graphHeader}</h5>
                     <p className="card-text">
-                      You have checked in to {checkIns.length} hikes
-                      <br></br>and walked {total_miles} miles!
+                      You have checked in to {graphCheckIns.length} hikes
+                      <br></br>and walked {graphCheckInsTotalMiles} miles!
                     </p>
                   </div>
                 </div>
