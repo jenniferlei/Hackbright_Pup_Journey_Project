@@ -1,7 +1,198 @@
 "use strict";
 
+// const DashboardMap = React.forwardRef((props, ref) => {
+//   const [myMap, setMyMap] = React.useState(null);
+//   const [mapHikes, setMapHikes] = React.useState([]);
+//   const [mapMarkers, setMapMarkers] = React.useState([]);
+//   const [mapBounds, setMapBounds] = React.useState([]);
+
+//   React.useEffect(() => {
+//     initMap();
+//   }, []);
+
+//   function initMap() {
+//     fetch("/user_check_ins.json")
+//       .then((response) => response.json())
+//       .then((jsonResponse) => {
+//         const basicMap = new google.maps.Map(
+//           document.querySelector("#dashboard-map")
+//         );
+
+//         const { checkIns } = jsonResponse;
+//         const markers = [];
+//         const uniqueHikes = [];
+//         // uniqueHikes to hold array of objects {hikeName: hike_name, hike_id:, latitude:, longitude:, occurrences:}
+
+//         for (const currentCheckIn of checkIns) {
+//           const { hike_name, latitude, longitude } = currentCheckIn.hike;
+//           const hikeId = currentCheckIn.hike_id;
+//           if (
+//             uniqueHikes.some((uniqueHike) => {
+//               return uniqueHike["hike_id"] === hikeId;
+//             })
+//           ) {
+//             uniqueHikes.forEach((uniqueHike) => {
+//               if (uniqueHike["hike_id"] === hikeId) {
+//                 uniqueHike["occurrence"]++;
+//               }
+//             });
+//           } else {
+//             let newUniqueHikeObj = {};
+//             newUniqueHikeObj["hike_id"] = hikeId;
+//             newUniqueHikeObj["hike_name"] = hike_name;
+//             newUniqueHikeObj["latitude"] = latitude;
+//             newUniqueHikeObj["longitude"] = longitude;
+//             newUniqueHikeObj["occurrence"] = 1;
+//             uniqueHikes.push(newUniqueHikeObj);
+//             markers.push(
+//               new google.maps.Marker({
+//                 position: {
+//                   lat: Number(latitude),
+//                   lng: Number(longitude),
+//                 },
+//                 title: hike_name,
+//                 map: basicMap,
+//                 icon: {
+//                   // custom icon
+//                   url: "/static/img/marker.svg",
+//                   scaledSize: {
+//                     width: 30,
+//                     height: 30,
+//                   },
+//                 },
+//               })
+//             );
+//           }
+//         }
+
+//         const bounds = new google.maps.LatLngBounds();
+
+//         for (const marker of markers) {
+//           bounds.extend(marker.position);
+//           const markerInfo = `
+//           <h6>${marker.title}</h6>
+//           <p>
+//             Located at: <code>${marker.position.lat()}</code>,
+//             <code>${marker.position.lng()}</code>
+//           </p>
+//         `;
+
+//           const infoWindow = new google.maps.InfoWindow({
+//             content: markerInfo,
+//             maxWidth: 200,
+//           });
+
+//           marker.addListener("click", () => {
+//             infoWindow.open(basicMap, marker);
+//           });
+//         }
+
+//         basicMap.fitBounds(bounds);
+//         basicMap.setZoom(11);
+
+//         setMapHikes(uniqueHikes);
+//         setMapMarkers(markers);
+//         setMapBounds(bounds);
+//         setMyMap(basicMap);
+//       });
+//   }
+
+//   // console.log("!!!! mapHikes", mapHikes);
+
+//   React.useImperativeHandle(ref, () => ({
+//     addMapHike(hikeId, hikeName, latitude, longitude) {
+//       if (
+//         mapHikes.some((mapHike) => {
+//           return mapHike["hike_id"] === hikeId;
+//         })
+//       ) {
+//         mapHikes.forEach((mapHike) => {
+//           if (mapHike["hike_id"] === hikeId) {
+//             mapHike["occurrence"]++;
+//           }
+//         });
+//       } else {
+//         let newUniqueHikeObj = {};
+//         newUniqueHikeObj["hike_id"] = hikeId;
+//         newUniqueHikeObj["hike_name"] = hikeName;
+//         newUniqueHikeObj["latitude"] = latitude;
+//         newUniqueHikeObj["longitude"] = longitude;
+//         newUniqueHikeObj["occurrence"] = 1;
+//         mapHikes.push(newUniqueHikeObj);
+//         setMapHikes(mapHikes);
+//         const newMarker = new google.maps.Marker({
+//           position: {
+//             lat: Number(latitude),
+//             lng: Number(longitude),
+//           },
+//           title: hikeName,
+//           map: myMap,
+//           icon: {
+//             // custom icon
+//             url: "/static/img/marker.svg",
+//             scaledSize: {
+//               width: 30,
+//               height: 30,
+//             },
+//           },
+//         });
+//         mapMarkers.push(newMarker);
+//         setMapMarkers(mapMarkers);
+
+//         mapBounds.extend(newMarker.position);
+//         const markerInfo = `
+//           <h6>${newMarker.title}</h6>
+//           <p>
+//             Located at: <code>${newMarker.position.lat()}</code>,
+//             <code>${newMarker.position.lng()}</code>
+//           </p>
+//         `;
+
+//         const infoWindow = new google.maps.InfoWindow({
+//           content: markerInfo,
+//           maxWidth: 200,
+//         });
+
+//         newMarker.addListener("click", () => {
+//           infoWindow.open(myMap, newMarker);
+//         });
+//         setMapBounds(mapBounds);
+//         setMyMap(myMap);
+//       }
+//     },
+//   }));
+
+// updateGraphView() {
+//   const view = document.querySelector(
+//     "input[name=chart-view]:checked"
+//   ).value;
+
+//   if (view === "chart-month-view") {
+//     const month =
+//       document.querySelector("select[name=chart-month-view-month]").value -
+//       1;
+//     const year = document.querySelector(
+//       "select[name=chart-month-view-year]"
+//     ).value;
+//     myChart.options.scales.x.min = new Date(year, month, 1, 0, 0);
+//     myChart.options.scales.x.max = new Date(year, month + 1, 1, 0, 0) - 1;
+//     myChart.update();
+//   } else {
+//     const year = document.querySelector(
+//       "select[name=chart-year-view-year]"
+//     ).value;
+//     myChart.options.scales.x.min = new Date(year, 0);
+//     myChart.options.scales.x.max = new Date(year, 11, 31);
+//     myChart.update();
+//   }
+//   props.updateGraphInfo();
+// },
+
+//   return <div id="dashboard-map" style={{ height: "100%" }}></div>;
+// });
+
 const DashboardGraph = React.forwardRef((props, ref) => {
-  const [mychart, setMyChart] = React.useState(null);
+  const [myChart, setMyChart] = React.useState(null);
 
   React.useEffect(() => {
     initGraph();
@@ -119,8 +310,8 @@ const DashboardGraph = React.forwardRef((props, ref) => {
             });
           }
 
-          mychart.data.datasets = all_data;
-          mychart.update();
+          myChart.data.datasets = all_data;
+          myChart.update();
         });
     },
     updateGraphView() {
@@ -135,18 +326,17 @@ const DashboardGraph = React.forwardRef((props, ref) => {
         const year = document.querySelector(
           "select[name=chart-month-view-year]"
         ).value;
-        mychart.options.scales.x.min = new Date(year, month, 1, 0, 0);
-        mychart.options.scales.x.max = new Date(year, month + 1, 1, 0, 0) - 1;
-        mychart.update();
+        myChart.options.scales.x.min = new Date(year, month, 1, 0, 0);
+        myChart.options.scales.x.max = new Date(year, month + 1, 1, 0, 0) - 1;
+        myChart.update();
       } else {
         const year = document.querySelector(
           "select[name=chart-year-view-year]"
         ).value;
-        mychart.options.scales.x.min = new Date(year, 0);
-        mychart.options.scales.x.max = new Date(year, 11, 31);
-        mychart.update();
+        myChart.options.scales.x.min = new Date(year, 0);
+        myChart.options.scales.x.max = new Date(year, 11, 31);
+        myChart.update();
       }
-      props.updateGraphInfo();
     },
   }));
   return <canvas id="check-in-graph"></canvas>;
@@ -247,6 +437,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
   const BookmarksListRef = React.useRef();
   const AddMultHikesToExistingListRef = React.useRef();
   const DashboardGraphRef = React.useRef();
+  const DashboardMapRef = React.useRef();
   const [graphDisplay, setGraphDisplay] = React.useState(false);
   const [graphHeader, setGraphHeader] = React.useState("");
   const [graphCheckIns, setGraphCheckIns] = React.useState([]);
@@ -304,6 +495,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
       .then((response) => response.json())
       .then((data) => {
         setCheckIns(data.checkIns);
+        updateGraphInfo();
       });
   }
 
@@ -318,9 +510,36 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
   }
 
   function updateGraphInfo() {
-    const view = document.querySelector("input[name=chart-view]:checked").value;
+    const view = document.querySelector("input[name=chart-view]:checked");
+    if (view === null) {
+      const date = new Date();
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const monthName = date.toLocaleString("default", { month: "long" });
+      const startDate = new Date(year, month, 1, 0, 0);
+      const endDate = new Date(year, month + 1, 1, 0, 0) - 1;
 
-    if (view === "chart-month-view") {
+      let initCheckIns = [];
+      for (const checkIn of checkIns) {
+        const dateHiked = new Date(checkIn["date_hiked"]);
+        if (dateHiked > startDate && dateHiked < endDate) {
+          initCheckIns.push(checkIn);
+        }
+      }
+
+      let initMiles = 0;
+
+      let totalMiles = initCheckIns.reduce(function (
+        previousValue,
+        currentValue
+      ) {
+        return previousValue + currentValue.miles_completed;
+      },
+      initMiles);
+      setGraphHeader(`${monthName} ${year}`);
+      setGraphCheckIns(initCheckIns);
+      setGraphCheckInsTotalMiles(totalMiles);
+    } else if (view.value === "chart-month-view") {
       const date = new Date(
         document.querySelector("select[name=chart-month-view-year]").value,
         document.querySelector("select[name=chart-month-view-month]").value - 1,
@@ -328,49 +547,50 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
         0,
         0
       );
-      const month = date.toLocaleString("default", { month: "long" });
+      const monthString = date.toLocaleString("default", { month: "long" });
+      const month = date.getMonth();
       const year = date.getFullYear();
       const startDate = new Date(year, month, 1, 0, 0);
-      const endDate = new Date(year, month + 1, 1, 0, 0) - 1;
+      const endDate = new Date(new Date(year, month + 1, 1, 0, 0) - 1);
 
-      let graphCheckIns = [];
+      let updateGraphCheckIns = [];
       for (const checkIn of checkIns) {
         const dateHiked = new Date(checkIn["date_hiked"]);
         if (dateHiked > startDate && dateHiked < endDate) {
-          graphCheckIns.push(checkIn);
+          updateGraphCheckIns.push(checkIn);
         }
       }
 
       let initMiles = 0;
 
-      let totalMiles = graphCheckIns.reduce(function (
+      let totalMiles = updateGraphCheckIns.reduce(function (
         previousValue,
         currentValue
       ) {
         return previousValue + currentValue.miles_completed;
       },
       initMiles);
-      setGraphHeader(`${month} ${year}`);
-      setGraphCheckIns(graphCheckIns);
+      setGraphHeader(`${monthString} ${year}`);
+      setGraphCheckIns(updateGraphCheckIns);
       setGraphCheckInsTotalMiles(totalMiles);
-    } else {
+    } else if (view.value === "chart-year-view") {
       const year = document.querySelector(
         "select[name=chart-year-view-year]"
       ).value;
       const startDate = new Date(year, 0);
       const endDate = new Date(year, 11, 31);
 
-      let graphCheckIns = [];
+      let updateGraphCheckIns = [];
       for (const checkIn of checkIns) {
         const dateHiked = new Date(checkIn["date_hiked"]);
         if (dateHiked > startDate && dateHiked < endDate) {
-          graphCheckIns.push(checkIn);
+          updateGraphCheckIns.push(checkIn);
         }
       }
 
       let initMiles = 0;
 
-      let totalMiles = graphCheckIns.reduce(function (
+      let totalMiles = updateGraphCheckIns.reduce(function (
         previousValue,
         currentValue
       ) {
@@ -378,9 +598,13 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
       },
       initMiles);
       setGraphHeader(`${year}`);
-      setGraphCheckIns(graphCheckIns);
+      setGraphCheckIns(updateGraphCheckIns);
       setGraphCheckInsTotalMiles(totalMiles);
     }
+  }
+
+  function parentAddMapHike(hikeId, hikeName, latitude, longitude) {
+    DashboardMapRef.current.addMapHike(hikeId, hikeName, latitude, longitude);
   }
 
   function parentGetGraphData() {
@@ -389,6 +613,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
 
   function parentUpdateGraphView() {
     DashboardGraphRef.current.updateGraphView();
+    updateGraphInfo();
   }
 
   function parentSetHikesOptionState() {
@@ -477,6 +702,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
         pets_not_on_hike={currentCheckIn.pets_not_on_hike}
         getCheckIns={getCheckIns}
         refreshProfiles={refreshProfiles}
+        parentAddMapHike={parentAddMapHike}
       />
     );
     allEditCheckIns.push(
@@ -602,7 +828,8 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
           >
             <div className="row g-0" style={{ height: "100%" }}>
               <div className="col-md-6">
-                <div id="dashboard-map" style={{ height: "100%" }}></div>
+                {/* <DashboardMap ref={DashboardMapRef} /> */}
+                {/* <div id="dashboard-map" style={{ height: "100%" }}></div> */}
               </div>
               <div
                 className="col-md-6"
@@ -623,7 +850,6 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
                           id="map-month-view"
                           autocomplete="off"
                           onClick={viewMapForm}
-                          checked
                         />
                         <label
                           className="btn btn-outline-dark btn-sm"
@@ -649,7 +875,11 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
                         </label>
                       </div>
                     </div>
-                    <div id="map-show-month-view" className="mt-1 map-form">
+                    <div
+                      id="map-show-month-view"
+                      className="mt-1 map-form"
+                      style={{ display: "none" }}
+                    >
                       <div className="d-flex">
                         <div>
                           <select
@@ -734,13 +964,6 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
                       </React.Fragment>
                     ))}
                   </p>
-                  <p className="card-text">
-                    TO DOS
-                    <br></br>Need to refresh map and graph when
-                    adding/editing/deleting check in
-                    <br></br>Make react components more reusable
-                    <br></br>Add some tests
-                  </p>
                 </div>
               </div>
             </div>
@@ -824,6 +1047,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
                       <div
                         id="chart-show-month-view"
                         className="mt-1 chart-form"
+                        style={{ display: "none" }}
                       >
                         <div className="d-flex">
                           <div>

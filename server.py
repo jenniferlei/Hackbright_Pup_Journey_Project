@@ -351,7 +351,7 @@ def add_check_in():
     db.session.add(check_in)
     db.session.commit()
 
-    check_in_schema = CheckInSchema()
+    check_in_schema = CheckInSchema(only=["check_in_id","date_hiked","hike_id","miles_completed","notes","pets","total_time","hike.hike_name","hike.latitude","hike.longitude"])
     check_in_json = check_in_schema.dump(check_in)
 
     return jsonify({"checkInAdded": check_in_json})
@@ -824,7 +824,7 @@ def get_user_check_ins_json():
     check_ins = crud_check_ins.get_check_ins_by_user_id(user.user_id)
     sorted_check_ins = sorted(check_ins, key=lambda x: x.date_hiked, reverse=True)
 
-    check_ins_schema = CheckInSchema(many=True, only=["check_in_id","date_hiked","hike_id","miles_completed","notes","pets","total_time","hike.hike_name"])
+    check_ins_schema = CheckInSchema(many=True, only=["check_in_id","date_hiked","hike_id","miles_completed","notes","pets","total_time","hike.hike_name","hike.latitude","hike.longitude"])
     check_ins_json = check_ins_schema.dump(sorted_check_ins)
     pets_schema = PetSchema(many=True, exclude=["check_ins"])
 
@@ -889,34 +889,34 @@ def get_check_ins_by_pets_json():
     return jsonify({"petCheckIns": check_in_data})
 
 
-@app.route("/dashboard_map_coordinates.json")
-def get_user_check_in_coordinates():
-    """Return a JSON response with all coordinates for a user."""
+# @app.route("/dashboard_map_coordinates.json")
+# def get_user_check_in_coordinates():
+#     """Return a JSON response with all coordinates for a user."""
 
-    logged_in_email = session.get("user_email")
-    user = crud_users.get_user_by_email(logged_in_email)
+#     logged_in_email = session.get("user_email")
+#     user = crud_users.get_user_by_email(logged_in_email)
 
-    # Get list of unique check in objects for the user
-    check_ins_by_user = crud_check_ins.get_check_ins_by_user_id(user.user_id)
+#     # Get list of unique check in objects for the user
+#     check_ins_by_user = crud_check_ins.get_check_ins_by_user_id(user.user_id)
 
-    # For each check in
-    # Get unique hikes
-    # For each hike
-    # Create a new object with hike_name, latitude, and longitude
+#     # For each check in
+#     # Get unique hikes
+#     # For each hike
+#     # Create a new object with hike_name, latitude, and longitude
 
-    hikes = set()
+#     hikes = set()
 
-    for check_in in check_ins_by_user:
-        hikes.add(check_in.hike)
+#     for check_in in check_ins_by_user:
+#         hikes.add(check_in.hike)
     
-    user_hike_data = []
+#     user_hike_data = []
 
-    for hike in hikes:
-        hike_data = {"hike_name": hike.hike_name, "latitude": hike.latitude, "longitude": hike.longitude}
+#     for hike in hikes:
+#         hike_data = {"hike_name": hike.hike_name, "latitude": hike.latitude, "longitude": hike.longitude}
  
-        user_hike_data.append(hike_data)
+#         user_hike_data.append(hike_data)
 
-    return jsonify({"checkInCoordinates": user_hike_data})
+#     return jsonify({"checkInCoordinates": user_hike_data})
 
 
 @app.route("/<bookmarks_list_id>/hikes.json")
