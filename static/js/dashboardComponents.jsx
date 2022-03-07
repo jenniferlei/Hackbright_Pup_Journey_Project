@@ -1,347 +1,5 @@
 "use strict";
 
-// const DashboardMap = React.forwardRef((props, ref) => {
-//   const [myMap, setMyMap] = React.useState(null);
-//   const [mapHikes, setMapHikes] = React.useState([]);
-//   const [mapMarkers, setMapMarkers] = React.useState([]);
-//   const [mapBounds, setMapBounds] = React.useState([]);
-
-//   React.useEffect(() => {
-//     initMap();
-//   }, []);
-
-//   function initMap() {
-//     fetch("/user_check_ins.json")
-//       .then((response) => response.json())
-//       .then((jsonResponse) => {
-//         const basicMap = new google.maps.Map(
-//           document.querySelector("#dashboard-map")
-//         );
-
-//         const { checkIns } = jsonResponse;
-//         const markers = [];
-//         const uniqueHikes = [];
-//         // uniqueHikes to hold array of objects {hikeName: hike_name, hike_id:, latitude:, longitude:, occurrences:}
-
-//         for (const currentCheckIn of checkIns) {
-//           const { hike_name, latitude, longitude } = currentCheckIn.hike;
-//           const hikeId = currentCheckIn.hike_id;
-//           if (
-//             uniqueHikes.some((uniqueHike) => {
-//               return uniqueHike["hike_id"] === hikeId;
-//             })
-//           ) {
-//             uniqueHikes.forEach((uniqueHike) => {
-//               if (uniqueHike["hike_id"] === hikeId) {
-//                 uniqueHike["occurrence"]++;
-//               }
-//             });
-//           } else {
-//             let newUniqueHikeObj = {};
-//             newUniqueHikeObj["hike_id"] = hikeId;
-//             newUniqueHikeObj["hike_name"] = hike_name;
-//             newUniqueHikeObj["latitude"] = latitude;
-//             newUniqueHikeObj["longitude"] = longitude;
-//             newUniqueHikeObj["occurrence"] = 1;
-//             uniqueHikes.push(newUniqueHikeObj);
-//             markers.push(
-//               new google.maps.Marker({
-//                 position: {
-//                   lat: Number(latitude),
-//                   lng: Number(longitude),
-//                 },
-//                 title: hike_name,
-//                 map: basicMap,
-//                 icon: {
-//                   // custom icon
-//                   url: "/static/img/marker.svg",
-//                   scaledSize: {
-//                     width: 30,
-//                     height: 30,
-//                   },
-//                 },
-//               })
-//             );
-//           }
-//         }
-
-//         const bounds = new google.maps.LatLngBounds();
-
-//         for (const marker of markers) {
-//           bounds.extend(marker.position);
-//           const markerInfo = `
-//           <h6>${marker.title}</h6>
-//           <p>
-//             Located at: <code>${marker.position.lat()}</code>,
-//             <code>${marker.position.lng()}</code>
-//           </p>
-//         `;
-
-//           const infoWindow = new google.maps.InfoWindow({
-//             content: markerInfo,
-//             maxWidth: 200,
-//           });
-
-//           marker.addListener("click", () => {
-//             infoWindow.open(basicMap, marker);
-//           });
-//         }
-
-//         basicMap.fitBounds(bounds);
-//         basicMap.setZoom(11);
-
-//         setMapHikes(uniqueHikes);
-//         setMapMarkers(markers);
-//         setMapBounds(bounds);
-//         setMyMap(basicMap);
-//       });
-//   }
-
-//   // console.log("!!!! mapHikes", mapHikes);
-
-//   React.useImperativeHandle(ref, () => ({
-//     addMapHike(hikeId, hikeName, latitude, longitude) {
-//       if (
-//         mapHikes.some((mapHike) => {
-//           return mapHike["hike_id"] === hikeId;
-//         })
-//       ) {
-//         mapHikes.forEach((mapHike) => {
-//           if (mapHike["hike_id"] === hikeId) {
-//             mapHike["occurrence"]++;
-//           }
-//         });
-//       } else {
-//         let newUniqueHikeObj = {};
-//         newUniqueHikeObj["hike_id"] = hikeId;
-//         newUniqueHikeObj["hike_name"] = hikeName;
-//         newUniqueHikeObj["latitude"] = latitude;
-//         newUniqueHikeObj["longitude"] = longitude;
-//         newUniqueHikeObj["occurrence"] = 1;
-//         mapHikes.push(newUniqueHikeObj);
-//         setMapHikes(mapHikes);
-//         const newMarker = new google.maps.Marker({
-//           position: {
-//             lat: Number(latitude),
-//             lng: Number(longitude),
-//           },
-//           title: hikeName,
-//           map: myMap,
-//           icon: {
-//             // custom icon
-//             url: "/static/img/marker.svg",
-//             scaledSize: {
-//               width: 30,
-//               height: 30,
-//             },
-//           },
-//         });
-//         mapMarkers.push(newMarker);
-//         setMapMarkers(mapMarkers);
-
-//         mapBounds.extend(newMarker.position);
-//         const markerInfo = `
-//           <h6>${newMarker.title}</h6>
-//           <p>
-//             Located at: <code>${newMarker.position.lat()}</code>,
-//             <code>${newMarker.position.lng()}</code>
-//           </p>
-//         `;
-
-//         const infoWindow = new google.maps.InfoWindow({
-//           content: markerInfo,
-//           maxWidth: 200,
-//         });
-
-//         newMarker.addListener("click", () => {
-//           infoWindow.open(myMap, newMarker);
-//         });
-//         setMapBounds(mapBounds);
-//         setMyMap(myMap);
-//       }
-//     },
-//   }));
-
-// updateGraphView() {
-//   const view = document.querySelector(
-//     "input[name=chart-view]:checked"
-//   ).value;
-
-//   if (view === "chart-month-view") {
-//     const month =
-//       document.querySelector("select[name=chart-month-view-month]").value -
-//       1;
-//     const year = document.querySelector(
-//       "select[name=chart-month-view-year]"
-//     ).value;
-//     myChart.options.scales.x.min = new Date(year, month, 1, 0, 0);
-//     myChart.options.scales.x.max = new Date(year, month + 1, 1, 0, 0) - 1;
-//     myChart.update();
-//   } else {
-//     const year = document.querySelector(
-//       "select[name=chart-year-view-year]"
-//     ).value;
-//     myChart.options.scales.x.min = new Date(year, 0);
-//     myChart.options.scales.x.max = new Date(year, 11, 31);
-//     myChart.update();
-//   }
-//   props.updateGraphInfo();
-// },
-
-//   return <div id="dashboard-map" style={{ height: "100%" }}></div>;
-// });
-
-const DashboardGraph = React.forwardRef((props, ref) => {
-  const [myChart, setMyChart] = React.useState(null);
-
-  React.useEffect(() => {
-    initGraph();
-  }, []);
-
-  function initGraph() {
-    fetch("/check-ins-by-pets.json")
-      .then((response) => response.json())
-      .then((responseJson) => {
-        const { petCheckIns } = responseJson;
-
-        const all_data = [];
-
-        for (const petCheckIn of petCheckIns) {
-          const label = petCheckIn.pet_name;
-          const data = petCheckIn.data.map((checkIn) => ({
-            x: checkIn.date_hiked,
-            y: checkIn.miles_completed,
-          }));
-
-          const lineColor = randomColor();
-
-          all_data.push({
-            label: label,
-            data: data,
-            fill: false,
-            lineTension: 0.4,
-            radius: 6,
-            borderColor: lineColor,
-            backgroundColor: lineColor,
-          });
-        }
-
-        const date = new Date();
-        const year = date.getFullYear();
-        const month = date.getMonth();
-
-        const myLineChart = new Chart(
-          document.querySelector("#check-in-graph"),
-          {
-            type: "line",
-            data: {
-              datasets: all_data,
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: { display: true, position: "bottom" },
-              },
-
-              scales: {
-                x: {
-                  type: "time",
-                  min: new Date(year, month, 1, 0, 0),
-                  max: new Date(year, month + 1, 1, 0, 0) - 1,
-                  time: {
-                    tooltipFormat: "LLLL dd", // Luxon format string
-                    unit: "day",
-                  },
-                  display: true,
-                  title: {
-                    display: true,
-                    text: "Date",
-                  },
-                },
-
-                y: {
-                  min: 0,
-                  suggestedMax: 20,
-                  display: true,
-                  ticks: {
-                    stepSize: 1,
-                  },
-                  title: {
-                    display: true,
-                    text: "Miles",
-                  },
-                },
-              },
-            },
-          }
-        );
-
-        setMyChart(myLineChart);
-      });
-  }
-
-  React.useImperativeHandle(ref, () => ({
-    updateGraphData() {
-      fetch("/check-ins-by-pets.json")
-        .then((response) => response.json())
-        .then((responseJson) => {
-          const { petCheckIns } = responseJson;
-
-          const all_data = [];
-
-          for (const petCheckIn of petCheckIns) {
-            const label = petCheckIn.pet_name;
-            const data = petCheckIn.data.map((checkIn) => ({
-              x: checkIn.date_hiked,
-              y: checkIn.miles_completed,
-            }));
-
-            const lineColor = randomColor();
-
-            all_data.push({
-              label: label,
-              data: data,
-              fill: false,
-              lineTension: 0.4,
-              radius: 6,
-              borderColor: lineColor,
-              backgroundColor: lineColor,
-            });
-          }
-
-          myChart.data.datasets = all_data;
-          myChart.update();
-        });
-    },
-    updateGraphView() {
-      const view = document.querySelector(
-        "input[name=chart-view]:checked"
-      ).value;
-
-      if (view === "chart-month-view") {
-        const month =
-          document.querySelector("select[name=chart-month-view-month]").value -
-          1;
-        const year = document.querySelector(
-          "select[name=chart-month-view-year]"
-        ).value;
-        myChart.options.scales.x.min = new Date(year, month, 1, 0, 0);
-        myChart.options.scales.x.max = new Date(year, month + 1, 1, 0, 0) - 1;
-        myChart.update();
-      } else {
-        const year = document.querySelector(
-          "select[name=chart-year-view-year]"
-        ).value;
-        myChart.options.scales.x.min = new Date(year, 0);
-        myChart.options.scales.x.max = new Date(year, 11, 31);
-        myChart.update();
-      }
-    },
-  }));
-  return <canvas id="check-in-graph"></canvas>;
-});
-
 function FooterNavItemOffCanvas(props) {
   return (
     <li className="nav-item">
@@ -433,16 +91,203 @@ function Footer(props) {
   );
 }
 
+const ViewMonthYear = (props) => {
+  const [yearOptions, setYearOptions] = React.useState([]);
+  const monthOptions = [
+    { monthNum: 1, monthAbbr: "Jan" },
+    { monthNum: 2, monthAbbr: "Feb" },
+    { monthNum: 3, monthAbbr: "Mar" },
+    { monthNum: 4, monthAbbr: "Apr" },
+    { monthNum: 5, monthAbbr: "May" },
+    { monthNum: 6, monthAbbr: "Jun" },
+    { monthNum: 7, monthAbbr: "Jul" },
+    { monthNum: 8, monthAbbr: "Aug" },
+    { monthNum: 9, monthAbbr: "Sep" },
+    { monthNum: 10, monthAbbr: "Oct" },
+    { monthNum: 11, monthAbbr: "Dec" },
+    { monthNum: 12, monthAbbr: "Nov" },
+  ];
+
+  React.useEffect(() => {
+    getYearOptions();
+  }, []);
+
+  function getYearOptions() {
+    fetch("/user_check_ins.json")
+      .then((response) => response.json())
+      .then((jsonResponse) => {
+        const { checkIns } = jsonResponse;
+        let years = [];
+        for (const checkIn of checkIns) {
+          const dateHiked = new Date(checkIn.date_hiked);
+          const year = dateHiked.getFullYear();
+          if (!years.includes(year)) {
+            years.push(year);
+          }
+        }
+        setYearOptions(years);
+      });
+  }
+
+  function changeMonthYearForm() {
+    if (document.getElementById(`${props.category}-month-view`).checked) {
+      document.getElementById(
+        `${props.category}-show-month-view`
+      ).style.display = "block";
+      document.getElementById(
+        `${props.category}-show-year-view`
+      ).style.display = "none";
+    } else if (document.getElementById(`${props.category}-year-view`).checked) {
+      document.getElementById(
+        `${props.category}-show-month-view`
+      ).style.display = "none";
+      document.getElementById(
+        `${props.category}-show-year-view`
+      ).style.display = "block";
+    }
+  }
+
+  return (
+    <div>
+      <div className="row">
+        <div className="d-flex">
+          View by&nbsp;&nbsp;
+          <input
+            type="radio"
+            className="btn-check"
+            name={`${props.category}-view`}
+            value={`${props.category}-month-view`}
+            id={`${props.category}-month-view`}
+            autocomplete="off"
+            onClick={changeMonthYearForm}
+          />
+          <label
+            className="btn btn-outline-dark btn-sm"
+            for={`${props.category}-month-view`}
+          >
+            month
+          </label>
+          &nbsp;
+          <input
+            type="radio"
+            className="btn-check"
+            name={`${props.category}-view`}
+            value={`${props.category}-year-view`}
+            id={`${props.category}-year-view`}
+            autocomplete="off"
+            onClick={changeMonthYearForm}
+          />
+          <label
+            className="btn btn-outline-dark btn-sm"
+            for={`${props.category}-year-view`}
+          >
+            year
+          </label>
+        </div>
+      </div>
+      <div
+        id={`${props.category}-show-month-view`}
+        className="mt-1 map-form"
+        style={{ display: "none" }}
+      >
+        <div className="d-flex">
+          <div>
+            <select
+              className="form-select btn-sm"
+              name={`${props.category}-month-view-month`}
+              aria-label={`${props.category}-month-view-select-month`}
+            >
+              {monthOptions.map((month) => (
+                <option
+                  key={`${props.category}-month-${month.monthNum}`}
+                  value={month.monthNum}
+                >
+                  {month.monthAbbr}
+                </option>
+              ))}
+            </select>
+          </div>
+          &nbsp;
+          <div>
+            <select
+              className="form-select btn-sm"
+              name={`${props.category}-month-view-year`}
+              aria-label={`${props.category}-month-view-select-year`}
+            >
+              <option value="2022">2022</option>
+            </select>
+          </div>
+          &nbsp;
+          <button
+            className={`${props.category}-view-submit btn btn-sm btn-outline-dark`}
+            type="submit"
+            name="view"
+            value="month"
+            onClick={props.getFunction}
+          >
+            Submit
+          </button>
+        </div>
+      </div>
+      <div
+        id={`${props.category}-show-year-view`}
+        className="mt-1 map-form"
+        style={{ display: "none" }}
+      >
+        <div className="d-flex">
+          <div>
+            <select
+              className="form-select btn-sm"
+              name={`${props.category}-year-view-year`}
+              aria-label={`${props.category}-year-view-select-year`}
+            >
+              {yearOptions.map((year) => (
+                <option value={year}>{year}</option>
+              ))}
+            </select>
+          </div>
+          &nbsp;
+          <button
+            className={`${props.category}-view-submit btn btn-sm btn-outline-dark`}
+            type="submit"
+            name="view"
+            value="year"
+            onClick={props.getFunction}
+          >
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const DashboardHeader = (props) => {
+  return (
+    <div className="clearfix" style={{ width: "100%" }}>
+      <h3 className="float-start" id={props.headerLabel}>
+        {props.title}
+      </h3>
+      <div className="float-end">
+        <a
+          className="btn btn-sm"
+          href=""
+          data-bs-toggle="modal"
+          data-bs-target={props.modalTarget}
+        >
+          <i className={props.icon}></i> {props.modalText}
+        </a>
+      </div>
+    </div>
+  );
+};
+
 const DashboardMainContainer = React.forwardRef((props, ref) => {
   const BookmarksListRef = React.useRef();
   const AddMultHikesToExistingListRef = React.useRef();
-  const DashboardGraphRef = React.useRef();
+  const DashboardGraphContainerRef = React.useRef();
   const DashboardMapRef = React.useRef();
   const [graphDisplay, setGraphDisplay] = React.useState(false);
-  const [graphHeader, setGraphHeader] = React.useState("");
-  const [graphCheckIns, setGraphCheckIns] = React.useState([]);
-  const [graphCheckInsTotalMiles, setGraphCheckInsTotalMiles] =
-    React.useState("");
   const [checkInsDisplay, setCheckInsDisplay] = React.useState(false);
   const [bookmarksDisplay, setBookmarksDisplay] = React.useState(false);
 
@@ -454,35 +299,6 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
       .then((response) => response.json())
       .then((data) => {
         setCheckIns(data.checkIns);
-        const { checkIns } = data;
-
-        const date = new Date();
-        const year = date.getFullYear();
-        const month = date.getMonth();
-        const monthName = date.toLocaleString("default", { month: "long" });
-        const startDate = new Date(year, month, 1, 0, 0);
-        const endDate = new Date(year, month + 1, 1, 0, 0) - 1;
-
-        let initCheckIns = [];
-        for (const checkIn of checkIns) {
-          const dateHiked = new Date(checkIn["date_hiked"]);
-          if (dateHiked > startDate && dateHiked < endDate) {
-            initCheckIns.push(checkIn);
-          }
-        }
-
-        let initMiles = 0;
-
-        let totalMiles = initCheckIns.reduce(function (
-          previousValue,
-          currentValue
-        ) {
-          return previousValue + currentValue.miles_completed;
-        },
-        initMiles);
-        setGraphHeader(`${monthName} ${year}`);
-        setGraphCheckIns(initCheckIns);
-        setGraphCheckInsTotalMiles(totalMiles);
       });
   }, []);
 
@@ -495,7 +311,6 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
       .then((response) => response.json())
       .then((data) => {
         setCheckIns(data.checkIns);
-        updateGraphInfo();
       });
   }
 
@@ -509,111 +324,14 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
       });
   }
 
-  function updateGraphInfo() {
-    const view = document.querySelector("input[name=chart-view]:checked");
-    if (view === null) {
-      const date = new Date();
-      const year = date.getFullYear();
-      const month = date.getMonth();
-      const monthName = date.toLocaleString("default", { month: "long" });
-      const startDate = new Date(year, month, 1, 0, 0);
-      const endDate = new Date(year, month + 1, 1, 0, 0) - 1;
-
-      let initCheckIns = [];
-      for (const checkIn of checkIns) {
-        const dateHiked = new Date(checkIn["date_hiked"]);
-        if (dateHiked > startDate && dateHiked < endDate) {
-          initCheckIns.push(checkIn);
-        }
-      }
-
-      let initMiles = 0;
-
-      let totalMiles = initCheckIns.reduce(function (
-        previousValue,
-        currentValue
-      ) {
-        return previousValue + currentValue.miles_completed;
-      },
-      initMiles);
-      setGraphHeader(`${monthName} ${year}`);
-      setGraphCheckIns(initCheckIns);
-      setGraphCheckInsTotalMiles(totalMiles);
-    } else if (view.value === "chart-month-view") {
-      const date = new Date(
-        document.querySelector("select[name=chart-month-view-year]").value,
-        document.querySelector("select[name=chart-month-view-month]").value - 1,
-        1,
-        0,
-        0
-      );
-      const monthString = date.toLocaleString("default", { month: "long" });
-      const month = date.getMonth();
-      const year = date.getFullYear();
-      const startDate = new Date(year, month, 1, 0, 0);
-      const endDate = new Date(new Date(year, month + 1, 1, 0, 0) - 1);
-
-      let updateGraphCheckIns = [];
-      for (const checkIn of checkIns) {
-        const dateHiked = new Date(checkIn["date_hiked"]);
-        if (dateHiked > startDate && dateHiked < endDate) {
-          updateGraphCheckIns.push(checkIn);
-        }
-      }
-
-      let initMiles = 0;
-
-      let totalMiles = updateGraphCheckIns.reduce(function (
-        previousValue,
-        currentValue
-      ) {
-        return previousValue + currentValue.miles_completed;
-      },
-      initMiles);
-      setGraphHeader(`${monthString} ${year}`);
-      setGraphCheckIns(updateGraphCheckIns);
-      setGraphCheckInsTotalMiles(totalMiles);
-    } else if (view.value === "chart-year-view") {
-      const year = document.querySelector(
-        "select[name=chart-year-view-year]"
-      ).value;
-      const startDate = new Date(year, 0);
-      const endDate = new Date(year, 11, 31);
-
-      let updateGraphCheckIns = [];
-      for (const checkIn of checkIns) {
-        const dateHiked = new Date(checkIn["date_hiked"]);
-        if (dateHiked > startDate && dateHiked < endDate) {
-          updateGraphCheckIns.push(checkIn);
-        }
-      }
-
-      let initMiles = 0;
-
-      let totalMiles = updateGraphCheckIns.reduce(function (
-        previousValue,
-        currentValue
-      ) {
-        return previousValue + currentValue.miles_completed;
-      },
-      initMiles);
-      setGraphHeader(`${year}`);
-      setGraphCheckIns(updateGraphCheckIns);
-      setGraphCheckInsTotalMiles(totalMiles);
-    }
+  function parentGetGraphData() {
+    DashboardGraphContainerRef.current.updateGraphData();
   }
+
+  function parentUpdateMapView() {}
 
   function parentAddMapHike(hikeId, hikeName, latitude, longitude) {
     DashboardMapRef.current.addMapHike(hikeId, hikeName, latitude, longitude);
-  }
-
-  function parentGetGraphData() {
-    DashboardGraphRef.current.updateGraphData();
-  }
-
-  function parentUpdateGraphView() {
-    DashboardGraphRef.current.updateGraphView();
-    updateGraphInfo();
   }
 
   function parentSetHikesOptionState() {
@@ -702,6 +420,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
         pets_not_on_hike={currentCheckIn.pets_not_on_hike}
         getCheckIns={getCheckIns}
         refreshProfiles={refreshProfiles}
+        parentGetGraphData={parentGetGraphData}
         parentAddMapHike={parentAddMapHike}
       />
     );
@@ -769,26 +488,6 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
     return 0;
   });
 
-  function viewMapForm() {
-    if (document.getElementById("map-month-view").checked) {
-      document.getElementById("map-show-month-view").style.display = "block";
-      document.getElementById("map-show-year-view").style.display = "none";
-    } else if (document.getElementById("map-year-view").checked) {
-      document.getElementById("map-show-month-view").style.display = "none";
-      document.getElementById("map-show-year-view").style.display = "block";
-    }
-  }
-
-  function viewGraphForm() {
-    if (document.getElementById("chart-month-view").checked) {
-      document.getElementById("chart-show-month-view").style.display = "block";
-      document.getElementById("chart-show-year-view").style.display = "none";
-    } else if (document.getElementById("chart-year-view").checked) {
-      document.getElementById("chart-show-month-view").style.display = "none";
-      document.getElementById("chart-show-year-view").style.display = "block";
-    }
-  }
-
   return (
     <React.Fragment>
       <AddCheckIn
@@ -802,21 +501,13 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
       <CreateBookmarksList getBookmarksLists={getBookmarksLists} />
       <div className="dashboard-container d-flex flex-column flex-shrink-0">
         <div id="display-map">
-          <div className="clearfix" style={{ width: "100%" }}>
-            <h3 className="float-start" id="MapLabel">
-              Where We've Been <i className="bi bi-map"></i>
-            </h3>
-            <div className="float-end">
-              <a
-                className="btn btn-sm dropdown-item"
-                href=""
-                data-bs-toggle="modal"
-                data-bs-target="#modal-add-check-in"
-              >
-                <i className="bi bi-bookmark-star"></i> add a check in
-              </a>
-            </div>
-          </div>
+          <DashboardHeader
+            headerLabel="MapLabel"
+            title="Where We've Been 🗺"
+            modalTarget="#modal-add-check-in"
+            icon="bi bi-check-circle"
+            modalText="add a check in"
+          />
 
           <div
             className="card"
@@ -836,120 +527,10 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
                 style={{ height: "100%", overflowY: "auto" }}
               >
                 <div className="card-body">
-                  {/* view by starts here */}
-
-                  <div>
-                    <div className="row">
-                      <div className="d-flex">
-                        View by&nbsp;&nbsp;
-                        <input
-                          type="radio"
-                          className="btn-check"
-                          name="map-view"
-                          value="map-month-view"
-                          id="map-month-view"
-                          autocomplete="off"
-                          onClick={viewMapForm}
-                        />
-                        <label
-                          className="btn btn-outline-dark btn-sm"
-                          for="map-month-view"
-                        >
-                          month
-                        </label>
-                        &nbsp;
-                        <input
-                          type="radio"
-                          className="btn-check"
-                          name="map-view"
-                          value="map-year-view"
-                          id="map-year-view"
-                          autocomplete="off"
-                          onClick={viewMapForm}
-                        />
-                        <label
-                          className="btn btn-outline-dark btn-sm"
-                          for="map-year-view"
-                        >
-                          year
-                        </label>
-                      </div>
-                    </div>
-                    <div
-                      id="map-show-month-view"
-                      className="mt-1 map-form"
-                      style={{ display: "none" }}
-                    >
-                      <div className="d-flex">
-                        <div>
-                          <select
-                            className="form-select btn-sm"
-                            name="map-month-view-month"
-                            aria-label="map-month-view-select-month"
-                          >
-                            <option value={1}>Jan</option>
-                            <option value={2}>Feb</option>
-                            <option value={3}>Mar</option>
-                            <option value={4}>Apr</option>
-                            <option value={5}>May</option>
-                            <option value={6}>Jun</option>
-                            <option value={7}>Jul</option>
-                            <option value={8}>Aug</option>
-                            <option value={9}>Sep</option>
-                            <option value={10}>Oct</option>
-                            <option value={11}>Nov</option>
-                            <option value={12}>Dec</option>
-                          </select>
-                        </div>
-                        &nbsp;
-                        <div>
-                          <select
-                            className="form-select btn-sm"
-                            name="map-month-view-year"
-                            aria-label="map-month-view-select-year"
-                          >
-                            <option value="2022">2022</option>
-                          </select>
-                        </div>
-                        &nbsp;
-                        <button
-                          className="map-view-submit btn btn-sm btn-outline-dark"
-                          type="submit"
-                          name="view"
-                          value="month"
-                        >
-                          Submit
-                        </button>
-                      </div>
-                    </div>
-                    <div
-                      id="map-show-year-view"
-                      className="mt-1 map-form"
-                      style={{ display: "none" }}
-                    >
-                      <div className="d-flex">
-                        <div>
-                          <select
-                            className="form-select btn-sm"
-                            name="map-year-view-year"
-                            aria-label="map-year-view-select-year"
-                          >
-                            <option value="2022">2022</option>
-                          </select>
-                        </div>
-                        &nbsp;
-                        <button
-                          className="map-view-submit btn btn-sm btn-outline-dark"
-                          type="submit"
-                          name="view"
-                          value="year"
-                        >
-                          Submit
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  {/* view by ends here */}
+                  <ViewMonthYear
+                    category="map"
+                    getFunction={parentUpdateMapView}
+                  />
                   <h5 className="mt-4 card-title">Your Visited Hikes</h5>
                   <p className="card-text">
                     {checkInsHikeCounts.map((hikeCount) => (
@@ -971,184 +552,25 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
         </div>
         {graphDisplay === true ? (
           <React.Fragment>
-            <div className="clearfix" style={{ width: "100%" }}>
-              <h3 className="float-start" id="GraphLabel">
-                How Far We've Traveled&nbsp;🐾
-              </h3>
-              <div className="float-end">
-                <a
-                  className="btn btn-sm dropdown-item"
-                  href=""
-                  data-bs-toggle="modal"
-                  data-bs-target="#modal-add-check-in"
-                >
-                  <i className="bi bi-bookmark-star"></i> add a check in
-                </a>
-              </div>
-            </div>
-
-            <div
-              className="card"
-              style={{
-                border: "0",
-                width: "100%",
-                height: "calc(100vh - 174px)",
-              }}
-            >
-              <div className="row g-0" style={{ height: "100%" }}>
-                <div className="col-md-8" style={{ height: "100%" }}>
-                  {/* <canvas id="check-in-graph"></canvas> */}
-                  <DashboardGraph
-                    ref={DashboardGraphRef}
-                    updateGraphInfo={updateGraphInfo}
-                  />
-                </div>
-                <div className="col-md-4">
-                  <div className="card-body">
-                    {/* view by starts here */}
-
-                    <div>
-                      <div className="row">
-                        <div className="d-flex">
-                          View by&nbsp;&nbsp;
-                          <input
-                            type="radio"
-                            className="btn-check"
-                            name="chart-view"
-                            value="chart-month-view"
-                            id="chart-month-view"
-                            autocomplete="off"
-                            onClick={viewGraphForm}
-                          />
-                          <label
-                            className="btn btn-outline-dark btn-sm"
-                            for="chart-month-view"
-                          >
-                            month
-                          </label>
-                          &nbsp;
-                          <input
-                            type="radio"
-                            className="btn-check"
-                            name="chart-view"
-                            value="chart-year-view"
-                            id="chart-year-view"
-                            autocomplete="off"
-                            onClick={viewGraphForm}
-                          />
-                          <label
-                            className="btn btn-outline-dark btn-sm"
-                            for="chart-year-view"
-                          >
-                            year
-                          </label>
-                        </div>
-                      </div>
-                      <div
-                        id="chart-show-month-view"
-                        className="mt-1 chart-form"
-                        style={{ display: "none" }}
-                      >
-                        <div className="d-flex">
-                          <div>
-                            <select
-                              className="form-select btn-sm"
-                              name="chart-month-view-month"
-                              aria-label="chart-month-view-select-month"
-                            >
-                              <option value={1}>Jan</option>
-                              <option value={2}>Feb</option>
-                              <option value={3}>Mar</option>
-                              <option value={4}>Apr</option>
-                              <option value={5}>May</option>
-                              <option value={6}>Jun</option>
-                              <option value={7}>Jul</option>
-                              <option value={8}>Aug</option>
-                              <option value={9}>Sep</option>
-                              <option value={10}>Oct</option>
-                              <option value={11}>Nov</option>
-                              <option value={12}>Dec</option>
-                            </select>
-                          </div>
-                          &nbsp;
-                          <div>
-                            <select
-                              className="form-select btn-sm"
-                              name="chart-month-view-year"
-                              aria-label="chart-month-view-select-year"
-                            >
-                              <option value="2022">2022</option>
-                            </select>
-                          </div>
-                          &nbsp;
-                          <button
-                            className="chart-view-submit btn btn-sm btn-outline-dark"
-                            type="submit"
-                            name="view"
-                            value="month"
-                            onClick={parentUpdateGraphView}
-                          >
-                            Submit
-                          </button>
-                        </div>
-                      </div>
-                      <div
-                        id="chart-show-year-view"
-                        className="mt-1 chart-form"
-                        style={{ display: "none" }}
-                      >
-                        <div className="d-flex">
-                          <div>
-                            <select
-                              className="form-select btn-sm"
-                              name="chart-year-view-year"
-                              aria-label="chart-year-view-select-year"
-                            >
-                              <option value="2022">2022</option>
-                            </select>
-                          </div>
-                          &nbsp;
-                          <button
-                            className="btn btn-sm btn-outline-dark"
-                            type="submit"
-                            name="view"
-                            value="year"
-                            onClick={parentUpdateGraphView}
-                          >
-                            Submit
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    {/* view by ends here */}
-                    <h5 className="mt-4 card-title">{graphHeader}</h5>
-                    <p className="card-text">
-                      You have checked in to {graphCheckIns.length} hikes
-                      <br></br>and walked {graphCheckInsTotalMiles} miles!
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <DashboardHeader
+              headerLabel="GraphLabel"
+              title="How Far We've Traveled 🐾"
+              modalTarget="#modal-add-check-in"
+              icon="bi bi-check-circle"
+              modalText="add a check in"
+            />
+            <DashboardGraphContainer ref={DashboardGraphContainerRef} />
           </React.Fragment>
         ) : null}
         {checkInsDisplay === true ? (
           <React.Fragment>
-            <div className="clearfix" style={{ width: "100%" }}>
-              <h3 className="float-start" id="CheckInsLabel">
-                Check Ins
-              </h3>
-              <div className="float-end">
-                <a
-                  className="btn btn-sm dropdown-item"
-                  href=""
-                  data-bs-toggle="modal"
-                  data-bs-target="#modal-add-check-in"
-                >
-                  <i className="bi bi-bookmark-star"></i> add a check in
-                </a>
-              </div>
-            </div>
+            <DashboardHeader
+              headerLabel="CheckInsLabel"
+              title="Check Ins"
+              modalTarget="#modal-add-check-in"
+              icon="bi bi-check-circle"
+              modalText="add a check in"
+            />
 
             <div style={{ height: "100%", overflowY: "auto" }}>
               <div>{allCheckIns}</div>
@@ -1157,21 +579,13 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
         ) : null}
         {bookmarksDisplay === true ? (
           <React.Fragment>
-            <div className="clearfix" style={{ width: "100%" }}>
-              <h3 className="float-start" id="BookmarksLabel">
-                Bookmarks
-              </h3>
-              <div className="float-end">
-                <a
-                  className="btn btn-sm dropdown-item"
-                  href=""
-                  data-bs-toggle="modal"
-                  data-bs-target="#modal-create-bookmarks-list"
-                >
-                  <i className="bi bi-bookmark-star"></i> create a list
-                </a>
-              </div>
-            </div>
+            <DashboardHeader
+              headerLabel="BookmarksLabel"
+              title="Bookmarks"
+              modalTarget="#modal-create-bookmarks-list"
+              icon="bi bi-bookmark-star"
+              modalText="create a list"
+            />
 
             <div style={{ height: "100%", overflowY: "auto" }}>
               <div>{allBookmarksLists}</div>
