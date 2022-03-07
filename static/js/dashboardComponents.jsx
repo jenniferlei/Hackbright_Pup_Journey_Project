@@ -104,8 +104,8 @@ const ViewMonthYear = (props) => {
     { monthNum: 8, monthAbbr: "Aug" },
     { monthNum: 9, monthAbbr: "Sep" },
     { monthNum: 10, monthAbbr: "Oct" },
-    { monthNum: 11, monthAbbr: "Dec" },
-    { monthNum: 12, monthAbbr: "Nov" },
+    { monthNum: 11, monthAbbr: "Nov" },
+    { monthNum: 12, monthAbbr: "Dec" },
   ];
 
   React.useEffect(() => {
@@ -137,6 +137,8 @@ const ViewMonthYear = (props) => {
       document.getElementById(
         `${props.category}-show-year-view`
       ).style.display = "none";
+      document.getElementById(`${props.category}-show-all-view`).style.display =
+        "none";
     } else if (document.getElementById(`${props.category}-year-view`).checked) {
       document.getElementById(
         `${props.category}-show-month-view`
@@ -144,6 +146,17 @@ const ViewMonthYear = (props) => {
       document.getElementById(
         `${props.category}-show-year-view`
       ).style.display = "block";
+      document.getElementById(`${props.category}-show-all-view`).style.display =
+        "none";
+    } else if (document.getElementById(`${props.category}-all-view`).checked) {
+      document.getElementById(
+        `${props.category}-show-month-view`
+      ).style.display = "none";
+      document.getElementById(
+        `${props.category}-show-year-view`
+      ).style.display = "none";
+      document.getElementById(`${props.category}-show-all-view`).style.display =
+        "block";
     }
   }
 
@@ -183,6 +196,24 @@ const ViewMonthYear = (props) => {
           >
             year
           </label>
+          &nbsp;
+          <div style={{ display: `${props.display}` }}>
+            <input
+              type="radio"
+              className="btn-check"
+              name={`${props.category}-view`}
+              value={`${props.category}-all-view`}
+              id={`${props.category}-all-view`}
+              autocomplete="off"
+              onClick={changeMonthYearForm}
+            />
+            <label
+              className="btn btn-outline-dark btn-sm"
+              for={`${props.category}-all-view`}
+            >
+              all time
+            </label>
+          </div>
         </div>
       </div>
       <div
@@ -214,7 +245,9 @@ const ViewMonthYear = (props) => {
               name={`${props.category}-month-view-year`}
               aria-label={`${props.category}-month-view-select-year`}
             >
-              <option value="2022">2022</option>
+              {yearOptions.map((year) => (
+                <option value={year}>{year}</option>
+              ))}
             </select>
           </div>
           &nbsp;
@@ -258,6 +291,23 @@ const ViewMonthYear = (props) => {
           </button>
         </div>
       </div>
+      <div
+        id={`${props.category}-show-all-view`}
+        className="mt-1 map-form"
+        style={{ display: "none" }}
+      >
+        <div className="d-flex">
+          <button
+            className={`${props.category}-view-submit btn btn-sm btn-outline-dark`}
+            type="submit"
+            name="view"
+            value="all"
+            onClick={props.getFunction}
+          >
+            Submit
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
@@ -286,7 +336,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
   const BookmarksListRef = React.useRef();
   const AddMultHikesToExistingListRef = React.useRef();
   const DashboardGraphContainerRef = React.useRef();
-  const DashboardMapRef = React.useRef();
+  const DashboardMapContainerRef = React.useRef();
   const [graphDisplay, setGraphDisplay] = React.useState(false);
   const [checkInsDisplay, setCheckInsDisplay] = React.useState(false);
   const [bookmarksDisplay, setBookmarksDisplay] = React.useState(false);
@@ -325,13 +375,12 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
   }
 
   function parentGetGraphData() {
+    // When a check in is added, edited, deleted, update graph data
     DashboardGraphContainerRef.current.updateGraphData();
   }
 
-  function parentUpdateMapView() {}
-
-  function parentAddMapHike(hikeId, hikeName, latitude, longitude) {
-    DashboardMapRef.current.addMapHike(hikeId, hikeName, latitude, longitude);
+  function parentGetMapData() {
+    DashboardMapContainerRef.current.getMapData();
   }
 
   function parentSetHikesOptionState() {
@@ -340,32 +389,30 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
 
   React.useImperativeHandle(ref, () => ({
     displayMap() {
-      setGraphDisplay(false);
       setCheckInsDisplay(false);
       setBookmarksDisplay(false);
-      // getDashboardMap();
       document.getElementById("display-map").style.display = "block";
+      document.getElementById("display-graph").style.display = "none";
     },
     displayGraph() {
-      setGraphDisplay(true);
       setCheckInsDisplay(false);
       setBookmarksDisplay(false);
-      // getDashboardGraph();
       document.getElementById("display-map").style.display = "none";
+      document.getElementById("display-graph").style.display = "block";
     },
     displayCheckIns() {
-      setGraphDisplay(false);
       setCheckInsDisplay(true);
       setBookmarksDisplay(false);
       getCheckIns();
       document.getElementById("display-map").style.display = "none";
+      document.getElementById("display-graph").style.display = "none";
     },
     displayBookmarks() {
-      setGraphDisplay(false);
       setCheckInsDisplay(false);
       setBookmarksDisplay(true);
       getBookmarksLists();
       document.getElementById("display-map").style.display = "none";
+      document.getElementById("display-graph").style.display = "none";
     },
   }));
 
@@ -376,33 +423,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
   const allRenameBookmarksLists = [];
   const allAddMultHikesToExistingList = [];
 
-  let checkInsHikeCounts = [];
-
   for (const currentCheckIn of checkIns) {
-    if (
-      checkInsHikeCounts.some((hikeCount) => {
-        return hikeCount["hike_id"] == currentCheckIn["hike_id"];
-      })
-    ) {
-      // If yes! then increase the occurrence by 1
-      checkInsHikeCounts.forEach((hikeCount) => {
-        if (hikeCount["hike_id"] === currentCheckIn["hike_id"]) {
-          hikeCount["occurrence"]++;
-        }
-      });
-    } else {
-      // If not! Then create a new object initialize
-      // it with the present iteration key's value and
-      // set the occurrence to 1
-      let newHikeCountObj = {};
-      newHikeCountObj["hike_id"] = currentCheckIn["hike_id"];
-      newHikeCountObj["occurrence"] = 1;
-      newHikeCountObj["hike_name"] = currentCheckIn["hike"]["hike_name"];
-      checkInsHikeCounts.push(newHikeCountObj);
-    }
-
-    console.log("checkInsHikeCounts", checkInsHikeCounts);
-
     const date_hiked = new Date(currentCheckIn.date_hiked);
     const date_hiked_formatted = date_hiked.toLocaleDateString();
 
@@ -420,8 +441,8 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
         pets_not_on_hike={currentCheckIn.pets_not_on_hike}
         getCheckIns={getCheckIns}
         refreshProfiles={refreshProfiles}
+        parentGetMapData={parentGetMapData}
         parentGetGraphData={parentGetGraphData}
-        parentAddMapHike={parentAddMapHike}
       />
     );
     allEditCheckIns.push(
@@ -437,6 +458,8 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
         pets_not_on_hike={currentCheckIn.pets_not_on_hike}
         getCheckIns={getCheckIns}
         refreshProfiles={refreshProfiles}
+        parentGetMapData={parentGetMapData}
+        parentGetGraphData={parentGetGraphData}
       />
     );
   }
@@ -475,24 +498,12 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
     );
   }
 
-  checkInsHikeCounts.sort((a, b) => {
-    let fa = a.hike_name.toLowerCase(),
-      fb = b.hike_name.toLowerCase();
-
-    if (fa < fb) {
-      return -1;
-    }
-    if (fa > fb) {
-      return 1;
-    }
-    return 0;
-  });
-
   return (
     <React.Fragment>
       <AddCheckIn
         getCheckIns={getCheckIns}
         refreshProfiles={refreshProfiles}
+        parentGetMapData={parentGetMapData}
         parentGetGraphData={parentGetGraphData}
       />
       {allEditCheckIns}
@@ -508,60 +519,18 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
             icon="bi bi-check-circle"
             modalText="add a check in"
           />
-
-          <div
-            className="card"
-            style={{
-              border: "0",
-              width: "100%",
-              height: "calc(100vh - 190px)",
-            }}
-          >
-            <div className="row g-0" style={{ height: "100%" }}>
-              <div className="col-md-6">
-                {/* <DashboardMap ref={DashboardMapRef} /> */}
-                {/* <div id="dashboard-map" style={{ height: "100%" }}></div> */}
-              </div>
-              <div
-                className="col-md-6"
-                style={{ height: "100%", overflowY: "auto" }}
-              >
-                <div className="card-body">
-                  <ViewMonthYear
-                    category="map"
-                    getFunction={parentUpdateMapView}
-                  />
-                  <h5 className="mt-4 card-title">Your Visited Hikes</h5>
-                  <p className="card-text">
-                    {checkInsHikeCounts.map((hikeCount) => (
-                      <React.Fragment>
-                        <br></br>
-                        You hiked{" "}
-                        <a href={`/hikes/${hikeCount.hike_id}`}>
-                          {hikeCount.hike_name}
-                        </a>{" "}
-                        {hikeCount.occurrence}{" "}
-                        {hikeCount.occurrence > 1 ? "times" : "time"}
-                      </React.Fragment>
-                    ))}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <DashboardMapContainer ref={DashboardMapContainerRef} />
         </div>
-        {graphDisplay === true ? (
-          <React.Fragment>
-            <DashboardHeader
-              headerLabel="GraphLabel"
-              title="How Far We've Traveled 🐾"
-              modalTarget="#modal-add-check-in"
-              icon="bi bi-check-circle"
-              modalText="add a check in"
-            />
-            <DashboardGraphContainer ref={DashboardGraphContainerRef} />
-          </React.Fragment>
-        ) : null}
+        <div id="display-graph" style={{ display: "none" }}>
+          <DashboardHeader
+            headerLabel="GraphLabel"
+            title="How Far We've Traveled 🐾"
+            modalTarget="#modal-add-check-in"
+            icon="bi bi-check-circle"
+            modalText="add a check in"
+          />
+          <DashboardGraphContainer ref={DashboardGraphContainerRef} />
+        </div>
         {checkInsDisplay === true ? (
           <React.Fragment>
             <DashboardHeader
