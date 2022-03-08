@@ -192,6 +192,10 @@ ul.no-bullets {
   /* The width is the width of the web page */
 }
 
+.footer-menu {
+  border: 1px solid #ced4da;
+}
+
 /* FIXED RIGHT SIDEBAR PROFILES */
 /* The sidebar menu */
 .side-bar-menu {

@@ -18,17 +18,17 @@ Chart.js adapter #}
 <div hidden id="login">False</div>
 {% endif %} {% endblock %} {% block js %}
 <!-- Google Maps API -->
-<script
+<!-- <script
   async
   src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_KEY }}"
-></script>
-<script src="/static/js/dashboardPetProfile.jsx" type="text/jsx"></script>
-<script src="/static/js/allHikesComment.jsx" type="text/jsx"></script>
-<script src="/static/js/dashboardBookmark.jsx" type="text/jsx"></script>
+></script> -->
+<script src="/static/js/petProfileComponents.jsx" type="text/jsx"></script>
+<script src="/static/js/checkInComponents.jsx" type="text/jsx"></script>
+<script src="/static/js/bookmarkComponents.jsx" type="text/jsx"></script>
+<script src="/static/js/otherComponents.jsx" type="text/jsx"></script>
 <script src="/static/js/dashboardCheckIn.jsx" type="text/jsx"></script>
 <script src="/static/js/dashboardMap.jsx" type="text/jsx"></script>
 <script src="/static/js/dashboardGraph.jsx" type="text/jsx"></script>
-
-<script src="/static/js/search.jsx" type="text/jsx"></script>
+<script src="/static/js/searchComponents.jsx" type="text/jsx"></script>
 <script src="/static/js/dashboardComponents.jsx" type="text/jsx"></script>
 {% endblock %}

@@ -60,6 +60,7 @@
 
 {% if "login" in session %}
 <div hidden id="login">True</div>
+<div hidden id="user_id">{{ user.user_id }}</div>
 {% else %}
 <div hidden id="login">False</div>
 {% endif %}
@@ -67,10 +68,11 @@
 
 {% endblock %}
 {% block js %}
-<script src="/static/js/petProfile.jsx" type="text/jsx"></script>
-<script src="/static/js/allHikesComment.jsx" type="text/jsx"></script>
-<script src="/static/js/allHikesBookmark.jsx" type="text/jsx"></script>
-<script src="/static/js/allHikesCheckIn.jsx" type="text/jsx"></script>
-<script src="/static/js/search.jsx" type="text/jsx"></script>
+<script src="/static/js/petProfileComponents.jsx" type="text/jsx"></script>
+<script src="/static/js/checkInComponents.jsx" type="text/jsx"></script>
+<script src="/static/js/bookmarkComponents.jsx" type="text/jsx"></script>
+<script src="/static/js/commentComponents.jsx" type="text/jsx"></script>
+<script src="/static/js/otherComponents.jsx" type="text/jsx"></script>
+<script src="/static/js/searchComponents.jsx" type="text/jsx"></script>
 <script src="/static/js/allHikesComponents.jsx" type="text/jsx"></script>
 {% endblock %}

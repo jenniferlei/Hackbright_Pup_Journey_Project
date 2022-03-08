@@ -77,11 +77,15 @@ def all_hikes():
     """View all hikes."""
 
     # Populate options for the search bar
-    search_hikes = hikes = crud_hikes.get_hikes()
+    search_hikes = crud_hikes.get_hikes()
 
-    return render_template(
-        "all_hikes.html",
-        search_hikes=search_hikes)
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email is None:
+        return render_template("all_hikes.html", search_hikes=search_hikes)
+    
+    user = crud_users.get_user_by_email(logged_in_email)
+    return render_template("all_hikes.html", user=user, search_hikes=search_hikes)
 
 
 @app.route("/hikes/search", methods=["GET"])
@@ -608,7 +612,7 @@ def edit_comment(comment_id):
     """Edit a comment"""
 
     comment = crud_comments.get_comment_by_comment_id(comment_id)
-    comment.body = request.get_json().get("comment_body")
+    comment.body = request.get_json().get("commentBody")
     comment.edit = True
     comment.date_edited = datetime.now()
 

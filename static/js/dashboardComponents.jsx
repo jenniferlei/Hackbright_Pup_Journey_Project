@@ -1,30 +1,5 @@
 "use strict";
 
-function FooterNavItemOffCanvas(props) {
-  return (
-    <li className="nav-item">
-      <a
-        className="nav-link"
-        data-bs-toggle="offcanvas"
-        href={`#${props.href}`}
-        role="button"
-        aria-controls={props.href}
-        onClick={props.getFunction}
-      >
-        <small>
-          <i
-            data-bs-toggle="tooltip"
-            data-bs-placement="right"
-            title={props.tooltip}
-            className={props.icon}
-          ></i>
-          &nbsp;{props.name}
-        </small>
-      </a>
-    </li>
-  );
-}
-
 function Footer(props) {
   const session_login = document.querySelector("#login").innerText;
 
@@ -33,7 +8,7 @@ function Footer(props) {
   return (
     <React.Fragment>
       <nav
-        className="navbar navbar-expand-sm navbar-light bg-light fixed-bottom"
+        className="footer-menu navbar navbar-expand-sm navbar-light bg-light fixed-bottom"
         style={{ border: "1px solid #ced4da" }}
       >
         <div className="container-fluid">
@@ -337,55 +312,8 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
   const AddMultHikesToExistingListRef = React.useRef();
   const DashboardGraphContainerRef = React.useRef();
   const DashboardMapContainerRef = React.useRef();
-  const [graphDisplay, setGraphDisplay] = React.useState(false);
   const [checkInsDisplay, setCheckInsDisplay] = React.useState(false);
   const [bookmarksDisplay, setBookmarksDisplay] = React.useState(false);
-
-  const [checkIns, setCheckIns] = React.useState([]);
-  const [bookmarksLists, setBookmarksLists] = React.useState([]);
-
-  React.useEffect(() => {
-    fetch(`/user_check_ins.json`)
-      .then((response) => response.json())
-      .then((data) => {
-        setCheckIns(data.checkIns);
-      });
-  }, []);
-
-  function refreshProfiles() {
-    props.parentGetPetProfiles();
-  }
-
-  function getCheckIns() {
-    fetch(`/user_check_ins.json`)
-      .then((response) => response.json())
-      .then((data) => {
-        setCheckIns(data.checkIns);
-      });
-  }
-
-  console.log("checkIns", checkIns);
-
-  function getBookmarksLists() {
-    fetch("/user_bookmarks_lists.json")
-      .then((response) => response.json())
-      .then((data) => {
-        setBookmarksLists(data.bookmarksLists);
-      });
-  }
-
-  function parentGetGraphData() {
-    // When a check in is added, edited, deleted, update graph data
-    DashboardGraphContainerRef.current.updateGraphData();
-  }
-
-  function parentGetMapData() {
-    DashboardMapContainerRef.current.getMapData();
-  }
-
-  function parentSetHikesOptionState() {
-    AddMultHikesToExistingListRef.current.setHikesOptionsState();
-  }
 
   React.useImperativeHandle(ref, () => ({
     displayMap() {
@@ -415,6 +343,38 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
       document.getElementById("display-graph").style.display = "none";
     },
   }));
+
+  const [checkIns, setCheckIns] = React.useState([]);
+  const [bookmarksLists, setBookmarksLists] = React.useState([]);
+
+  function refreshProfiles() {
+    props.parentGetPetProfiles();
+  }
+
+  function getCheckIns() {
+    fetch(`/user_check_ins.json`)
+      .then((response) => response.json())
+      .then((data) => {
+        setCheckIns(data.checkIns);
+      });
+  }
+
+  function getBookmarksLists() {
+    fetch("/user_bookmarks_lists.json")
+      .then((response) => response.json())
+      .then((data) => {
+        setBookmarksLists(data.bookmarksLists);
+      });
+  }
+
+  function parentGetGraphData() {
+    // When a check in is added, edited, deleted, update graph data
+    DashboardGraphContainerRef.current.updateGraphData();
+  }
+
+  function parentGetMapData() {
+    DashboardMapContainerRef.current.getMapData();
+  }
 
   const allCheckIns = [];
   const allEditCheckIns = [];
@@ -464,6 +424,8 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
     );
   }
 
+  const timestamp = Date.now();
+
   for (const currentBookmarksList of bookmarksLists) {
     allBookmarksLists.push(
       <BookmarksList
@@ -472,14 +434,13 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
         bookmarks_list_id={currentBookmarksList.bookmarks_list_id}
         hikes={currentBookmarksList.hikes}
         getBookmarksLists={getBookmarksLists}
-        parentSetHikesOptionState={parentSetHikesOptionState}
         ref={BookmarksListRef}
       />
     );
 
     allAddMultHikesToExistingList.push(
       <AddMultHikesToExistingList
-        key={currentBookmarksList.bookmarks_list_id}
+        key={`${timestamp}-${currentBookmarksList.bookmarks_list_id}`}
         bookmarks_list_name={currentBookmarksList.bookmarks_list_name}
         bookmarks_list_id={currentBookmarksList.bookmarks_list_id}
         hikes={currentBookmarksList.hikes}
@@ -659,10 +620,10 @@ function SideBarMenu(props) {
 
 function DashboardEverythingContainer(props) {
   const DashboardMainContainerRef = React.useRef();
-  const PetProfileContainerRef = React.useRef();
+  const DashboardPetProfileContainerRef = React.useRef();
 
   function parentGetPetProfiles() {
-    PetProfileContainerRef.current.getPetProfiles();
+    DashboardPetProfileContainerRef.current.getPetProfiles();
   }
 
   function parentDisplayMap() {
@@ -691,7 +652,7 @@ function DashboardEverythingContainer(props) {
         parentDisplayBookmarks={parentDisplayBookmarks}
       />
       <SearchOffCanvas />
-      <PetProfileContainer ref={PetProfileContainerRef} />
+      <DashboardPetProfileContainer ref={DashboardPetProfileContainerRef} />
       <Footer />
     </React.Fragment>
   );

@@ -406,7 +406,7 @@ const DashboardMapContainer = React.forwardRef((props, ref) => {
                 <React.Fragment>
                   <br></br>
                   Hiked{" "}
-                  <a href={`/hikes/${hikeCount.hike_id}`}>
+                  <a className="link-dark" href={`/hikes/${hikeCount.hike_id}`}>
                     {hikeCount.hike_name}
                   </a>{" "}
                   {hikeCount.occurrence}{" "}
