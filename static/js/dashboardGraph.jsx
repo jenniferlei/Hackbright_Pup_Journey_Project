@@ -153,6 +153,7 @@ const DashboardGraph = React.forwardRef((props, ref) => {
 const DashboardGraphContainer = React.forwardRef((props, ref) => {
   const DashboardGraphRef = React.useRef();
 
+  const [allCheckIns, setAllCheckIns] = React.useState([]);
   const [graphHeader, setGraphHeader] = React.useState("");
   const [graphCheckIns, setGraphCheckIns] = React.useState([]);
   const [graphCheckInsTotalMiles, setGraphCheckInsTotalMiles] =
@@ -163,6 +164,7 @@ const DashboardGraphContainer = React.forwardRef((props, ref) => {
       .then((response) => response.json())
       .then((data) => {
         const { checkIns } = data;
+        setAllCheckIns(checkIns);
 
         const date = new Date();
         const year = date.getFullYear();
@@ -203,6 +205,8 @@ const DashboardGraphContainer = React.forwardRef((props, ref) => {
       .then((response) => response.json())
       .then((jsonResponse) => {
         const { checkIns } = jsonResponse;
+
+        setAllCheckIns(checkIns);
         const view = document.querySelector("input[name=graph-view]:checked");
         if (view === null) {
           const date = new Date();
@@ -286,16 +290,25 @@ const DashboardGraphContainer = React.forwardRef((props, ref) => {
         </div>
         <div className="col-md-4">
           <div className="card-body">
-            <ViewMonthYear
-              category="graph"
-              getFunction={parentUpdateGraphView}
-              display="none"
-            />
-            <h5 className="mt-4 card-title">{graphHeader}</h5>
-            <p className="card-text">
-              You have checked in to {graphCheckIns.length} hikes
-              <br></br>and walked {graphCheckInsTotalMiles} miles!
-            </p>
+            {allCheckIns.length > 0 ? (
+              <React.Fragment>
+                <ViewMonthYear
+                  category="graph"
+                  getFunction={parentUpdateGraphView}
+                  display="none"
+                />
+                <h5 className="mt-4 card-title">{graphHeader}</h5>
+                <p className="card-text">
+                  You have checked in to {graphCheckIns.length} hikes
+                  <br></br>and walked {graphCheckInsTotalMiles} miles!
+                </p>
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                You haven't checked into any hikes yet!
+                <br></br>Please add a check in to view your stats.
+              </React.Fragment>
+            )}
           </div>
         </div>
       </div>

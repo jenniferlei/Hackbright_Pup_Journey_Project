@@ -78,7 +78,8 @@ def get_hikes_by_advanced_search(
     if length_max != "":
         queries.append(Hike.miles <= length_max)
     if parking != []:
-        queries.append(Hike.parking.in_(parking))
+        for parking_rule in parking:
+            queries.append(Hike.parking.ilike(f"%{parking_rule}%"))
 
     return db.session.query(Hike).filter(*queries).order_by(Hike.hike_name.asc()).all()
 

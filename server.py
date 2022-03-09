@@ -97,10 +97,13 @@ def search_box():
     # Populate the list of hikes
     search_hikes = crud_hikes.get_hike_by_keyword(search_term)
 
-    return render_template(
-        "all_hikes.html",
-        search_hikes=search_hikes,
-    )
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email is None:
+        return render_template("all_hikes.html", search_hikes=search_hikes)
+    
+    user = crud_users.get_user_by_email(logged_in_email)
+    return render_template("all_hikes.html", user=user, search_hikes=search_hikes)
 
 
 @app.route("/hikes/advanced_search", methods=["GET"])
@@ -120,10 +123,13 @@ def advanced_search():
     # Populate the list of hike objects that fulfill the search criteria
     search_hikes = crud_hikes.get_hikes_by_advanced_search(keyword, difficulties, leash_rules, areas, cities, state, length_min, length_max, parking)
  
-    return render_template(
-        "all_hikes.html",
-        search_hikes=search_hikes,
-    )
+    logged_in_email = session.get("user_email")
+
+    if logged_in_email is None:
+        return render_template("all_hikes.html", search_hikes=search_hikes)
+    
+    user = crud_users.get_user_by_email(logged_in_email)
+    return render_template("all_hikes.html", user=user, search_hikes=search_hikes)
 
 
 @app.route("/hikes/<hike_id>")

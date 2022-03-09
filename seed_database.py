@@ -101,16 +101,19 @@ for hike in hike_data:
     # append db_movie to hikes_in_db list
     hikes_in_db.append(db_hike)
 
-test_user = crud_users.create_user("Test User", "test@test", "test")
-test_pet = crud_pets.create_pet(test_user, "Test Pet1", "female", None, "Shiba Inu", "https://res.cloudinary.com/hbpupjourney/image/upload/v1644612543/hvtridjccxxvvsiqgoi6.jpg", None, [])
-test_pet = crud_pets.create_pet(test_user, "Test Pet1", "male", None, "German Shepherd Mix", "https://res.cloudinary.com/hbpupjourney/image/upload/v1644711360/l3jnf1aod2h2bglnzpyi.jpg", None, [])
+test_user = crud_users.create_user("Test User 1", "test@test", "test")
+test_pet1 = crud_pets.create_pet(test_user, "Test Pet1", "female", None, "Shiba Inu", "https://res.cloudinary.com/hbpupjourney/image/upload/v1644612543/hvtridjccxxvvsiqgoi6.jpg", None, [])
+test_pet2 = crud_pets.create_pet(test_user, "Test Pet2", "male", None, "German Shepherd Mix", "https://res.cloudinary.com/hbpupjourney/image/upload/v1644711360/l3jnf1aod2h2bglnzpyi.jpg", None, [])
 test_bookmarks_list = crud_bookmarks_lists.create_bookmarks_list(
     "Test List", 1, []
 )
+test_user2 = crud_users.create_user("Test User 2", "tes2t@test2", "test2")
 
 model.db.session.add_all(hikes_in_db)
 model.db.session.add(test_user)
-model.db.session.add(test_pet)
+model.db.session.add(test_user2)
+model.db.session.add(test_pet1)
+model.db.session.add(test_pet2)
 model.db.session.add(test_bookmarks_list)
 
 model.db.session.commit()

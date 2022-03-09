@@ -1,16 +1,8 @@
 "use strict";
 
 function SearchOffCanvas(props) {
-  const stateOptions = ["California"];
-  const parkingOptions = [
-    "Fee (Adventure Pass)",
-    "Fee (Lot/Area)",
-    "Free (Lot/Area) or Fee (Adventure Pass)",
-    "Free (Lot/Area)",
-    "Free (Road/Street)",
-    "Restricted",
-    "Weekend/Holiday Fee, Weekday Free (Lot/Area)",
-  ];
+  const stateOptions = ["California", "Oregon", "Washington"];
+  const parkingOptions = ["Fee", "Free"];
   const difficultyOptions = ["easy", "moderate", "hard"];
 
   const [stateChoice, setStateChoice] = React.useState("");
@@ -163,11 +155,9 @@ function SearchOffCanvas(props) {
 
               <div className="row g-2 mt-2">
                 <div className="col" style={{ verticalAlign: "middle" }}>
-                  <label className="form-label">
-                    <strong>Length</strong>
+                  <label className="form-label mt-3">
+                    <strong>Length (miles)</strong>
                   </label>
-                  <br></br>
-                  <strong>(miles)</strong>
                 </div>
                 <div className="form-floating col">
                   <input
@@ -198,45 +188,32 @@ function SearchOffCanvas(props) {
                 </div>
               </div>
 
-              <div className="mt-2">
-                <label className="form-label" htmlFor="search-parking">
+              <div className="mt-2 d-flex">
+                <label for="search-parking" className="mt-2 me-2">
                   <strong>Parking</strong>
                 </label>
-                <div
-                  style={{
-                    border: "1px solid #ced4da",
-                    borderRadius: "5px",
-                    paddingLeft: "1em",
-                    height: "10vh",
-                    overflow: "auto",
-                  }}
+                <select
+                  id="search-parking"
+                  className="form-select"
+                  aria-label="search-parking"
                 >
+                  <option value=""></option>
                   {parkingOptions.map((parkingOption) => (
-                    <div className="form-check" key={parkingOption}>
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        name="parking"
-                        id={parkingOption}
-                        value={parkingOption}
-                      />
-                      <label
-                        className="form-check-label"
-                        htmlFor={parkingOption}
-                      >
-                        {parkingOption}
-                      </label>
-                    </div>
+                    <option
+                      name="parking"
+                      value={`${parkingOption}`}
+                      key={`parking-${parkingOption}`}
+                    >
+                      {parkingOption}
+                    </option>
                   ))}
-                </div>
+                </select>
               </div>
 
-              <div className="row mt-2">
-                <label className="form-label">
-                  <strong>Location</strong>
+              <div className="mt-2 d-flex">
+                <label for="search-state" className="mt-2 me-2">
+                  <strong>State</strong>
                 </label>
-              </div>
-              <div className="form-floating row ms-1 me-1">
                 <select
                   id="search-state"
                   className="form-select"
@@ -254,56 +231,8 @@ function SearchOffCanvas(props) {
                     </option>
                   ))}
                 </select>
-                <label className="form-label" htmlFor="search-state">
-                  State
-                </label>
               </div>
 
-              <div className="row mt-2">
-                {cityOptions.length < 1 ? (
-                  <div>
-                    <strong>City</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <small className="text-muted">
-                      Select state to see all city options
-                    </small>
-                  </div>
-                ) : (
-                  <React.Fragment>
-                    <label className="form-label" htmlFor="search-city">
-                      <strong>City</strong>
-                    </label>
-                    <div
-                      style={{
-                        border: "1px solid #ced4da",
-                        borderRadius: "5px",
-                        paddingLeft: "1em",
-                        height: "10vh",
-                        overflow: "auto",
-                      }}
-                    >
-                      {cityOptions !== ""
-                        ? cityOptions.map((cityOption) => (
-                            <div className="form-check" key={cityOption.city}>
-                              <input
-                                className="form-check-input"
-                                type="checkbox"
-                                id={cityOption.city}
-                                name="city"
-                                value={cityOption.city}
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor={cityOption.city}
-                              >
-                                {cityOption.city}
-                              </label>
-                            </div>
-                          ))
-                        : null}
-                    </div>
-                  </React.Fragment>
-                )}
-              </div>
               <div className="row mt-2">
                 {areaOptions.length < 1 ? (
                   <div>
@@ -341,6 +270,51 @@ function SearchOffCanvas(props) {
                                 htmlFor={areaOption.area}
                               >
                                 {areaOption.area}
+                              </label>
+                            </div>
+                          ))
+                        : null}
+                    </div>
+                  </React.Fragment>
+                )}
+              </div>
+              <div className="row mt-2">
+                {cityOptions.length < 1 ? (
+                  <div>
+                    <strong>City</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <small className="text-muted">
+                      Select state to see all city options
+                    </small>
+                  </div>
+                ) : (
+                  <React.Fragment>
+                    <label className="form-label" htmlFor="search-city">
+                      <strong>City</strong>
+                    </label>
+                    <div
+                      style={{
+                        border: "1px solid #ced4da",
+                        borderRadius: "5px",
+                        paddingLeft: "1em",
+                        height: "10vh",
+                        overflow: "auto",
+                      }}
+                    >
+                      {cityOptions !== ""
+                        ? cityOptions.map((cityOption) => (
+                            <div className="form-check" key={cityOption.city}>
+                              <input
+                                className="form-check-input"
+                                type="checkbox"
+                                id={cityOption.city}
+                                name="city"
+                                value={cityOption.city}
+                              />
+                              <label
+                                className="form-check-label"
+                                htmlFor={cityOption.city}
+                              >
+                                {cityOption.city}
                               </label>
                             </div>
                           ))

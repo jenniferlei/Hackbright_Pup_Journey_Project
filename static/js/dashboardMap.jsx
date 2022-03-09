@@ -1,4 +1,5 @@
 const DashboardMap = React.forwardRef((props, ref) => {
+  const [allCheckIns, setAllCheckIns] = React.useState([]);
   const [myMap, setMyMap] = React.useState(null);
   const [mapHikes, setMapHikes] = React.useState([]);
   const [mapMarkers, setMapMarkers] = React.useState([]);
@@ -13,10 +14,15 @@ const DashboardMap = React.forwardRef((props, ref) => {
       .then((response) => response.json())
       .then((jsonResponse) => {
         const basicMap = new google.maps.Map(
-          document.querySelector("#dashboard-map")
+          document.querySelector("#dashboard-map"),
+          {
+            zoom: 8,
+          }
         );
 
         const { checkIns } = jsonResponse;
+        setAllCheckIns(checkIns);
+
         const markers = [];
         const uniqueHikes = [];
 
@@ -69,7 +75,7 @@ const DashboardMap = React.forwardRef((props, ref) => {
         }
 
         basicMap.fitBounds(bounds);
-        basicMap.setZoom(11);
+        basicMap.setZoom(8);
 
         setMapHikes(uniqueHikes);
         setMapMarkers(markers);
@@ -220,6 +226,7 @@ const DashboardMap = React.forwardRef((props, ref) => {
         .then((response) => response.json())
         .then((jsonResponse) => {
           const { checkIns } = jsonResponse;
+          setAllCheckIns(checkIns);
           const view = document.querySelector("input[name=map-view]:checked");
           if (view === null || view.value === "map-all-view") {
             createMarkers(checkIns);
@@ -259,12 +266,17 @@ const DashboardMap = React.forwardRef((props, ref) => {
     },
   }));
 
-  return <div id="dashboard-map" style={{ height: "100%" }}></div>;
+  return (
+    <React.Fragment>
+      <div id="dashboard-map" style={{ height: "100%" }}></div>
+    </React.Fragment>
+  );
 });
 
 const DashboardMapContainer = React.forwardRef((props, ref) => {
   const DashboardMapRef = React.useRef();
 
+  const [checkIns, setCheckIns] = React.useState([]);
   const [mapHeader, setMapHeader] = React.useState("Hikes Visited - All Time");
   const [mapCheckIns, setMapCheckIns] = React.useState([]);
 
@@ -273,7 +285,7 @@ const DashboardMapContainer = React.forwardRef((props, ref) => {
       .then((response) => response.json())
       .then((data) => {
         const { checkIns } = data;
-
+        setCheckIns(checkIns);
         countHikeOccurrences(checkIns);
       });
   }, []);
@@ -283,6 +295,7 @@ const DashboardMapContainer = React.forwardRef((props, ref) => {
       .then((response) => response.json())
       .then((jsonResponse) => {
         const { checkIns } = jsonResponse;
+        setCheckIns(checkIns);
         const view = document.querySelector("input[name=map-view]:checked");
         if (view === null || view.value === "map-all-view") {
           setMapHeader("Hikes Visited - All Time");
@@ -395,25 +408,37 @@ const DashboardMapContainer = React.forwardRef((props, ref) => {
         </div>
         <div className="col-md-6" style={{ height: "100%", overflowY: "auto" }}>
           <div className="card-body">
-            <ViewMonthYear
-              category="map"
-              getFunction={getMapData}
-              display="block"
-            />
-            <h5 className="mt-4 card-title">{mapHeader}</h5>
-            <p className="card-text">
-              {mapCheckIns.map((hikeCount) => (
-                <React.Fragment>
-                  <br></br>
-                  Hiked{" "}
-                  <a className="link-dark" href={`/hikes/${hikeCount.hike_id}`}>
-                    {hikeCount.hike_name}
-                  </a>{" "}
-                  {hikeCount.occurrence}{" "}
-                  {hikeCount.occurrence > 1 ? "times" : "time"}
-                </React.Fragment>
-              ))}
-            </p>
+            {checkIns.length > 0 ? (
+              <React.Fragment>
+                <ViewMonthYear
+                  category="map"
+                  getFunction={getMapData}
+                  display="block"
+                />
+                <h5 className="mt-4 card-title">{mapHeader}</h5>
+                <p className="card-text">
+                  {mapCheckIns.map((hikeCount) => (
+                    <React.Fragment>
+                      <br></br>
+                      Hiked{" "}
+                      <a
+                        className="link-dark"
+                        href={`/hikes/${hikeCount.hike_id}`}
+                      >
+                        {hikeCount.hike_name}
+                      </a>{" "}
+                      {hikeCount.occurrence}{" "}
+                      {hikeCount.occurrence > 1 ? "times" : "time"}
+                    </React.Fragment>
+                  ))}
+                </p>
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                You haven't checked into any hikes yet!
+                <br></br>Please add a check in to view your stats.
+              </React.Fragment>
+            )}
           </div>
         </div>
       </div>
