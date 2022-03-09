@@ -1,153 +1,8 @@
 "use strict";
 
-// Add Hike Comment
-function AddComment(props) {
-  const hike_id = document.querySelector("#hike_id").innerText;
-  const add_comment_url = `/hikes/${hike_id}/add-comment`;
-  const session_login = document.querySelector("#login").innerText;
-
-  const [comment_body, setCommentBody] = React.useState("");
-
-  // Add a POST request to hit the server /add-card endpoint and add a new card.
-
-  function addNewComment() {
-    fetch(add_comment_url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({ comment_body }),
-    }).then((response) => {
-      response.json().then((jsonResponse) => {
-        const commentAdded = jsonResponse.commentAdded; // same as commentAdded = jsonResponse.commentAdded
-        const comment_id = commentAdded.comment_id;
-        const full_name = commentAdded.user.full_name;
-        const user_id = commentAdded.user_id;
-        const date_created = commentAdded.date_created;
-        const date_edited = commentAdded.date_edited;
-        const edit = commentAdded.edit;
-        const session_login = jsonResponse.login;
-        const session_user_id = commentAdded.user_id;
-        const hike_name = commentAdded.hike.hike_name;
-        const hike_id = commentAdded.hike_id;
-        props.addComment(
-          comment_id,
-          comment_body,
-          full_name,
-          user_id,
-          date_created,
-          date_edited,
-          edit,
-          session_login,
-          session_user_id,
-          hike_name,
-          hike_id
-        );
-        // console.log(jsonResponse);
-      });
-    });
-  }
-
-  return (
-    <React.Fragment>
-      <div
-        className="modal fade"
-        id="modal-add-comment"
-        tabIndex="-1"
-        aria-labelledby="modal-add-comment-label"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="modal-add-comment-label">
-                Add a Comment
-              </h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div className="modal-body">
-              {session_login !== "True" ? (
-                <div>Please log in to add a comment.</div>
-              ) : (
-                <div>
-                  <div className="mb-3">
-                    <textarea
-                      name="body"
-                      rows="3"
-                      className="form-control"
-                      placeholder="Enter your comment here"
-                      value={comment_body}
-                      onChange={(event) => setCommentBody(event.target.value)}
-                      required
-                    ></textarea>
-                  </div>
-                  <div className="modal-footer">
-                    <button
-                      className="btn btn-sm btn-outline-dark btn-block"
-                      type="submit"
-                      data-bs-dismiss="modal"
-                      onClick={addNewComment}
-                    >
-                      Submit
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-secondary btn-block"
-                      data-bs-dismiss="modal"
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>
-  );
-}
-
 // Hike Details Comment container component
 const HikeDetailsCommentContainer = React.forwardRef((props, ref) => {
   const [comments, setComments] = React.useState([]);
-
-  function addComment(
-    comment_id,
-    comment_body,
-    full_name,
-    user_id,
-    date_created,
-    date_edited,
-    edit,
-    session_login,
-    session_user_id,
-    hike_name,
-    hike_id
-  ) {
-    const newComment = {
-      comment_id: comment_id,
-      body: comment_body,
-      user: { full_name: full_name },
-      user_id: user_id,
-      date_created: date_created,
-      date_edited: date_edited,
-      edit: edit,
-      session_login: session_login,
-      session_user_id: session_user_id,
-      hike: { hike_name: hike_name },
-      hike_id: hike_id,
-    }; // equivalent to { cardId: cardId, skill: skill, name: name, imgUrl: imgUrl }
-    const currentComments = [...comments]; // makes a copy of cards. similar to doing currentCards = cards[:] in Python
-    // [...currentCards, newCard] is an array containing all elements in currentCards followed by newCard
-    setComments([newComment, ...currentComments]);
-  }
 
   const hike_id = document.querySelector("#hike_id").innerText;
 
@@ -205,10 +60,6 @@ const HikeDetailsCommentContainer = React.forwardRef((props, ref) => {
   const allComments = [];
   const allEditComments = [];
 
-  // the following line will print out the value of cards
-  // pay attention to what it is initially and what it is when the component re-renders
-  // console.log(`comments: `, comments);
-
   for (const currentComment of comments) {
     const date_edited = new Date(currentComment.date_edited);
     const date_edited_formatted = `${date_edited.toLocaleDateString()} ${date_edited.toLocaleTimeString()}`;
@@ -227,8 +78,6 @@ const HikeDetailsCommentContainer = React.forwardRef((props, ref) => {
         date_edited={date_edited_formatted}
         edit={currentComment.edit}
         comment_body={currentComment.body}
-        session_login={document.querySelector("#login").innerText}
-        session_user_id={Number(document.querySelector("#user_id").innerText)}
         getComments={getComments}
       />
     );
@@ -253,7 +102,8 @@ const HikeDetailsCommentContainer = React.forwardRef((props, ref) => {
 
   return (
     <React.Fragment>
-      <AddComment addComment={addComment} />
+      <AddComment getComments={getComments} />
+      <AddHikeComment getComments={getComments} />
       {allEditComments}
       <div
         className="offcanvas offcanvas-end"
@@ -288,6 +138,16 @@ const HikeDetailsCommentContainer = React.forwardRef((props, ref) => {
                       href=""
                       data-bs-toggle="modal"
                       data-bs-target="#modal-add-comment"
+                    >
+                      add a comment
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      className="btn btn-sm dropdown-item"
+                      href=""
+                      data-bs-toggle="modal"
+                      data-bs-target="#modal-add-hike-comment"
                     >
                       add a comment for this hike
                     </a>
@@ -1175,7 +1035,7 @@ function HikeDetails(props) {
                   <div className="dropup">
                     <a
                       href=""
-                      className="btn"
+                      className="btn nav-link"
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
                     >
@@ -1204,7 +1064,7 @@ function HikeDetails(props) {
                           className="btn btn-sm dropdown-item"
                           href=""
                           data-bs-toggle="modal"
-                          data-bs-target="#modal-add-check-in"
+                          data-bs-target="#modal-add-hike-check-in"
                           // onClick = {}
                         >
                           <i className="bi bi-check-circle"></i> check in to
@@ -1216,7 +1076,7 @@ function HikeDetails(props) {
                           className="btn btn-sm dropdown-item"
                           href=""
                           data-bs-toggle="modal"
-                          data-bs-target="#modal-add-comment"
+                          data-bs-target="#modal-add-hike-comment"
                         >
                           <i className="bi bi-chat-text"></i> comment this hike
                         </a>

@@ -218,6 +218,7 @@ const AllHikesCommentContainer = React.forwardRef((props, ref) => {
 
   return (
     <React.Fragment>
+      <AddComment getComments={getComments} />
       {allEditComments}
       <div
         className="offcanvas offcanvas-end"
@@ -233,6 +234,32 @@ const AllHikesCommentContainer = React.forwardRef((props, ref) => {
           <h3 className="offcanvas-title" id="CommentsLabel">
             Your Comments For All Hikes
           </h3>
+          {session_login === "True" ? (
+            <div className="d-flex float-end">
+              <div className="btn-group mt-1">
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-dark dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  actions <i className="bi bi-chat-text"></i>
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <a
+                      className="btn btn-sm dropdown-item"
+                      href=""
+                      data-bs-toggle="modal"
+                      data-bs-target="#modal-add-comment"
+                    >
+                      add a comment
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          ) : null}
         </div>
 
         <div className="offcanvas-body">

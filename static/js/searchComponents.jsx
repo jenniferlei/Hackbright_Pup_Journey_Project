@@ -153,7 +153,7 @@ function SearchOffCanvas(props) {
                 </div>
               </div>
 
-              <div className="row g-2 mt-2">
+              <div className="row g-2">
                 <div className="col" style={{ verticalAlign: "middle" }}>
                   <label className="form-label mt-3">
                     <strong>Length (miles)</strong>
@@ -196,11 +196,11 @@ function SearchOffCanvas(props) {
                   id="search-parking"
                   className="form-select"
                   aria-label="search-parking"
+                  name="parking"
                 >
                   <option value=""></option>
                   {parkingOptions.map((parkingOption) => (
                     <option
-                      name="parking"
                       value={`${parkingOption}`}
                       key={`parking-${parkingOption}`}
                     >
@@ -218,12 +218,12 @@ function SearchOffCanvas(props) {
                   id="search-state"
                   className="form-select"
                   aria-label="search-state"
+                  name="state"
                   onChange={handleStateLocationUpdate}
                 >
                   <option value=""></option>
                   {stateOptions.map((stateOption) => (
                     <option
-                      name="state"
                       value={`${stateOption}`}
                       key={`state-${stateOption}`}
                     >

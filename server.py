@@ -40,31 +40,26 @@ def dashboard():
 
     if "user_email" in session:
         user = crud_users.get_user_by_email(session["user_email"])
-        pets = crud_pets.get_pets_by_user_id(user.user_id)
-        hikes = crud_hikes.get_hikes()
-        check_ins = crud_check_ins.get_check_ins_by_user_id(user.user_id)
-        years = list(set(check_in.date_hiked.year
-                            for check_in in check_ins))
-        month_nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-        current_date = datetime.now()
-        current_month_index = current_date.month
-        month_nums_sorted = month_nums[current_month_index-1:] + month_nums[0: current_month_index-1]
-        months_abbr = month_abbr[current_month_index:] + month_abbr[1:current_month_index]
-        months = zip(month_nums_sorted, months_abbr)
+        # pets = crud_pets.get_pets_by_user_id(user.user_id)
+        # hikes = crud_hikes.get_hikes()
+        # check_ins = crud_check_ins.get_check_ins_by_user_id(user.user_id)
+        # years = list(set(check_in.date_hiked.year
+        #                     for check_in in check_ins))
+        # month_nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        # current_date = datetime.now()
+        # current_month_index = current_date.month
+        # month_nums_sorted = month_nums[current_month_index-1:] + month_nums[0: current_month_index-1]
+        # months_abbr = month_abbr[current_month_index:] + month_abbr[1:current_month_index]
+        # months = zip(month_nums_sorted, months_abbr)
 
         # month = datetime.now().month
         
-        bookmarks_lists = crud_bookmarks_lists.get_bookmarks_lists_by_user_id(
-            user.user_id
-        )
+        # bookmarks_lists = crud_bookmarks_lists.get_bookmarks_lists_by_user_id(
+        #     user.user_id
+        # )
 
         return render_template("dashboard.html",
-                                pets=pets,
-                                hikes=hikes,
-                                check_ins=check_ins,
-                                months=months,
-                                years=years,
-                                bookmarks_lists=bookmarks_lists,
+                                user=user,
                                 GOOGLE_KEY=GOOGLE_KEY)
     else:
         flash("You must log in to view your dashboard.")
@@ -593,13 +588,35 @@ def remove_hike(bookmarks_list_id, hike_id):
 
 
 @app.route("/hikes/<hike_id>/add-comment", methods=["POST"])
-def add_comment(hike_id):
+def add_hike_comment(hike_id):
     """Add a comment for a hike"""
     logged_in_email = session.get("user_email")
 
     user = crud_users.get_user_by_email(logged_in_email)
     hike = crud_hikes.get_hike_by_id(hike_id)
     comment_body = request.get_json().get("comment_body")
+
+    comment = crud_comments.create_comment(
+        user, hike, comment_body, date_created=datetime.now(), edit=False, date_edited=None
+    )
+    db.session.add(comment)
+    db.session.commit()
+
+    comment_schema = CommentSchema()
+    comment_json = comment_schema.dump(comment)
+
+    return jsonify({"commentAdded": comment_json, "login": True})
+
+
+@app.route("/add-comment", methods=["POST"])
+def add_comment():
+    """Add a comment for a hike"""
+    logged_in_email = session.get("user_email")
+
+    user = crud_users.get_user_by_email(logged_in_email)
+    hike_id = request.get_json().get("hikeId")
+    hike = crud_hikes.get_hike_by_id(hike_id)
+    comment_body = request.get_json().get("commentBody")
 
     comment = crud_comments.create_comment(
         user, hike, comment_body, date_created=datetime.now(), edit=False, date_edited=None

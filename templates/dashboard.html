@@ -14,6 +14,7 @@ Chart.js adapter #}
 
 {% if "login" in session %}
 <div hidden id="login">True</div>
+<div hidden id="user_id">{{ user.user_id }}</div>
 {% else %}
 <div hidden id="login">False</div>
 {% endif %} {% endblock %} {% block js %}
@@ -23,10 +24,10 @@ Chart.js adapter #}
   src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_KEY }}"
 ></script>
 <script src="/static/js/petProfileComponents.jsx" type="text/jsx"></script>
+<script src="/static/js/commentComponents.jsx" type="text/jsx"></script>
 <script src="/static/js/checkInComponents.jsx" type="text/jsx"></script>
 <script src="/static/js/bookmarkComponents.jsx" type="text/jsx"></script>
 <script src="/static/js/otherComponents.jsx" type="text/jsx"></script>
-<script src="/static/js/dashboardCheckIn.jsx" type="text/jsx"></script>
 <script src="/static/js/dashboardMap.jsx" type="text/jsx"></script>
 <script src="/static/js/dashboardGraph.jsx" type="text/jsx"></script>
 <script src="/static/js/searchComponents.jsx" type="text/jsx"></script>

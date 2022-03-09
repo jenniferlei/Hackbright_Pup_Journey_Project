@@ -172,3 +172,263 @@ function EditComment(props) {
     </React.Fragment>
   );
 }
+
+// Add Hike Comment
+function AddHikeComment(props) {
+  const hike_id = document.querySelector("#hike_id").innerText;
+  const add_comment_url = `/hikes/${hike_id}/add-comment`;
+  const session_login = document.querySelector("#login").innerText;
+
+  const [comment_body, setCommentBody] = React.useState("");
+
+  function validateComment() {
+    const alertText = "Please complete the following:\n• input comment";
+
+    if (comment_body === "") {
+      alert(alertText);
+    } else {
+      addNewComment();
+    }
+  }
+
+  // Add a POST request to hit the server /add-card endpoint and add a new card.
+
+  function addNewComment() {
+    fetch(add_comment_url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ comment_body }),
+    }).then((response) => {
+      response.json().then((jsonResponse) => {
+        const commentAdded = jsonResponse.commentAdded; // same as commentAdded = jsonResponse.commentAdded
+        const comment_id = commentAdded.comment_id;
+        const full_name = commentAdded.user.full_name;
+        const user_id = commentAdded.user_id;
+        const date_created = commentAdded.date_created;
+        const date_edited = commentAdded.date_edited;
+        const edit = commentAdded.edit;
+        const hike_name = commentAdded.hike.hike_name;
+        const hike_id = commentAdded.hike_id;
+        props.getComments();
+        // console.log(jsonResponse);
+      });
+    });
+  }
+
+  return (
+    <React.Fragment>
+      <div
+        className="modal fade"
+        id="modal-add-hike-comment"
+        tabIndex="-1"
+        aria-labelledby="modal-add-hike-comment-label"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="modal-add-hike-comment-label">
+                Add a Comment
+              </h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              {session_login !== "True" ? (
+                <div>Please log in to add a comment.</div>
+              ) : (
+                <div>
+                  <div className="mb-3">
+                    <textarea
+                      name="body"
+                      rows="3"
+                      className="form-control"
+                      placeholder="Enter your comment here"
+                      value={comment_body}
+                      onChange={(event) => setCommentBody(event.target.value)}
+                      required
+                    ></textarea>
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      className="btn btn-sm btn-outline-dark btn-block"
+                      type="submit"
+                      data-bs-dismiss="modal"
+                      onClick={validateComment}
+                    >
+                      Submit
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-secondary btn-block"
+                      data-bs-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </React.Fragment>
+  );
+}
+
+// Add Hike Comment
+function AddComment(props) {
+  const session_login = document.querySelector("#login").innerText;
+
+  const [allHikeOptions, setHikeOptions] = React.useState([]);
+  const [commentBody, setCommentBody] = React.useState("");
+  const [hikeId, setHikeId] = React.useState("");
+
+  function getHikeOptions() {
+    fetch("/all_hikes.json")
+      .then((response) => response.json())
+      .then((jsonResponse) => {
+        const { hikes } = jsonResponse;
+        setHikeOptions(hikes);
+      });
+  }
+
+  if (session_login === "True") {
+    React.useEffect(() => {
+      getHikeOptions();
+    }, []);
+  }
+
+  // Validate form - need to make sure to validate each required item
+  function validateComment() {
+    const alertText = "Please complete the following:";
+    const hikeAlert = "\n• select a hike";
+    const commentAlert = "\n• input comment";
+
+    if (hikeId === "" || commentBody === "") {
+      let completeAlertText = [alertText];
+      if (hikeId === "") {
+        completeAlertText.push(hikeAlert);
+      }
+      if (commentBody === "") {
+        completeAlertText.push(commentAlert);
+      }
+      alert(completeAlertText.join(""));
+    } else {
+      addNewComment();
+    }
+  }
+
+  function addNewComment() {
+    fetch("/add-comment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ hikeId, commentBody }),
+    }).then((response) => {
+      response.json().then((jsonResponse) => {
+        const commentAdded = jsonResponse.commentAdded; // same as commentAdded = jsonResponse.commentAdded
+        const commentId = commentAdded.comment_id;
+        const fullName = commentAdded.user.full_name;
+        const userId = commentAdded.user_id;
+        const dateCreated = commentAdded.date_created;
+        const dateEdited = commentAdded.date_edited;
+        const edit = commentAdded.edit;
+        const hikeName = commentAdded.hike.hike_name;
+        const hikeId = commentAdded.hike_id;
+        props.getComments();
+        // console.log(jsonResponse);
+      });
+    });
+  }
+
+  return (
+    <React.Fragment>
+      <div
+        className="modal fade"
+        id="modal-add-comment"
+        tabIndex="-1"
+        aria-labelledby="modal-add-comment-label"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="modal-add-comment-label">
+                Add a Comment
+              </h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              {session_login !== "True" ? (
+                <div>Please log in to add a comment.</div>
+              ) : (
+                <div>
+                  <div className="mb-3">
+                    <label>Hike</label>&nbsp;
+                    <small className="text-muted">*</small>
+                    <select
+                      id="hike-comment"
+                      name="hike-comment"
+                      className="form-select"
+                      aria-label="hike-comment"
+                      onChange={(event) => setHikeId(event.target.value)}
+                    >
+                      <option value=""></option>
+                      {allHikeOptions.map((hike) => (
+                        <option value={hike.hike_id} key={hike.hike_id}>
+                          {hike.hike_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="mb-3">
+                    <textarea
+                      name="body"
+                      rows="3"
+                      className="form-control"
+                      placeholder="Enter your comment here"
+                      value={commentBody}
+                      onChange={(event) => setCommentBody(event.target.value)}
+                    ></textarea>
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      className="btn btn-sm btn-outline-dark btn-block"
+                      type="submit"
+                      data-bs-dismiss="modal"
+                      onClick={validateComment}
+                    >
+                      Submit
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-secondary btn-block"
+                      data-bs-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </React.Fragment>
+  );
+}

@@ -16,7 +16,7 @@ const DashboardMap = React.forwardRef((props, ref) => {
         const basicMap = new google.maps.Map(
           document.querySelector("#dashboard-map"),
           {
-            zoom: 8,
+            zoom: 4,
           }
         );
 
@@ -75,84 +75,13 @@ const DashboardMap = React.forwardRef((props, ref) => {
         }
 
         basicMap.fitBounds(bounds);
-        basicMap.setZoom(8);
+        basicMap.setZoom(5);
 
         setMapHikes(uniqueHikes);
         setMapMarkers(markers);
         setMapBounds(bounds);
         setMyMap(basicMap);
       });
-  }
-
-  function createMarkers(checkIns) {
-    const markers = [];
-    const uniqueHikes = [];
-
-    for (const currentCheckIn of checkIns) {
-      const { hike_name, latitude, longitude } = currentCheckIn.hike;
-      const hikeId = currentCheckIn.hike_id;
-      if (!uniqueHikes.includes(hikeId)) {
-        uniqueHikes.push(hikeId);
-        markers.push(
-          new google.maps.Marker({
-            position: {
-              lat: Number(latitude),
-              lng: Number(longitude),
-            },
-            title: hike_name,
-            map: basicMap,
-            icon: {
-              // custom icon
-              url: "/static/img/marker.svg",
-              scaledSize: {
-                width: 30,
-                height: 30,
-              },
-            },
-          })
-        );
-      }
-    }
-
-    const bounds = new google.maps.LatLngBounds();
-
-    for (const marker of markers) {
-      bounds.extend(marker.position);
-      const markerInfo = `
-          <h6>${marker.title}</h6>
-          <p>
-            Located at: <code>${marker.position.lat()}</code>,
-            <code>${marker.position.lng()}</code>
-          </p>
-        `;
-
-      const infoWindow = new google.maps.InfoWindow({
-        content: markerInfo,
-        maxWidth: 200,
-      });
-
-      marker.addListener("click", () => {
-        infoWindow.open(basicMap, marker);
-      });
-    }
-
-    basicMap.fitBounds(bounds);
-    basicMap.setZoom(8);
-
-    setMapHikes(uniqueHikes);
-    setMapMarkers(markers);
-    setMapBounds(bounds);
-  }
-
-  function filterCheckInsByDate(checkIns, startDate, endDate) {
-    let filteredCheckIns = [];
-    for (const checkIn of checkIns) {
-      const dateHiked = new Date(checkIn["date_hiked"]);
-      if (dateHiked > startDate && dateHiked < endDate) {
-        filteredCheckIns.push(checkIn);
-      }
-    }
-    return filteredCheckIns;
   }
 
   function createMarkers(checkIns) {
@@ -208,7 +137,81 @@ const DashboardMap = React.forwardRef((props, ref) => {
     }
 
     myMap.fitBounds(bounds);
-    myMap.setZoom(8);
+    myMap.setZoom(5);
+
+    setMapHikes(uniqueHikes);
+    setMapMarkers(markers);
+    setMapBounds(bounds);
+  }
+
+  function filterCheckInsByDate(checkIns, startDate, endDate) {
+    let filteredCheckIns = [];
+
+    for (const checkIn of checkIns) {
+      const dateHiked = new Date(checkIn["date_hiked"]);
+      if (dateHiked > startDate && dateHiked < endDate) {
+        filteredCheckIns.push(checkIn);
+      }
+    }
+    return filteredCheckIns;
+  }
+
+  function createMarkers(checkIns) {
+    const markers = [];
+    const uniqueHikes = [];
+
+    for (const currentCheckIn of checkIns) {
+      const { hike_name, latitude, longitude } = currentCheckIn.hike;
+      const hikeId = currentCheckIn.hike_id;
+      if (!uniqueHikes.includes(hikeId)) {
+        uniqueHikes.push(hikeId);
+        markers.push(
+          new google.maps.Marker({
+            position: {
+              lat: Number(latitude),
+              lng: Number(longitude),
+            },
+            title: hike_name,
+            map: myMap,
+            icon: {
+              // custom icon
+              url: "/static/img/marker.svg",
+              scaledSize: {
+                width: 30,
+                height: 30,
+              },
+            },
+          })
+        );
+      }
+    }
+
+    myMap.setZoom(5);
+
+    const bounds = new google.maps.LatLngBounds();
+
+    for (const marker of markers) {
+      bounds.extend(marker.position);
+      const markerInfo = `
+          <h6>${marker.title}</h6>
+          <p>
+            Located at: <code>${marker.position.lat()}</code>,
+            <code>${marker.position.lng()}</code>
+          </p>
+        `;
+
+      const infoWindow = new google.maps.InfoWindow({
+        content: markerInfo,
+        maxWidth: 200,
+      });
+
+      marker.addListener("click", () => {
+        infoWindow.open(myMap, marker);
+      });
+    }
+
+    myMap.fitBounds(bounds);
+    myMap.setZoom(5);
 
     setMapHikes(uniqueHikes);
     setMapMarkers(markers);
@@ -263,6 +266,8 @@ const DashboardMap = React.forwardRef((props, ref) => {
             createMarkers(filteredCheckIns);
           }
         });
+
+      myMap.setZoom(5);
     },
   }));
 

@@ -314,23 +314,27 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
   const DashboardMapContainerRef = React.useRef();
   const [checkInsDisplay, setCheckInsDisplay] = React.useState(false);
   const [bookmarksDisplay, setBookmarksDisplay] = React.useState(false);
+  const [commentsDisplay, setCommentsDisplay] = React.useState(false);
 
   React.useImperativeHandle(ref, () => ({
     displayMap() {
       setCheckInsDisplay(false);
       setBookmarksDisplay(false);
+      setCommentsDisplay(false);
       document.getElementById("display-map").style.display = "block";
       document.getElementById("display-graph").style.display = "none";
     },
     displayGraph() {
       setCheckInsDisplay(false);
       setBookmarksDisplay(false);
+      setCommentsDisplay(false);
       document.getElementById("display-map").style.display = "none";
       document.getElementById("display-graph").style.display = "block";
     },
     displayCheckIns() {
       setCheckInsDisplay(true);
       setBookmarksDisplay(false);
+      setCommentsDisplay(false);
       getCheckIns();
       document.getElementById("display-map").style.display = "none";
       document.getElementById("display-graph").style.display = "none";
@@ -338,7 +342,16 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
     displayBookmarks() {
       setCheckInsDisplay(false);
       setBookmarksDisplay(true);
+      setCommentsDisplay(false);
       getBookmarksLists();
+      document.getElementById("display-map").style.display = "none";
+      document.getElementById("display-graph").style.display = "none";
+    },
+    displayComments() {
+      setCheckInsDisplay(false);
+      setBookmarksDisplay(false);
+      setCommentsDisplay(true);
+      getComments();
       document.getElementById("display-map").style.display = "none";
       document.getElementById("display-graph").style.display = "none";
     },
@@ -346,13 +359,14 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
 
   const [checkIns, setCheckIns] = React.useState([]);
   const [bookmarksLists, setBookmarksLists] = React.useState([]);
+  const [comments, setComments] = React.useState([]);
 
   function refreshProfiles() {
     props.parentGetPetProfiles();
   }
 
   function getCheckIns() {
-    fetch(`/user_check_ins.json`)
+    fetch("/user_check_ins.json")
       .then((response) => response.json())
       .then((data) => {
         setCheckIns(data.checkIns);
@@ -364,6 +378,14 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
       .then((response) => response.json())
       .then((data) => {
         setBookmarksLists(data.bookmarksLists);
+      });
+  }
+
+  function getComments() {
+    fetch("/user_comments.json")
+      .then((response) => response.json())
+      .then((data) => {
+        setComments(data.comments);
       });
   }
 
@@ -459,14 +481,57 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
     );
   }
 
+  const allComments = [];
+  const allEditComments = [];
+
+  for (const currentComment of comments) {
+    const date_edited = new Date(currentComment.date_edited);
+    const date_edited_formatted = `${date_edited.toLocaleDateString()} ${date_edited.toLocaleTimeString()}`;
+    const date_created = new Date(currentComment.date_created);
+    const date_created_formatted = `${date_created.toLocaleDateString()} ${date_created.toLocaleTimeString()}`;
+
+    allComments.push(
+      <Comment
+        key={currentComment.comment_id}
+        hike_id={currentComment.hike_id}
+        hike_name={currentComment.hike.hike_name}
+        comment_id={currentComment.comment_id}
+        full_name={currentComment.user.full_name}
+        user_id={currentComment.user_id}
+        date_created={date_created_formatted}
+        date_edited={date_edited_formatted}
+        edit={currentComment.edit}
+        comment_body={currentComment.body}
+        getComments={getComments}
+      />
+    );
+
+    allEditComments.push(
+      <EditComment
+        key={currentComment.comment_id}
+        hike_id={currentComment.hike_id}
+        comment_id={currentComment.comment_id}
+        full_name={currentComment.user.full_name}
+        user_id={currentComment.user_id}
+        date_created={date_created_formatted}
+        date_edited={date_edited_formatted}
+        edit={currentComment.edit}
+        comment_body={currentComment.body}
+        getComments={getComments}
+      />
+    );
+  }
+
   return (
     <React.Fragment>
+      <AddComment getComments={getComments} />
       <AddCheckIn
         getCheckIns={getCheckIns}
         refreshProfiles={refreshProfiles}
         parentGetMapData={parentGetMapData}
         parentGetGraphData={parentGetGraphData}
       />
+      {allEditComments}
       {allEditCheckIns}
       {allRenameBookmarksLists}
       {allAddMultHikesToExistingList}
@@ -519,6 +584,21 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
 
             <div style={{ height: "100%", overflowY: "auto" }}>
               <div>{allBookmarksLists}</div>
+            </div>
+          </React.Fragment>
+        ) : null}
+        {commentsDisplay === true ? (
+          <React.Fragment>
+            <DashboardHeader
+              headerLabel="CommentsLabel"
+              title="Your Comments For All Hikes"
+              modalTarget="#modal-add-comment"
+              icon="bi bi-chat-text"
+              modalText="add a comment"
+            />
+
+            <div style={{ height: "100%", overflowY: "auto" }}>
+              <div>{allComments}</div>
             </div>
           </React.Fragment>
         ) : null}
@@ -612,6 +692,18 @@ function SideBarMenu(props) {
               <i className="bi bi-bookmark-star"></i>
             </a>
           </li>
+          <li>
+            <a
+              href="#"
+              className="nav-link py-3 border-bottom"
+              title="Comments"
+              data-bs-toggle="tooltip"
+              data-bs-placement="right"
+              onClick={props.parentDisplayComments}
+            >
+              <i className="bi bi-chat-text"></i>
+            </a>
+          </li>
         </ul>
       </div>
     </React.Fragment>
@@ -638,6 +730,9 @@ function DashboardEverythingContainer(props) {
   function parentDisplayBookmarks() {
     DashboardMainContainerRef.current.displayBookmarks();
   }
+  function parentDisplayComments() {
+    DashboardMainContainerRef.current.displayComments();
+  }
 
   return (
     <React.Fragment>
@@ -650,6 +745,7 @@ function DashboardEverythingContainer(props) {
         parentDisplayGraph={parentDisplayGraph}
         parentDisplayCheckIns={parentDisplayCheckIns}
         parentDisplayBookmarks={parentDisplayBookmarks}
+        parentDisplayComments={parentDisplayComments}
       />
       <SearchOffCanvas />
       <DashboardPetProfileContainer ref={DashboardPetProfileContainerRef} />
