@@ -29,17 +29,19 @@ function Comment(props) {
     <React.Fragment>
       <div className="card ms-4 mb-1">
         <div className="card-header">
+          <div className="flex-truncate-text">
+            {props.full_name}&nbsp;&nbsp;<i className="bi bi-chat-text"></i>
+            &nbsp;&nbsp;
+            <small>
+              <a className="link-dark" href={`/hikes/${props.hike_id}`}>
+                {props.hike_name}
+              </a>
+            </small>
+          </div>
+
           <div className="clearfix">
             <div className="float-start">
-              {props.full_name}&nbsp;<i className="bi bi-chat-text"></i>
-              &nbsp;
-              <small>
-                <a className="link-dark" href={`/hikes/${props.hike_id}`}>
-                  {props.hike_name}
-                </a>
-              </small>
               <small className="text-muted">
-                <br></br>
                 posted {props.date_created}
                 {props.edit == true ? (
                   <span> (edited {props.date_edited})</span>

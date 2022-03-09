@@ -1,15 +1,14 @@
 import unittest
 
-# from party import app
-# from model import db, example_data, connect_to_db
+from model import connect_to_db, db, ma, app, User, CheckIn, Pet, Hike, Comment, PetSchema, CheckInSchema, BookmarksListSchema, HikeBookmarksListSchema, HikeSchema, CommentSchema
 
 
-# class PartyTests(unittest.TestCase):
-#     """Tests for my party site."""
+class PupJourneyTests(unittest.TestCase):
+    """Tests for pup journey site."""
 
-#     def setUp(self):
-#         self.client = app.test_client()
-#         app.config['TESTING'] = True
+    def setUp(self):
+        self.client = app.test_client()
+        app.config['TESTING'] = True
 
 #     def test_homepage(self):
 #         result = self.client.get("/")

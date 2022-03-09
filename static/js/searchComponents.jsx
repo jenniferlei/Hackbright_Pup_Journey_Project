@@ -73,16 +73,20 @@ function SearchOffCanvas(props) {
         <div className="offcanvas-body" style={{ position: "relative" }}>
           <div style={{ padding: "0.5em" }}>
             <form method="GET" action="/hikes/advanced_search">
-              <div className="form-floating row ms-1 me-1">
-                <input
-                  id="search-keyword"
-                  className="form-control"
-                  type="text"
-                  name="keyword"
-                ></input>
-                <label className="form-label" htmlFor="search-keyword">
-                  <small className="form-text text-muted">Keyword</small>
-                </label>
+              <div className="row">
+                <div className="d-flex">
+                  <label className="mt-2 me-2" htmlFor="search-keyword">
+                    <strong>Keyword</strong>
+                  </label>
+                  <div className="ms-1 me-1">
+                    <input
+                      id="search-keyword"
+                      className="form-control"
+                      type="text"
+                      name="keyword"
+                    ></input>
+                  </div>
+                </div>
               </div>
 
               <div className="row mt-2">
@@ -108,49 +112,6 @@ function SearchOffCanvas(props) {
                     </label>
                   </div>
                 ))}
-              </div>
-
-              <div className="row mt-2">
-                <div className="col">
-                  <label className="form-label">
-                    <strong>Leash Rule</strong>
-                  </label>
-                </div>
-                <div className="col">
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      name="leash_rules"
-                      value="On leash"
-                      id="search-on-leash"
-                    />
-                    <label
-                      className="form-check-label"
-                      htmlFor="search-on-leash"
-                    >
-                      on leash
-                    </label>
-                  </div>
-                </div>
-
-                <div className="col">
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      name="leash_rules"
-                      value="Off leash"
-                      id="search-off-leash"
-                    />
-                    <label
-                      className="form-check-label"
-                      htmlFor="search-off-leash"
-                    >
-                      off leash
-                    </label>
-                  </div>
-                </div>
               </div>
 
               <div className="row g-2">
@@ -186,28 +147,6 @@ function SearchOffCanvas(props) {
                     <small className="form-text text-muted">max</small>
                   </label>
                 </div>
-              </div>
-
-              <div className="mt-2 d-flex">
-                <label for="search-parking" className="mt-2 me-2">
-                  <strong>Parking</strong>
-                </label>
-                <select
-                  id="search-parking"
-                  className="form-select"
-                  aria-label="search-parking"
-                  name="parking"
-                >
-                  <option value=""></option>
-                  {parkingOptions.map((parkingOption) => (
-                    <option
-                      value={`${parkingOption}`}
-                      key={`parking-${parkingOption}`}
-                    >
-                      {parkingOption}
-                    </option>
-                  ))}
-                </select>
               </div>
 
               <div className="mt-2 d-flex">
@@ -322,6 +261,71 @@ function SearchOffCanvas(props) {
                     </div>
                   </React.Fragment>
                 )}
+              </div>
+
+              <div className="row mt-2">
+                <div className="col">
+                  <label className="form-label">
+                    <strong>Leash Rule</strong>
+                  </label>
+                </div>
+                <div className="col">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      name="leash_rules"
+                      value="On leash"
+                      id="search-on-leash"
+                    />
+                    <label
+                      className="form-check-label"
+                      htmlFor="search-on-leash"
+                    >
+                      on leash
+                    </label>
+                  </div>
+                </div>
+
+                <div className="col">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      name="leash_rules"
+                      value="Off leash"
+                      id="search-off-leash"
+                    />
+                    <label
+                      className="form-check-label"
+                      htmlFor="search-off-leash"
+                    >
+                      off leash
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="d-flex">
+                <label for="search-parking" className="mt-2 me-2">
+                  <strong>Parking</strong>
+                </label>
+                <select
+                  id="search-parking"
+                  className="form-select"
+                  aria-label="search-parking"
+                  name="parking"
+                >
+                  <option value=""></option>
+                  {parkingOptions.map((parkingOption) => (
+                    <option
+                      value={`${parkingOption}`}
+                      key={`parking-${parkingOption}`}
+                    >
+                      {parkingOption}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="row ms-1 me-1 mt-4">

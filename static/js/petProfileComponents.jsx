@@ -705,12 +705,11 @@ const DashboardPetProfileContainer = React.forwardRef((props, ref) => {
       <AddPetProfile getPetProfiles={getPetProfiles} />
       {allEditPetProfiles}
       <div className="side-bar-profiles d-flex flex-column flex-shrink-0 bg-light">
-        <div className="header clearfix">
-          <h3
-            className="title float-start"
-            id="ProfileLabel"
-            style={{ marginLeft: "1em" }}
-          >
+        <div
+          className="header clearfix"
+          style={{ paddingLeft: "1em", paddingRight: "1em" }}
+        >
+          <h3 className="title float-start" id="ProfileLabel">
             Pet Profile
           </h3>
           <a
@@ -728,7 +727,7 @@ const DashboardPetProfileContainer = React.forwardRef((props, ref) => {
             add a pet profile
           </a>
         </div>
-        <div style={{ padding: "0.5em" }}>{allPetProfiles}</div>
+        <div style={{ paddingRight: "1em" }}>{allPetProfiles}</div>
       </div>
     </React.Fragment>
   );

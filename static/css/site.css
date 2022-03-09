@@ -230,3 +230,10 @@ ul.no-bullets {
   top: 70px;
   left: 90px;
 }
+
+.flex-truncate-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
