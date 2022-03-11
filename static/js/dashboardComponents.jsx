@@ -611,97 +611,81 @@ function SideBarMenu(props) {
   return (
     <React.Fragment>
       <div className="side-bar-menu d-flex flex-column flex-shrink-0 bg-light">
-        <a
-          href="/"
-          className="d-block p-3 link-dark text-decoration-none"
-          title=""
-          data-bs-toggle="tooltip"
-          data-bs-placement="right"
-          data-bs-original-title="Icon-only"
-        >
-          <svg className="bi" width="40" height="32"></svg>
-          <span className="visually-hidden">Icon-only</span>
-        </a>
         <ul className="nav nav-pills nav-flush flex-column mb-auto text-center">
           <li className="nav-item">
             <a
-              href="#"
-              className="nav-link  py-3 border-bottom"
+              href="/"
+              className="btn btn-dark sidebar-btn"
               aria-current="page"
               title=""
               data-bs-toggle="tooltip"
               data-bs-placement="right"
               data-bs-original-title="Home"
+              style={{ marginTop: "50px" }}
             >
-              <svg
-                className="bi"
-                width="24"
-                height="24"
-                role="img"
-                aria-label="Home"
-              ></svg>
+              <i class="bi bi-house-fill"></i>
             </a>
           </li>
           <li>
             <a
               href="#"
-              className="nav-link py-3 border-bottom"
+              className="btn btn-light sidebar-btn"
               title="Where We've Been"
               data-bs-custom-className="custom-tooltip"
               data-bs-toggle="tooltip"
               data-bs-placement="right"
               onClick={props.parentDisplayMap}
             >
-              <i className="bi bi-geo"></i>
+              <i className="sidebar-icon bi bi-geo"></i>
             </a>
           </li>
           <li>
             <a
               href="#"
-              className="nav-link py-3 border-bottom"
+              className="btn btn-light sidebar-btn"
               title="How Far We've Traveled"
               data-bs-custom-className="custom-tooltip"
               data-bs-toggle="tooltip"
               data-bs-placement="right"
               onClick={props.parentDisplayGraph}
             >
-              <i className="bi bi-graph-up"></i>
+              <i className="sidebar-icon bi bi-graph-up"></i>
             </a>
           </li>
           <li>
             <a
               href="#"
-              className="nav-link py-3 border-bottom"
+              className="btn btn-light sidebar-btn"
               title="Check Ins"
               data-bs-toggle="tooltip"
               data-bs-placement="right"
               onClick={props.parentDisplayCheckIns}
             >
-              <i className="bi bi-check-circle"></i>
+              <i className="sidebar-icon bi bi-check-circle"></i>
             </a>
           </li>
           <li>
             <a
               href="#"
-              className="nav-link py-3 border-bottom"
+              className="btn btn-light sidebar-btn"
               title="Bookmarks"
               data-bs-toggle="tooltip"
               data-bs-placement="right"
               onClick={props.parentDisplayBookmarks}
             >
-              <i className="bi bi-bookmark-star"></i>
+              <i className="sidebar-icon bi bi-bookmark-star"></i>
             </a>
           </li>
           <li>
             <a
               href="#"
-              className="nav-link py-3 border-bottom"
+              className="btn btn-light sidebar-btn"
               title="Comments"
               data-bs-toggle="tooltip"
               data-bs-placement="right"
               onClick={props.parentDisplayComments}
             >
-              <i className="bi bi-chat-text"></i>
+              <i className="sidebar-icon bi bi-chat-text"></i>
             </a>
           </li>
         </ul>

@@ -20,6 +20,8 @@ const DashboardMap = React.forwardRef((props, ref) => {
           }
         );
 
+        basicMap.setZoom(5);
+
         const { checkIns } = jsonResponse;
         setAllCheckIns(checkIns);
 
@@ -51,6 +53,7 @@ const DashboardMap = React.forwardRef((props, ref) => {
             );
           }
         }
+        basicMap.setZoom(5);
 
         const bounds = new google.maps.LatLngBounds();
 

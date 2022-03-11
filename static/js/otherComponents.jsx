@@ -24,3 +24,15 @@ function FooterNavItemOffCanvas(props) {
     </li>
   );
 }
+
+function NoComponentsWarning(props) {
+  return (
+    <React.Fragment>
+      <div id={`no-component-warning-${props.component}`} style={{ display: "none" }}>
+        You haven't {props.missingAction} yet!
+        <br></br>
+        {props.actionString}
+      </div>
+    </React.Fragment>
+  );
+}

@@ -4,12 +4,13 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from marshmallow import fields
+import datetime
 
 app = Flask(__name__)
+
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///pupjourney"
 app.config["SQLALCHEMY_ECHO"] = True
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
@@ -276,7 +277,10 @@ class BookmarksListSchema(ma.SQLAlchemyAutoSchema):
     hikes = fields.List(fields.Nested(HikeBookmarksListSchema))
 
 
-def connect_to_db(flask_app):
+def connect_to_db(flask_app, db_uri="postgresql:///pupjourney", echo=True):
+    app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
+    app.config["SQLALCHEMY_ECHO"] = echo
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     
     ma.app = flask_app
     db.app = flask_app
@@ -284,6 +288,36 @@ def connect_to_db(flask_app):
     ma.init_app(flask_app)
 
     print("Connected to the db!")
+
+
+def example_data():
+    """Create example data for the test database."""
+    
+    test_hike = crud_hikes.create_hike(
+        "Cedar Grove and Vista View Point in Griffith Park",
+        "Los Angeles Area - Griffith Park",
+        "easy",
+        "On leash",
+        "This hike on the southeast side of Griffith Park follows paved and unpaved trails to two park attractions, a quiet grove with a picnic area and a helipad with panoramic views",
+        "2650 N Commonwealth Avenue, Los Angeles, CA 90027",
+        "34.11865",
+        "-118.28615",
+        "Los Angeles",
+        "California",
+        2.3,
+        "loop",
+        "Free",
+        "https://www.hikespeak.com/trails/cedar-grove-vista-view-point-griffith-park/",
+        "",
+    )
+    test_user = crud_users.create_user("Test User 1", "test@test", "test")
+    test_pet = crud_pets.create_pet(test_user, "Test Pet 1", "female", None, "Shiba Inu", "https://res.cloudinary.com/hbpupjourney/image/upload/v1644612543/hvtridjccxxvvsiqgoi6.jpg", None, [])
+    test_check_in = crud_check_ins.create_check_in(test_hike, [test_pet], datetime.strptime("2022-03-10", "%Y-%m-%d"), 2.3, 1.5, "Fun hike with great views!")
+    test_comment = crud_comments.create_comment(test_user, test_hike, "Great hike! Would recommend", datetime.datetime.now(), False, None)
+    test_bookmarks_list = crud_bookmarks_lists.create_bookmarks_list("Test List", 1, [test_hike])
+    
+    db.session.add_all([test_hike, test_user, test_pet, test_comment, test_bookmarks_list])
+    db.session.commit()
 
 
 if __name__ == "__main__":
