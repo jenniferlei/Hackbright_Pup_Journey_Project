@@ -165,6 +165,7 @@ function EditPetProfile(props) {
       })
       .then((jsonResponse) => {
         props.getPetProfiles();
+        // Need to add refresh to AddCheckIns petOptions
         console.log(jsonResponse);
       });
   }

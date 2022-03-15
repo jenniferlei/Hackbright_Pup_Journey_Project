@@ -6,7 +6,7 @@ endblock %} {% block body %}
 <div class="container-fluid">
   <div class="d-flex justify-content-start">
     <div class="card col mt-3" style="width:100vw">
-      <div class="card-header">
+      <div class="card-header pb-0">
         <div class="clearfix">
           <div class="float-start">
             <h3 class="mt-1">{{hike.hike_name}}</h3>
@@ -72,7 +72,7 @@ endblock %} {% block body %}
                 <br />
                 <a
                   class="link-dark"
-                  href={hike.resources}
+                  href={{hike.resources}}
                   target="_blank"
                 >
                   {{hike.resources}}

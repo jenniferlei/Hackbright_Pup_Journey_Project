@@ -1,12 +1,16 @@
 """Server for pup journey app."""
 
 from flask import Flask, render_template, json, jsonify, request, flash, session, redirect
+from flask_sqlalchemy import SQLAlchemy
 import cloudinary.uploader
 import os
 from datetime import datetime
 from calendar import month_abbr
 
-from model import connect_to_db, db, ma, app, User, CheckIn, Pet, Hike, Comment, PetSchema, CheckInSchema, BookmarksListSchema, HikeBookmarksListSchema, HikeSchema, CommentSchema
+# from model import (connect_to_db, db, ma, User, CheckIn, Pet, Hike, Comment, PetSchema, CheckInSchema, BookmarksListSchema, HikeBookmarksListSchema, HikeSchema, CommentSchema)
+from model import (connect_to_db, db, User, CheckIn, Pet, HikeBookmarksList, 
+PetCheckIn, Hike, BookmarksList, Comment)
+
 import crud_bookmarks_lists
 import crud_check_ins
 import crud_comments
@@ -18,6 +22,15 @@ import crud_users
 
 from jinja2 import StrictUndefined
 
+from flask_marshmallow import Marshmallow
+from marshmallow import fields
+
+
+app = Flask(__name__)
+
+ma = Marshmallow(app)
+
+
 app.secret_key = "dev"
 app.jinja_env.undefined = StrictUndefined
 
@@ -25,6 +38,84 @@ CLOUDINARY_KEY = os.environ["CLOUDINARY_KEY"]
 CLOUDINARY_SECRET = os.environ["CLOUDINARY_SECRET"]
 CLOUD_NAME = "hbpupjourney"
 GOOGLE_KEY = os.environ["GOOGLE_KEY"]
+
+
+class UserSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = User
+        load_instance = True
+
+    # Make sure to use the 'only' or 'exclude'
+    # to avoid infinite recursion
+    pets = fields.List(fields.Nested("PetSchema", exclude=("user",)))
+    bookmarks_lists = fields.List(fields.Nested("BookmarksListSchema", exclude=("user",)))
+    comments = fields.List(fields.Nested("CommentSchema", exclude=("user",)))
+
+
+class PetSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Pet
+        include_fk = True
+        load_instance = True
+        
+    check_ins = fields.Nested("PetCheckInSchema", many=True)
+
+
+class HikeSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Hike
+        load_instance = True
+
+    comments = fields.List(fields.Nested("CommentSchema", exclude=("hike", "user")))
+    check_ins = fields.List(fields.Nested("CheckInSchema", exclude=("hike", "pets")))
+    bookmarks_lists = fields.List(fields.Nested("BookmarksListSchema", exclude=("hikes",)))
+
+
+class CommentSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Comment
+        include_fk = True
+        load_instance = True
+
+    hike = fields.Nested(HikeSchema(exclude=("check_ins", "comments", "bookmarks_lists",)))
+    user = fields.Nested(UserSchema(exclude=("pets", "comments", "bookmarks_lists",)))
+
+
+class CheckInSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = CheckIn
+        include_fk = True
+        load_instance = True
+
+    hike = fields.Nested(HikeSchema(exclude=("check_ins", "comments", "bookmarks_lists")))
+    pets = fields.Nested("PetCheckInSchema", many=True)
+
+
+class PetCheckInSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = PetCheckIn
+        include_fk = True
+        load_instance = True
+
+    check_in = fields.Nested(CheckInSchema)
+
+
+class HikeBookmarksListSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = HikeBookmarksList
+        include_fk = True
+        load_instance = True
+
+    hike = fields.Nested(HikeSchema(exclude=("check_ins", "comments", "bookmarks_lists",)))
+
+
+class BookmarksListSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = BookmarksList
+        include_fk = True
+        load_instance = True
+
+    hikes = fields.List(fields.Nested(HikeBookmarksListSchema))
 
 
 @app.route("/")
@@ -675,6 +766,8 @@ def process_login():
         session["login"] = True
         flash(f"Welcome back, {user.full_name}!")
 
+    print(request.referrer, "LINE 768")
+
     return redirect(request.referrer)
 
 
@@ -770,41 +863,6 @@ def get_check_in_json(check_in_id):
     return jsonify({"checkIn": check_in_json})
 
 
-# @app.route("/hikes/<hike_id>/user_check_ins.json")
-# def get_user_hike_check_ins_json(hike_id):
-#     """Return a JSON response for a hike's check ins."""
-#     logged_in_email = session.get("user_email")
-#     user = (db.session.query(User).filter(User.email == logged_in_email)
-#                                  .options(db.joinedload('pets'))
-#                                  .first())
-
-#     # sorted list of check in objects
-#     check_ins = crud_check_ins.get_check_ins_by_user_id_hike_id(user.user_id, hike_id)
-
-#     all_check_ins = []
-    
-#     for check_in in check_ins:
-#         pets_not_checked_in = []
-#         pets_checked_in = []
-#         for pet in sorted(user.pets, key=lambda x: x.pet_name.lower()):
-#             if pet not in check_in.pets:
-#                 pets_not_checked_in.append({"pet_id": pet.pet_id, "pet_name": pet.pet_name})
-#             else:
-#                 pets_checked_in.append({"pet_id": pet.pet_id, "pet_name": pet.pet_name})
-#         all_check_ins.append(
-#             {"check_in_id": check_in.check_in_id,
-#             "date_hiked": check_in.date_hiked,
-#             "hike_id": check_in.hike_id,
-#             "hike_name": check_in.hike.hike_name,
-#             "miles_completed": check_in.miles_completed,
-#             "notes": check_in.notes,
-#             "pets": pets_checked_in,
-#             "pets_not_on_hike": pets_not_checked_in,
-#             "total_time": check_in.total_time})
-
-#     return jsonify({"checkIns": all_check_ins})
-
-
 @app.route("/hikes/<hike_id>/user_check_ins.json")
 def get_hike_check_ins_json(hike_id):
     """Return a JSON response for a hike's check ins."""
@@ -876,7 +934,6 @@ def get_check_ins_by_pets_json():
     # Get list of pet objects for the user
     pets = crud_pets.get_pets_by_user_id(user.user_id)
     
-
     # For each pet:
     # Create a new object with pet_id, pet_name, and data
     # Sort the pet's check ins and append to data
@@ -899,34 +956,6 @@ def get_check_ins_by_pets_json():
     return jsonify({"petCheckIns": check_in_data})
 
 
-# @app.route("/dashboard_map_coordinates.json")
-# def get_user_check_in_coordinates():
-#     """Return a JSON response with all coordinates for a user."""
-
-#     logged_in_email = session.get("user_email")
-#     user = crud_users.get_user_by_email(logged_in_email)
-
-#     # Get list of unique check in objects for the user
-#     check_ins_by_user = crud_check_ins.get_check_ins_by_user_id(user.user_id)
-
-#     # For each check in
-#     # Get unique hikes
-#     # For each hike
-#     # Create a new object with hike_name, latitude, and longitude
-
-#     hikes = set()
-
-#     for check_in in check_ins_by_user:
-#         hikes.add(check_in.hike)
-    
-#     user_hike_data = []
-
-#     for hike in hikes:
-#         hike_data = {"hike_name": hike.hike_name, "latitude": hike.latitude, "longitude": hike.longitude}
- 
-#         user_hike_data.append(hike_data)
-
-#     return jsonify({"checkInCoordinates": user_hike_data})
 
 
 @app.route("/<bookmarks_list_id>/hikes.json")
@@ -980,9 +1009,12 @@ def get_user_bookmarks_lists():
     bookmarks_json = bookmarks_schema.dump(bookmarks_by_user)
 
     hikes_schema = HikeSchema(many=True, exclude=["comments", "check_ins", "bookmarks_lists"])
+    
 
     for idx, bookmark in enumerate(bookmarks_by_user):
-        hikes_json = hikes_schema.dump(sorted(bookmark.hikes, key=lambda x: x.hike_name))
+        hikes_sorted_by_name = sorted(bookmark.hikes, key=lambda x: x.hike_name)
+        hikes_sorted_by_difficulty = sorted(hikes_sorted_by_name, key=lambda x: x.difficulty)
+        hikes_json = hikes_schema.dump(hikes_sorted_by_difficulty)
         bookmarks_json[idx]["hikes"] = hikes_json
 
     return jsonify({"bookmarksLists": bookmarks_json})

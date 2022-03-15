@@ -84,6 +84,7 @@ function SearchOffCanvas(props) {
                       className="form-control"
                       type="text"
                       name="keyword"
+                      style={{ width: "20.5em" }}
                     ></input>
                   </div>
                 </div>

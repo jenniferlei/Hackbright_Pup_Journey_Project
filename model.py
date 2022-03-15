@@ -2,18 +2,16 @@
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
-from marshmallow import fields
+
 import datetime
 
-app = Flask(__name__)
+# app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///pupjourney"
+# app.config["SQLALCHEMY_ECHO"] = True
+# app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///pupjourney"
-app.config["SQLALCHEMY_ECHO"] = True
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-db = SQLAlchemy(app)
-ma = Marshmallow(app)
+db = SQLAlchemy()
+# ma = Marshmallow(app)
 
 
 class User(db.Model):
@@ -199,93 +197,91 @@ class HikeBookmarksList(db.Model):
         return f"<Hike on Bookmarks List hike_bookmarks_list_id={self.hike_bookmarks_list_id} hike_id={self.hike_id} bookmarks_list_id={self.bookmarks_list_id}>"
 
 
-class UserSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = User
-        load_instance = True
+# class UserSchema(ma.SQLAlchemyAutoSchema):
+#     class Meta:
+#         model = User
+#         load_instance = True
 
-    # Make sure to use the 'only' or 'exclude'
-    # to avoid infinite recursion
-    pets = fields.List(fields.Nested("PetSchema", exclude=("user",)))
-    bookmarks_lists = fields.List(fields.Nested("BookmarksListSchema", exclude=("user",)))
-    comments = fields.List(fields.Nested("CommentSchema", exclude=("user",)))
+#     # Make sure to use the 'only' or 'exclude'
+#     # to avoid infinite recursion
+#     pets = fields.List(fields.Nested("PetSchema", exclude=("user",)))
+#     bookmarks_lists = fields.List(fields.Nested("BookmarksListSchema", exclude=("user",)))
+#     comments = fields.List(fields.Nested("CommentSchema", exclude=("user",)))
 
 
-class PetSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = Pet
-        include_fk = True
-        load_instance = True
+# class PetSchema(ma.SQLAlchemyAutoSchema):
+#     class Meta:
+#         model = Pet
+#         include_fk = True
+#         load_instance = True
         
-    check_ins = fields.Nested("PetCheckInSchema", many=True)
+#     check_ins = fields.Nested("PetCheckInSchema", many=True)
 
 
-class HikeSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = Hike
-        load_instance = True
+# class HikeSchema(ma.SQLAlchemyAutoSchema):
+#     class Meta:
+#         model = Hike
+#         load_instance = True
 
-    comments = fields.List(fields.Nested("CommentSchema", exclude=("hike", "user")))
-    check_ins = fields.List(fields.Nested("CheckInSchema", exclude=("hike", "pets")))
-    bookmarks_lists = fields.List(fields.Nested("BookmarksListSchema", exclude=("hikes",)))
-
-
-class CommentSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = Comment
-        include_fk = True
-        load_instance = True
-
-    hike = fields.Nested(HikeSchema(exclude=("check_ins", "comments", "bookmarks_lists",)))
-    user = fields.Nested(UserSchema(exclude=("pets", "comments", "bookmarks_lists",)))
+#     comments = fields.List(fields.Nested("CommentSchema", exclude=("hike", "user")))
+#     check_ins = fields.List(fields.Nested("CheckInSchema", exclude=("hike", "pets")))
+#     bookmarks_lists = fields.List(fields.Nested("BookmarksListSchema", exclude=("hikes",)))
 
 
-class CheckInSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = CheckIn
-        include_fk = True
-        load_instance = True
+# class CommentSchema(ma.SQLAlchemyAutoSchema):
+#     class Meta:
+#         model = Comment
+#         include_fk = True
+#         load_instance = True
 
-    hike = fields.Nested(HikeSchema(exclude=("check_ins", "comments", "bookmarks_lists")))
-    pets = fields.Nested("PetCheckInSchema", many=True)
-
-
-class PetCheckInSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = PetCheckIn
-        include_fk = True
-        load_instance = True
-
-    check_in = fields.Nested(CheckInSchema)
+#     hike = fields.Nested(HikeSchema(exclude=("check_ins", "comments", "bookmarks_lists",)))
+#     user = fields.Nested(UserSchema(exclude=("pets", "comments", "bookmarks_lists",)))
 
 
-class HikeBookmarksListSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = HikeBookmarksList
-        include_fk = True
-        load_instance = True
+# class CheckInSchema(ma.SQLAlchemyAutoSchema):
+#     class Meta:
+#         model = CheckIn
+#         include_fk = True
+#         load_instance = True
 
-    hike = fields.Nested(HikeSchema(exclude=("check_ins", "comments", "bookmarks_lists",)))
+#     hike = fields.Nested(HikeSchema(exclude=("check_ins", "comments", "bookmarks_lists")))
+#     pets = fields.Nested("PetCheckInSchema", many=True)
 
 
-class BookmarksListSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = BookmarksList
-        include_fk = True
-        load_instance = True
+# class PetCheckInSchema(ma.SQLAlchemyAutoSchema):
+#     class Meta:
+#         model = PetCheckIn
+#         include_fk = True
+#         load_instance = True
 
-    hikes = fields.List(fields.Nested(HikeBookmarksListSchema))
+#     check_in = fields.Nested(CheckInSchema)
+
+
+# class HikeBookmarksListSchema(ma.SQLAlchemyAutoSchema):
+#     class Meta:
+#         model = HikeBookmarksList
+#         include_fk = True
+#         load_instance = True
+
+#     hike = fields.Nested(HikeSchema(exclude=("check_ins", "comments", "bookmarks_lists",)))
+
+
+# class BookmarksListSchema(ma.SQLAlchemyAutoSchema):
+#     class Meta:
+#         model = BookmarksList
+#         include_fk = True
+#         load_instance = True
+
+#     hikes = fields.List(fields.Nested(HikeBookmarksListSchema))
 
 
 def connect_to_db(flask_app, db_uri="postgresql:///pupjourney", echo=True):
-    app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
-    app.config["SQLALCHEMY_ECHO"] = echo
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
+    flask_app.config["SQLALCHEMY_ECHO"] = echo
+    flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     
-    ma.app = flask_app
     db.app = flask_app
     db.init_app(flask_app)
-    ma.init_app(flask_app)
 
     print("Connected to the db!")
 
@@ -293,34 +289,36 @@ def connect_to_db(flask_app, db_uri="postgresql:///pupjourney", echo=True):
 def example_data():
     """Create example data for the test database."""
     
-    test_hike = crud_hikes.create_hike(
-        "Cedar Grove and Vista View Point in Griffith Park",
-        "Los Angeles Area - Griffith Park",
-        "easy",
-        "On leash",
-        "This hike on the southeast side of Griffith Park follows paved and unpaved trails to two park attractions, a quiet grove with a picnic area and a helipad with panoramic views",
-        "2650 N Commonwealth Avenue, Los Angeles, CA 90027",
-        "34.11865",
-        "-118.28615",
-        "Los Angeles",
-        "California",
-        2.3,
-        "loop",
-        "Free",
-        "https://www.hikespeak.com/trails/cedar-grove-vista-view-point-griffith-park/",
-        "",
+    test_hike = Hike(
+        hike_name="Cedar Grove and Vista View Point in Griffith Park",
+        area="Los Angeles Area - Griffith Park",
+        difficulty="easy",
+        leash_rule="On leash",
+        description="This hike on the southeast side of Griffith Park follows paved and unpaved trails to two park attractions, a quiet grove with a picnic area and a helipad with panoramic views",
+        address="2650 N Commonwealth Avenue, Los Angeles, CA 90027",
+        latitude="34.11865",
+        longitude="-118.28615",
+        city="Los Angeles",
+        state="California",
+        miles=2.3,
+        path="loop",
+        parking="Free",
+        resources="https://www.hikespeak.com/trails/cedar-grove-vista-view-point-griffith-park/",
+        hike_imgURL="",
     )
-    test_user = crud_users.create_user("Test User 1", "test@test", "test")
-    test_pet = crud_pets.create_pet(test_user, "Test Pet 1", "female", None, "Shiba Inu", "https://res.cloudinary.com/hbpupjourney/image/upload/v1644612543/hvtridjccxxvvsiqgoi6.jpg", None, [])
-    test_check_in = crud_check_ins.create_check_in(test_hike, [test_pet], datetime.strptime("2022-03-10", "%Y-%m-%d"), 2.3, 1.5, "Fun hike with great views!")
-    test_comment = crud_comments.create_comment(test_user, test_hike, "Great hike! Would recommend", datetime.datetime.now(), False, None)
-    test_bookmarks_list = crud_bookmarks_lists.create_bookmarks_list("Test List", 1, [test_hike])
+    test_user = User(full_name="Test User 1", email="test@test", password="test")
+    test_pet = Pet(user=test_user, pet_name="Test Pet 1", gender="female", birthday=datetime.datetime(2014, 11, 10, 0, 0), breed="Shiba Inu", pet_imgURL="https://res.cloudinary.com/hbpupjourney/image/upload/v1644612543/hvtridjccxxvvsiqgoi6.jpg", img_public_id=None, check_ins=[])
+    test_check_in = CheckIn(hike=test_hike, pets=[test_pet], date_hiked=datetime.datetime(2022, 3, 12, 0, 0), miles_completed=2.3, total_time=1.5, notes="Fun hike with great views!")
+    test_comment = Comment(user=test_user, hike=test_hike, body="Great hike! Would recommend", date_created=datetime.datetime.now(), edit=False, date_edited=None)
+    test_bookmarks_list = BookmarksList(bookmarks_list_name="Test List", user_id=1, hikes=[test_hike])
     
     db.session.add_all([test_hike, test_user, test_pet, test_comment, test_bookmarks_list])
     db.session.commit()
 
 
 if __name__ == "__main__":
+
+    from server import app
 
     # Call connect_to_db(app, echo=False) if your program output gets
     # too annoying; this will tell SQLAlchemy not to print out every

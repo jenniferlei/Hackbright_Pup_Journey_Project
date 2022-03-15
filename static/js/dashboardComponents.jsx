@@ -2,9 +2,6 @@
 
 function Footer(props) {
   const session_login = document.querySelector("#login").innerText;
-
-  function doNothing() {}
-
   return (
     <React.Fragment>
       <nav
@@ -25,38 +22,7 @@ function Footer(props) {
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav me-auto">
-              <form method="GET" action="/hikes/search">
-                <li className="nav-item d-flex">
-                  <input
-                    className="form-control me-2 input-sm"
-                    type="search"
-                    name="search_term"
-                    placeholder="Search"
-                    aria-label="Search"
-                  ></input>
-                  <button
-                    className="btn btn-sm nav-link"
-                    role="button"
-                    type="submit"
-                  >
-                    <small>
-                      <i
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="right"
-                        title="search"
-                        className="bi bi-search"
-                      ></i>
-                    </small>
-                  </button>
-                </li>
-              </form>
-              <FooterNavItemOffCanvas
-                name=""
-                href="Search"
-                tooltip="advanced search"
-                icon="bi bi-sliders"
-                getFunction={doNothing}
-              />
+              <FooterSearchBar />
             </ul>
             <div className="d-flex"></div>
           </div>
@@ -139,7 +105,7 @@ const ViewMonthYear = (props) => {
     <div>
       <div className="row">
         <div className="d-flex">
-          View by&nbsp;&nbsp;
+          <div className="mt-1">View by&nbsp;&nbsp;</div>
           <input
             type="radio"
             className="btn-check"
@@ -202,6 +168,7 @@ const ViewMonthYear = (props) => {
               className="form-select btn-sm"
               name={`${props.category}-month-view-month`}
               aria-label={`${props.category}-month-view-select-month`}
+              style={{ width: "5em" }}
             >
               {monthOptions.map((month) => (
                 <option
@@ -219,6 +186,7 @@ const ViewMonthYear = (props) => {
               className="form-select btn-sm"
               name={`${props.category}-month-view-year`}
               aria-label={`${props.category}-month-view-select-year`}
+              style={{ width: "6em" }}
             >
               {yearOptions.map((year) => (
                 <option value={year}>{year}</option>
@@ -248,6 +216,7 @@ const ViewMonthYear = (props) => {
               className="form-select btn-sm"
               name={`${props.category}-year-view-year`}
               aria-label={`${props.category}-year-view-select-year`}
+              style={{ width: "6em" }}
             >
               {yearOptions.map((year) => (
                 <option value={year}>{year}</option>
@@ -612,20 +581,6 @@ function SideBarMenu(props) {
     <React.Fragment>
       <div className="side-bar-menu d-flex flex-column flex-shrink-0 bg-light">
         <ul className="nav nav-pills nav-flush flex-column mb-auto text-center">
-          <li className="nav-item">
-            <a
-              href="/"
-              className="btn btn-dark sidebar-btn"
-              aria-current="page"
-              title=""
-              data-bs-toggle="tooltip"
-              data-bs-placement="right"
-              data-bs-original-title="Home"
-              style={{ marginTop: "50px" }}
-            >
-              <i class="bi bi-house-fill"></i>
-            </a>
-          </li>
           <li>
             <a
               href="#"
@@ -635,6 +590,7 @@ function SideBarMenu(props) {
               data-bs-toggle="tooltip"
               data-bs-placement="right"
               onClick={props.parentDisplayMap}
+              style={{ marginTop: "50px" }}
             >
               <i className="sidebar-icon bi bi-geo"></i>
             </a>

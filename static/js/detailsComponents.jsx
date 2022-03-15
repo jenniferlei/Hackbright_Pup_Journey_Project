@@ -137,16 +137,6 @@ const HikeDetailsCommentContainer = React.forwardRef((props, ref) => {
                       className="btn btn-sm dropdown-item"
                       href=""
                       data-bs-toggle="modal"
-                      data-bs-target="#modal-add-comment"
-                    >
-                      add a comment
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      className="btn btn-sm dropdown-item"
-                      href=""
-                      data-bs-toggle="modal"
                       data-bs-target="#modal-add-hike-comment"
                     >
                       add a comment for this hike
@@ -935,8 +925,6 @@ function HikeDetails(props) {
   const hike_id = document.querySelector("#hike_id").innerText;
   const session_login = document.querySelector("#login").innerText;
 
-  function doNothing() {}
-
   function parentGetBookmarksLists() {
     if (session_login === "True") {
       HikeDetailsBookmarksListContainerRef.current.getHikeBookmarksLists();
@@ -996,38 +984,7 @@ function HikeDetails(props) {
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav me-auto">
-              <form method="GET" action="/hikes/search">
-                <li className="nav-item d-flex">
-                  <input
-                    className="form-control me-2 input-sm"
-                    type="search"
-                    name="search_term"
-                    placeholder="Search"
-                    aria-label="Search"
-                  ></input>
-                  <button
-                    className="btn btn-sm nav-link"
-                    role="button"
-                    type="submit"
-                  >
-                    <small>
-                      <i
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="right"
-                        title="search"
-                        className="bi bi-search"
-                      ></i>
-                    </small>
-                  </button>
-                </li>
-              </form>
-              <FooterNavItemOffCanvas
-                name=""
-                href="Search"
-                tooltip="advanced search"
-                icon="bi bi-sliders"
-                getFunction={doNothing}
-              />
+              <FooterSearchBar />
             </ul>
             <div className="d-flex">
               <ul className="navbar-nav me-auto navbar-center">

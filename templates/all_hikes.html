@@ -1,11 +1,9 @@
-{% extends 'base.html' %}
-{% block title %}All Hikes{% endblock %}
-
-{% block body %}
+{% extends 'base.html' %} {% block title %}All Hikes{% endblock %} {% block body
+%}
 
 <div id="root"></div>
 
-<div class="container-fluid">
+<!-- <div class="container-fluid">
 
   <div class="d-flex justify-content-start">
 
@@ -13,17 +11,17 @@
   
     <div class="card col mt-3" style="width:100vw">
 
-      <div class="card-header">
+      <div class="card-header pb-0">
         <div class="clearfix">
 
-          <div class="d-flex float-start"><h3>Hikes</h3></div>
+          <div class="d-flex float-start mt-1"><h3>Hikes</h3></div>
           <div class="d-flex float-end">
 
             <form method="GET" action="/hikes/search" class="d-flex">
               <input class="form-control me-2 input-sm"
                       type="search"
                       name="search_term"
-                      placeholder="Search"
+                      placeholder="Search hikes"
                       aria-label="Search">
               </input>
               <button class="btn btn-sm me-2"
@@ -65,7 +63,7 @@
                   City</small>
                 </th>
                 <th role="columnheader">
-                  <small>Leash rule</small></span>
+                  <small>Leash rule</small>
                 </th>
                 <th role="columnheader"><small>
                   Parking</small>
@@ -77,7 +75,6 @@
             {% for hike in search_hikes %}
               <tr>
                 <td>
-                  <!-- Name -->
                   <span class="d-inline-block text-truncate" style="min-width: 0px; max-width: 400px;">
                     <a class="link-dark" href="/hikes/{{ hike.hike_id }}"><small>{{ hike.hike_name }}</small></a>
                   </span>
@@ -130,18 +127,14 @@
 
   </div>
   
-</div>
+</div> -->
 
 {% if "login" in session %}
 <div hidden id="login">True</div>
 <div hidden id="user_id">{{ user.user_id }}</div>
 {% else %}
 <div hidden id="login">False</div>
-{% endif %}
-
-
-{% endblock %}
-{% block js %}
+{% endif %} {% endblock %} {% block js %}
 <script src="/static/js/petProfileComponents.jsx" type="text/jsx"></script>
 <script src="/static/js/checkInComponents.jsx" type="text/jsx"></script>
 <script src="/static/js/bookmarkComponents.jsx" type="text/jsx"></script>
