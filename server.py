@@ -181,13 +181,14 @@ def advanced_search():
 
     keyword = request.args.get("keyword", "")
     difficulties = request.args.getlist("difficulty")
-    leash_rules = request.args.getlist("leash_rules")
+    leash_rules = request.args.getlist("leash_rule")
     areas = request.args.getlist("area")
     cities = request.args.getlist("city")
     state = request.args.get("state", "")
     length_min = request.args.get("length_min", "")
     length_max = request.args.get("length_max", "")
     parking = request.args.getlist("parking")
+    print(leash_rules, "leash_rules 191")
 
     # Populate the list of hike objects that fulfill the search criteria
     search_hikes = crud_hikes.get_hikes_by_advanced_search(keyword, difficulties, leash_rules, areas, cities, state, length_min, length_max, parking)

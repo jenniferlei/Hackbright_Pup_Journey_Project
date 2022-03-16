@@ -3,7 +3,6 @@
 function SearchOffCanvas(props) {
   const stateOptions = ["California", "Oregon", "Washington"];
 
-  const [stateChoice, setStateChoice] = React.useState("");
   const [cityOptions, setCityOptions] = React.useState([]);
   const [areaOptions, setAreaOptions] = React.useState([]);
 
@@ -35,7 +34,7 @@ function SearchOffCanvas(props) {
   };
 
   const handleStateLocationUpdate = (event) => {
-    setStateChoice(event.target.value);
+    setStateFilter(event.target.value);
     if (event.target.value === "") {
       setCityOptions([]);
       setAreaOptions([]);
@@ -53,14 +52,68 @@ function SearchOffCanvas(props) {
   const [leashRules, setLeashRules] = React.useState([]);
   const [areas, setAreas] = React.useState([]);
   const [cities, setCities] = React.useState([]);
-  const [state, setState] = React.useState("");
+  const [stateFilter, setStateFilter] = React.useState("");
   const [lengthMin, setLengthMin] = React.useState("");
   const [lengthMax, setLengthMax] = React.useState("");
   const [parking, setParking] = React.useState([]);
 
   const getFilterQuery = () => {
-    const queriesUrl = props.getFilteredHikes(queriesUrl);
+    const queries = ["/hikes/advanced_search?"];
+    if (keyword) {
+      queries.push(`keyword=${keyword}`);
+    }
+    if (difficulties.length > 0) {
+      difficulties.map((difficulty) =>
+        queries.push(`difficulty=${difficulty}`)
+      );
+    }
+    if (leashRules.length > 0) {
+      leashRules.map((leashRule) => {
+        queries.push(
+          `leash_rule=${encodeURIComponent(
+            leashRule[0].toUpperCase() + leashRule.slice(1)
+          )}`
+        );
+      });
+    }
+    if (areas.length > 0) {
+      areas.map((area) => {
+        queries.push(`area=${encodeURIComponent(area)}`);
+      });
+    }
+    if (cities.length > 0) {
+      cities.map((city) => {
+        queries.push(`city=${encodeURIComponent(city)}`);
+      });
+    }
+    if (stateFilter) {
+      queries.push(`state=${stateFilter}`);
+    }
+    if (lengthMin) {
+      queries.push(`length_min=${lengthMin}`);
+    }
+    if (lengthMax) {
+      queries.push(`length_max=${lengthMax}`);
+    }
+    if (parking.length > 0) {
+      parking.map((parkOption) => {
+        queries.push(`parking=${encodeURIComponent(parkOption)}`);
+      });
+    }
+    const queriesUrl = queries.reduce(
+      (text, value, i, array) => text + (i > 1 ? "&" : "") + value
+    );
+    console.log(queriesUrl, "queriesUrl");
+    props.getFilteredHikes(queriesUrl);
   };
+
+  console.log(keyword, "keyword");
+  console.log(difficulties, "difficulties");
+  console.log(leashRules, "leashRules");
+  console.log(areas, "areas");
+  console.log(cities, "cities");
+  console.log(parking, "parking");
+  console.log(stateFilter, "stateFilter");
 
   return (
     <React.Fragment>
@@ -102,7 +155,7 @@ function SearchOffCanvas(props) {
                     type="text"
                     name="keyword"
                     value={keyword}
-                    onChange={(event) => setKeywordFilter(event.target.value)}
+                    onChange={(event) => setKeyword(event.target.value)}
                     style={{ width: "20.5em" }}
                   ></input>
                 </div>
@@ -129,6 +182,21 @@ function SearchOffCanvas(props) {
                         name="difficulty"
                         id={difficultyOption}
                         value={difficultyOption}
+                        onChange={(event) => {
+                          if (event.target.checked) {
+                            setDifficulties([
+                              ...difficulties,
+                              event.target.value,
+                            ]);
+                          } else {
+                            setDifficulties([
+                              ...difficulties.filter(
+                                (difficulty) =>
+                                  difficulty !== event.target.value
+                              ),
+                            ]);
+                          }
+                        }}
                         autocomplete="off"
                       />
                       <label
@@ -150,24 +218,36 @@ function SearchOffCanvas(props) {
                   <strong>Length (miles)</strong>
                 </label>
               </div>
-              {["min", "max"].map((param) => (
-                <div className="form-floating col">
-                  <input
-                    type="number"
-                    step={0.1}
-                    min={0}
-                    className="form-control input-sm"
-                    id={`search-length-${param}`}
-                    name={`length-${param}`}
-                  />
-                  <label
-                    className="form-label"
-                    htmlFor={`search-length-${param}`}
-                  >
-                    <small className="form-text text-muted">{param}</small>
-                  </label>
-                </div>
-              ))}
+              <div className="form-floating col">
+                <input
+                  type="number"
+                  step={0.1}
+                  min={0}
+                  className="form-control input-sm"
+                  id={`search-length-min`}
+                  name={`length-min`}
+                  value={lengthMin}
+                  onChange={(event) => setLengthMin(event.target.value)}
+                />
+                <label className="form-label" htmlFor={`search-length-min`}>
+                  <small className="form-text text-muted">min</small>
+                </label>
+              </div>
+              <div className="form-floating col">
+                <input
+                  type="number"
+                  step={0.1}
+                  min={0}
+                  className="form-control input-sm"
+                  id={`search-length-max`}
+                  name={`length-max`}
+                  value={lengthMax}
+                  onChange={(event) => setLengthMax(event.target.value)}
+                />
+                <label className="form-label" htmlFor={`search-length-max`}>
+                  <small className="form-text text-muted">max</small>
+                </label>
+              </div>
             </div>
 
             <div className="mt-2 d-flex">
@@ -232,6 +312,17 @@ function SearchOffCanvas(props) {
                               id={areaOption.area}
                               name="area"
                               value={areaOption.area}
+                              onChange={(event) => {
+                                if (event.target.checked) {
+                                  setAreas([...areas, event.target.value]);
+                                } else {
+                                  setAreas([
+                                    ...areas.filter(
+                                      (area) => area !== event.target.value
+                                    ),
+                                  ]);
+                                }
+                              }}
                             />
                             <label
                               className="form-check-label"
@@ -281,6 +372,17 @@ function SearchOffCanvas(props) {
                               id={cityOption.city}
                               name="city"
                               value={cityOption.city}
+                              onChange={(event) => {
+                                if (event.target.checked) {
+                                  setCities([...cities, event.target.value]);
+                                } else {
+                                  setCities([
+                                    ...cities.filter(
+                                      (city) => city !== event.target.value
+                                    ),
+                                  ]);
+                                }
+                              }}
                             />
                             <label
                               className="form-check-label"
@@ -315,6 +417,17 @@ function SearchOffCanvas(props) {
                         className="btn-check"
                         id={`search-${param}-leash`}
                         value={`${param} leash`}
+                        onChange={(event) => {
+                          if (event.target.checked) {
+                            setLeashRules([...leashRules, event.target.value]);
+                          } else {
+                            setLeashRules([
+                              ...leashRules.filter(
+                                (leashRule) => leashRule !== event.target.value
+                              ),
+                            ]);
+                          }
+                        }}
                         autocomplete="off"
                       />
                       <label
@@ -350,6 +463,18 @@ function SearchOffCanvas(props) {
                         id={`search-${param}-parking`}
                         autocomplete="off"
                         value={param}
+                        onChange={(event) => {
+                          if (event.target.checked) {
+                            setParking([...parking, event.target.value]);
+                          } else {
+                            setParking([
+                              ...parking.filter(
+                                (parkingOption) =>
+                                  parkingOption !== event.target.value
+                              ),
+                            ]);
+                          }
+                        }}
                       />
                       <label
                         className="btn btn-sm btn-outline-dark"

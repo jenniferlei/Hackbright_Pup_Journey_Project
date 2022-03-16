@@ -58,6 +58,7 @@ def get_hike_by_id(hike_id):
 def get_hikes_by_advanced_search(
     keyword, difficulties, leash_rules, areas, cities, state, length_min, length_max, parking
 ):
+    """Return hikes by query search"""
 
     queries = []
 
@@ -77,9 +78,10 @@ def get_hikes_by_advanced_search(
         queries.append(Hike.miles >= length_min)
     if length_max != "":
         queries.append(Hike.miles <= length_max)
-    if parking != []:
-        for parking_rule in parking:
-            queries.append(Hike.parking.ilike(f"%{parking_rule}%"))
+    if len(parking) == 1:
+        queries.append(Hike.parking.ilike(f"%{parking[0]}%"))
+    elif len(parking) == 2:
+        queries.append(Hike.parking.ilike(f"%{parking[0]}%") | Hike.parking.ilike(f"%{parking[1]}%"))
 
     return db.session.query(Hike).filter(*queries).order_by(Hike.hike_name.asc()).all()
 

@@ -699,6 +699,15 @@ function AllHikesContainer(props) {
     ]);
   }
 
+  function getFilteredHikes(url) {
+    fetch(url)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        const { hikes } = responseJson;
+        setSearchHikes(hikes);
+      });
+  }
+
   const timestamp = Date.now();
   const allHikeRows = searchHikes.map((hike) => (
     <HikeTableRow hike={hike} key={`${timestamp}-${hike.hike_id}`} />
@@ -732,7 +741,7 @@ function AllHikesContainer(props) {
 
   return (
     <React.Fragment>
-      <SearchOffCanvas />
+      <SearchOffCanvas getFilteredHikes={getFilteredHikes} />
       <PetProfileContainer ref={PetProfileContainerRef} />
       <AllHikesBookmarksListContainer ref={AllHikesBookmarksListContainerRef} />
       <AllHikesCheckInContainer ref={AllHikesCheckInContainerRef} />
