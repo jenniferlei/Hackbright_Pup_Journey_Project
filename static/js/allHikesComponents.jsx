@@ -462,7 +462,9 @@ function HikeTableRow(props) {
         <small>{props.hike.state}</small>
       </td>
       <td>
-        <small>{props.hike.area}</small>
+        <span className="flex-truncate-text">
+          <small>{props.hike.area}</small>
+        </span>
       </td>
       <td>
         <small>{props.hike.city}</small>
