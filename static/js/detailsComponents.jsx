@@ -983,9 +983,7 @@ function HikeDetails(props) {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav me-auto">
-              <FooterSearchBar />
-            </ul>
+              {/* <FooterSearchBar /> */}
             <div className="d-flex">
               <ul className="navbar-nav me-auto navbar-center">
                 <li className="nav-item">

@@ -192,13 +192,18 @@ def advanced_search():
     # Populate the list of hike objects that fulfill the search criteria
     search_hikes = crud_hikes.get_hikes_by_advanced_search(keyword, difficulties, leash_rules, areas, cities, state, length_min, length_max, parking)
  
-    logged_in_email = session.get("user_email")
+    # logged_in_email = session.get("user_email")
 
-    if logged_in_email is None:
-        return render_template("all_hikes.html", search_hikes=search_hikes)
+    # if logged_in_email is None:
+    #     return render_template("all_hikes.html", search_hikes=search_hikes)
     
-    user = crud_users.get_user_by_email(logged_in_email)
-    return render_template("all_hikes.html", user=user, search_hikes=search_hikes)
+    # user = crud_users.get_user_by_email(logged_in_email)
+    # return render_template("all_hikes.html", user=user, search_hikes=search_hikes)
+
+    hikes_schema = HikeSchema(many=True, exclude=["comments", "check_ins", "bookmarks_lists"])
+    hikes_json = hikes_schema.dump(search_hikes)
+
+    return jsonify({"hikes": hikes_json})
 
 
 @app.route("/hikes/<hike_id>")

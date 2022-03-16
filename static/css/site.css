@@ -212,7 +212,9 @@ ul.no-bullets {
 /* The sidebar menu */
 .side-bar-menu {
   width: 4.5rem;
-  height: 100%;
+  top: 0;
+  bottom: 0;
+  height: calc(100vh - 56px);
   z-index: 1;
   border: 1px solid #ced4da;
 }

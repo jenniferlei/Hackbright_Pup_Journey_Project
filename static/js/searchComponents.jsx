@@ -75,10 +75,12 @@ function SearchOffCanvas(props) {
             <form method="GET" action="/hikes/advanced_search">
               <div className="row">
                 <div className="d-flex">
-                  <label className="mt-2 me-2" htmlFor="search-keyword">
-                    <strong>Keyword</strong>
-                  </label>
-                  <div className="ms-1 me-1">
+                  <div className="col-2">
+                    <label className="mt-2" htmlFor="search-keyword">
+                      <strong>Keyword</strong>
+                    </label>
+                  </div>
+                  <div className="col ms-1 me-1">
                     <input
                       id="search-keyword"
                       className="form-control"
@@ -91,33 +93,43 @@ function SearchOffCanvas(props) {
               </div>
 
               <div className="row mt-2">
-                <div className="col">
-                  <label className="form-label">
+                <div className="col-2">
+                  <label className="form-label mt-1">
                     <strong>Difficulty</strong>
                   </label>
                 </div>
-                {difficultyOptions.map((difficultyOption) => (
-                  <div className="form-check col" key={difficultyOption}>
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id={difficultyOption}
-                      name="difficulty"
-                      value={difficultyOption}
-                    />
-                    <label
-                      className="form-check-label"
-                      htmlFor={difficultyOption}
-                    >
-                      {difficultyOption}
-                    </label>
+                <div className="col">
+                  <div
+                    className="btn-group"
+                    role="group"
+                    aria-label="Difficulty checkbox toggle button group"
+                  >
+                    {difficultyOptions.map((difficultyOption) => (
+                      <React.Fragment>
+                        <input
+                          type="checkbox"
+                          className="btn-check"
+                          name="difficulty"
+                          id={difficultyOption}
+                          value={difficultyOption}
+                          autocomplete="off"
+                        />
+                        <label
+                          className="btn btn-sm btn-outline-dark"
+                          style={{ border: "1px solid #ced4da" }}
+                          htmlFor={difficultyOption}
+                        >
+                          {difficultyOption}
+                        </label>
+                      </React.Fragment>
+                    ))}
                   </div>
-                ))}
+                </div>
               </div>
 
-              <div className="row g-2">
-                <div className="col" style={{ verticalAlign: "middle" }}>
-                  <label className="form-label mt-3">
+              <div className="row mt-1 g-2">
+                <div className="col-2" style={{ verticalAlign: "middle" }}>
+                  <label className="form-label mt-1">
                     <strong>Length (miles)</strong>
                   </label>
                 </div>
@@ -151,35 +163,43 @@ function SearchOffCanvas(props) {
               </div>
 
               <div className="mt-2 d-flex">
-                <label for="search-state" className="mt-2 me-2">
-                  <strong>State</strong>
-                </label>
-                <select
-                  id="search-state"
-                  className="form-select"
-                  aria-label="search-state"
-                  name="state"
-                  onChange={handleStateLocationUpdate}
-                >
-                  <option value=""></option>
-                  {stateOptions.map((stateOption) => (
-                    <option
-                      value={`${stateOption}`}
-                      key={`state-${stateOption}`}
-                    >
-                      {stateOption}
-                    </option>
-                  ))}
-                </select>
+                <div className="col-2">
+                  <label for="search-state" className="mt-2 me-2">
+                    <strong>State</strong>
+                  </label>
+                </div>
+                <div className="col">
+                  <select
+                    id="search-state"
+                    className="form-select"
+                    aria-label="search-state"
+                    name="state"
+                    onChange={handleStateLocationUpdate}
+                  >
+                    <option value=""></option>
+                    {stateOptions.map((stateOption) => (
+                      <option
+                        value={`${stateOption}`}
+                        key={`state-${stateOption}`}
+                      >
+                        {stateOption}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <div className="row mt-2">
                 {areaOptions.length < 1 ? (
-                  <div>
-                    <strong>Area</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <small className="text-muted">
-                      Select state to see all area options
-                    </small>
+                  <div className="d-flex">
+                    <div className="col-2">
+                      <strong>Area</strong>
+                    </div>
+                    <div className="col">
+                      <small className="text-muted">
+                        Select state to see all area options
+                      </small>
+                    </div>
                   </div>
                 ) : (
                   <React.Fragment>
@@ -220,11 +240,15 @@ function SearchOffCanvas(props) {
               </div>
               <div className="row mt-2">
                 {cityOptions.length < 1 ? (
-                  <div>
-                    <strong>City</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <small className="text-muted">
-                      Select state to see all city options
-                    </small>
+                  <div className="d-flex">
+                    <div className="col-2">
+                      <strong>City</strong>
+                    </div>
+                    <div className="col">
+                      <small className="text-muted">
+                        Select state to see all city options
+                      </small>
+                    </div>
                   </div>
                 ) : (
                   <React.Fragment>
@@ -265,40 +289,41 @@ function SearchOffCanvas(props) {
               </div>
 
               <div className="row mt-2">
-                <div className="col">
-                  <label className="form-label">
-                    <strong>Leash Rule</strong>
+                <div className="col-2">
+                  <label className="form-label mt-1">
+                    <strong>Leash</strong>
                   </label>
                 </div>
                 <div className="col">
-                  <div className="form-check">
+                  <div
+                    className="btn-group"
+                    role="group"
+                    aria-label="Leash rule checkbox toggle button group"
+                  >
                     <input
-                      className="form-check-input"
                       type="checkbox"
-                      name="leash_rules"
-                      value="On leash"
+                      className="btn-check"
                       id="search-on-leash"
+                      value="On leash"
+                      autocomplete="off"
                     />
                     <label
-                      className="form-check-label"
+                      className="btn btn-sm btn-outline-dark"
+                      style={{ border: "1px solid #ced4da" }}
                       htmlFor="search-on-leash"
                     >
                       on leash
                     </label>
-                  </div>
-                </div>
-
-                <div className="col">
-                  <div className="form-check">
                     <input
-                      className="form-check-input"
                       type="checkbox"
-                      name="leash_rules"
-                      value="Off leash"
+                      className="btn-check"
                       id="search-off-leash"
+                      value="Off leash"
+                      autocomplete="off"
                     />
                     <label
-                      className="form-check-label"
+                      className="btn btn-sm btn-outline-dark"
+                      style={{ border: "1px solid #ced4da" }}
                       htmlFor="search-off-leash"
                     >
                       off leash
@@ -307,26 +332,48 @@ function SearchOffCanvas(props) {
                 </div>
               </div>
 
-              <div className="d-flex">
-                <label for="search-parking" className="mt-2 me-2">
-                  <strong>Parking</strong>
-                </label>
-                <select
-                  id="search-parking"
-                  className="form-select"
-                  aria-label="search-parking"
-                  name="parking"
-                >
-                  <option value=""></option>
-                  {parkingOptions.map((parkingOption) => (
-                    <option
-                      value={`${parkingOption}`}
-                      key={`parking-${parkingOption}`}
+              <div className="row mt-2">
+                <div className="col-2">
+                  <label className="form-label mt-1">
+                    <strong>Parking</strong>
+                  </label>
+                </div>
+                <div className="col">
+                  <div
+                    className="btn-group"
+                    role="group"
+                    aria-label="Parking checkbox toggle button group"
+                  >
+                    <input
+                      type="checkbox"
+                      className="btn-check"
+                      id="search-free-parking"
+                      autocomplete="off"
+                      value="free"
+                    />
+                    <label
+                      className="btn btn-sm btn-outline-dark"
+                      style={{ border: "1px solid #ced4da" }}
+                      htmlFor="search-free-parking"
                     >
-                      {parkingOption}
-                    </option>
-                  ))}
-                </select>
+                      free
+                    </label>
+                    <input
+                      type="checkbox"
+                      className="btn-check"
+                      id="search-fee-parking"
+                      autocomplete="off"
+                      value="fee"
+                    />
+                    <label
+                      className="btn btn-sm btn-outline-dark"
+                      style={{ border: "1px solid #ced4da" }}
+                      htmlFor="search-fee-parking"
+                    >
+                      fee
+                    </label>
+                  </div>
+                </div>
               </div>
 
               <div className="row ms-1 me-1 mt-4">

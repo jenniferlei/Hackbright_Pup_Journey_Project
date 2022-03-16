@@ -15,26 +15,26 @@ os.system("createdb testdb")
 # example_data()
 
 
-# class PupJourneyTests(TestCase):
-#     """Flask tests."""
+class PupJourneyTests(TestCase):
+    """Flask tests."""
 
-#     def setUp(self):
-#         """Stuff to do before every test."""
+    def setUp(self):
+        """Stuff to do before every test."""
 
-#         # Get the Flask test client
-#         self.client = app.test_client()
+        # Get the Flask test client
+        self.client = app.test_client()
 
-#         # Show Flask errors that happen during tests
-#         app.config['TESTING'] = True
+        # Show Flask errors that happen during tests
+        app.config['TESTING'] = True
 
-#         # Connect to test database
-#         connect_to_db(app, "postgresql:///testdb")
+        # Connect to test database
+        connect_to_db(app, "postgresql:///testdb")
 
-#     def test_index(self):
-#         """Test homepage page."""
+    def test_index(self):
+        """Test homepage page."""
 
-#         result = self.client.get("/")
-#         self.assertIn(b"Welcome!", result.data)
+        result = self.client.get("/")
+        self.assertIn(b"Welcome!", result.data)
 
 
 class FlaskTestsDatabase(TestCase):
@@ -81,48 +81,48 @@ class FlaskTestsDatabase(TestCase):
         # print(result.data, "RESULT STATUS CODE")
         self.assertIn(b"Log Out", result.data)
 
-    # def test_hike_details(self):
-    #     """Test hike details page."""
-    #     result = self.client.get("/hikes/1")
-    #     self.assertIn(b"Cedar Grove and Vista View Point in Griffith Park", result.data)
+    def test_hike_details(self):
+        """Test hike details page."""
+        result = self.client.get("/hikes/1")
+        self.assertIn(b"Cedar Grove and Vista View Point in Griffith Park", result.data)
 
-    # def test_all_hikes(self):
-    #     """Test all hikes page."""
+    def test_all_hikes(self):
+        """Test all hikes page."""
 
-    #     result = self.client.get("/hikes")
-    #     self.assertIn(b"Cedar Grove and Vista View Point in Griffith Park", result.data)
+        result = self.client.get("/hikes")
+        self.assertIn(b"Cedar Grove and Vista View Point in Griffith Park", result.data)
 
 
-# class FlaskTestsLoggedIn(TestCase):
-#     """Flask tests with user logged in to session."""
+class FlaskTestsLoggedIn(TestCase):
+    """Flask tests with user logged in to session."""
 
-#     def setUp(self):
-#         """Stuff to do before every test."""
+    def setUp(self):
+        """Stuff to do before every test."""
 
-#         app.config['TESTING'] = True
+        app.config['TESTING'] = True
 
-#         # Need a key when testing with sessions
-#         app.config['SECRET_KEY'] = 'key' 
+        # Need a key when testing with sessions
+        app.config['SECRET_KEY'] = 'key' 
 
-#         # Connect to test database
-#         connect_to_db(app, "postgresql:///testdb")
+        # Connect to test database
+        connect_to_db(app, "postgresql:///testdb")
 
-#         # # Create tables and add sample data
-#         # db.create_all()
-#         # example_data()
+        # # Create tables and add sample data
+        # db.create_all()
+        # example_data()
 
-#         self.client = app.test_client()
+        self.client = app.test_client()
 
-#         with self.client as c:
-#             with c.session_transaction() as sess:
-#                 sess['user_email'] = "test@test"
-#                 sess['login'] = True
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess['user_email'] = "test@test"
+                sess['login'] = True
 
-#     def test_dashboard_page(self):
-#         """Test dashboard page."""
+    def test_dashboard_page(self):
+        """Test dashboard page."""
 
-#         result = self.client.get("/dashboard") # the result is not showing all the stuff from React
-#         self.assertIn(b"Where We've Been", result.data)
+        result = self.client.get("/dashboard") # the result is not showing all the stuff from React
+        self.assertIn(b"Where We've Been", result.data)
 
 
 # class FlaskTestsLoggedOut(TestCase):

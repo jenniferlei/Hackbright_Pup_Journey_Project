@@ -482,6 +482,62 @@ function HikeTableRow(props) {
   );
 }
 
+function TableHeader(props) {
+  return (
+    <React.Fragment>
+      <th role="columnheader">
+        <button
+          type="button"
+          className="btn btn-sm dropdown-toggle pb-0"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <h6
+            style={{
+              fontSize: ".875rem",
+              display: "inline-block",
+            }}
+          >
+            {props.header}
+          </h6>
+          &nbsp;
+        </button>
+        <ul className="dropdown-menu dropdown-menu-end">
+          <li>
+            <h6
+              style={{
+                padding: "0.25rem 1rem",
+                fontSize: ".875rem",
+              }}
+            >
+              Sort by {props.header}
+            </h6>
+          </li>
+          <li>
+            <hr class="dropdown-divider" />
+          </li>
+          <li>
+            <a
+              className="btn btn-sm dropdown-item"
+              onClick={props.handleClickAsc}
+            >
+              sort ascending
+            </a>
+          </li>
+          <li>
+            <a
+              className="btn btn-sm dropdown-item"
+              onClick={props.handleClickDesc}
+            >
+              sort descending
+            </a>
+          </li>
+        </ul>
+      </th>
+    </React.Fragment>
+  );
+}
+
 function AllHikesContainer(props) {
   const session_login = document.querySelector("#login").innerText;
 
@@ -493,6 +549,7 @@ function AllHikesContainer(props) {
   const [allHikes, setAllHikes] = React.useState([]);
   const [searchHikes, setSearchHikes] = React.useState([]);
   const [sortParam, setSortParam] = React.useState("");
+  const [keywordFilter, setKeywordFilter] = React.useState("");
 
   const [error, setError] = React.useState(null);
   const [isLoaded, setIsLoaded] = React.useState(false);
@@ -519,58 +576,112 @@ function AllHikesContainer(props) {
 
   React.useEffect(() => {
     console.log(sortParam);
-    if (sortParam === "name") {
+    if (sortParam === "name-asc") {
       setSearchHikes([
         ...searchHikes.sort((a, b) => {
-          let fa = a.hike_name.toLowerCase(),
-            fb = b.hike_name.toLowerCase();
-          return fa === fb ? 0 : fa < fb ? -1 : 1;
+          return a.hike_name.localeCompare(b.hike_name);
         }),
       ]);
-    } else if (sortParam === "difficulty") {
+    } else if (sortParam === "name-desc") {
       setSearchHikes([
         ...searchHikes.sort((a, b) => {
-          let fa = a.difficulty.toLowerCase(),
-            fb = b.difficulty.toLowerCase();
-          return fa === fb ? 0 : fa < fb ? -1 : 1;
+          return b.hike_name.localeCompare(a.hike_name);
         }),
       ]);
-    } else if (sortParam === "length") {
+    } else if (sortParam === "difficulty-asc") {
+      const order = ["easy", "moderate", "hard"];
+      searchHikes.forEach((hike) => {
+        hike.sort_order = order.indexOf(hike.difficulty);
+      });
+      // console.log(
+      //   "WATCH 4 ME",
+      //   searchHikes.map((hike) => hike.sort_order)
+      // );
+      setSearchHikes([
+        ...searchHikes.sort((a, b) => {
+          return a.sort_order - b.sort_order;
+        }),
+      ]);
+    } else if (sortParam === "difficulty-desc") {
+      const order = ["hard", "moderate", "easy"];
+      searchHikes.forEach((hike) => {
+        hike.sort_order = order.indexOf(hike.difficulty);
+      });
+      setSearchHikes([
+        ...searchHikes.sort((a, b) => {
+          return a.sort_order - b.sort_order;
+        }),
+      ]);
+    } else if (sortParam === "length-asc") {
       setSearchHikes([
         ...searchHikes.sort((a, b) => {
           return a.miles - b.miles;
         }),
       ]);
-    } else if (sortParam === "area") {
+    } else if (sortParam === "length-desc") {
       setSearchHikes([
         ...searchHikes.sort((a, b) => {
-          let fa = a.area.toLowerCase(),
-            fb = b.area.toLowerCase();
-          return fa === fb ? 0 : fa < fb ? -1 : 1;
+          return b.miles - a.miles;
         }),
       ]);
-    } else if (sortParam === "city") {
+    } else if (sortParam === "state-asc") {
       setSearchHikes([
         ...searchHikes.sort((a, b) => {
-          let fa = a.city.toLowerCase(),
-            fb = b.city.toLowerCase();
-          return fa === fb ? 0 : fa < fb ? -1 : 1;
+          return a.state.localeCompare(b.state);
         }),
       ]);
-    } else if (sortParam === "leashRule") {
+    } else if (sortParam === "state-desc") {
       setSearchHikes([
         ...searchHikes.sort((a, b) => {
-          let fa = a.leash_rule.toLowerCase(),
-            fb = b.leash_rule.toLowerCase();
-          return fa === fb ? 0 : fa < fb ? -1 : 1;
+          return b.state.localeCompare(a.state);
         }),
       ]);
-    } else if (sortParam === "parking") {
+    } else if (sortParam === "area-asc") {
       setSearchHikes([
         ...searchHikes.sort((a, b) => {
-          let fa = a.parking.toLowerCase(),
-            fb = b.parking.toLowerCase();
-          return fa === fb ? 0 : fa < fb ? -1 : 1;
+          return a.area.localeCompare(b.area);
+        }),
+      ]);
+    } else if (sortParam === "area-desc") {
+      setSearchHikes([
+        ...searchHikes.sort((a, b) => {
+          return b.area.localeCompare(a.area);
+        }),
+      ]);
+    } else if (sortParam === "city-asc") {
+      setSearchHikes([
+        ...searchHikes.sort((a, b) => {
+          return a.city.localeCompare(b.city);
+        }),
+      ]);
+    } else if (sortParam === "city-desc") {
+      setSearchHikes([
+        ...searchHikes.sort((a, b) => {
+          return b.city.localeCompare(a.city);
+        }),
+      ]);
+    } else if (sortParam === "leashRule-asc") {
+      setSearchHikes([
+        ...searchHikes.sort((a, b) => {
+          return a.leash_rule.localeCompare(b.leash_rule);
+        }),
+      ]);
+    } else if (sortParam === "leashRule-desc") {
+      setSearchHikes([
+        ...searchHikes.sort((a, b) => {
+          return b.leash_rule.localeCompare(a.leash_rule);
+        }),
+      ]);
+    } else if (sortParam === "parking-asc") {
+      setSearchHikes([
+        ...searchHikes.sort((a, b) => {
+          return a.parking.localeCompare(b.parking);
+        }),
+      ]);
+    } else if (sortParam === "parking-desc") {
+      setSearchHikes([
+        ...searchHikes.sort((a, b) => {
+          return b.parking.localeCompare(a.parking);
         }),
       ]);
     }
@@ -578,100 +689,21 @@ function AllHikesContainer(props) {
 
   console.log(searchHikes);
 
-  // function sortHikesByName() {
-  //   console.log(searchHikes);
-  //   const sortedHikes = searchHikes.sort((a, b) => {
-  //     let fa = a.difficulty.toLowerCase(),
-  //       fb = b.difficulty.toLowerCase();
-  //     return fa === fb ? 0 : fa < fb ? -1 : 1;
-  //   });
-
-  //   setSearchHikes(sortedHikes);
-
-  //   console.log(sortedHikes);
-  // }
-
-  function sortHikesByDifficulty() {
+  function getHikesByKeyword() {
     setSearchHikes([
-      ...searchHikes.sort((a, b) => {
-        let fa = a.difficulty.toLowerCase(),
-          fb = b.difficulty.toLowerCase();
-        return fa === fb ? 0 : fa < fb ? -1 : 1;
-      }),
+      ...allHikes.filter((hike) =>
+        hike.hike_name.toLowerCase().includes(keywordFilter.toLowerCase())
+      ),
     ]);
   }
 
-  // function sortHikesByLength() {
-  //   console.log(searchHikes);
-  //   const sortedHikes = searchHikes.sort((a, b) => {
-  //     return a.miles - b.miles;
-  //   });
-  //   setSearchHikes(sortedHikes);
-  // }
-
-  function sortHikes() {
-    console.log(sortParam);
-    if (sortParam === "name") {
-      setSearchHikes([
-        ...searchHikes.sort((a, b) => {
-          let fa = a.hike_name.toLowerCase(),
-            fb = b.hike_name.toLowerCase();
-          return fa === fb ? 0 : fa < fb ? -1 : 1;
-        }),
-      ]);
-    } else if (sortParam === "difficulty") {
-      setSearchHikes([
-        ...searchHikes.sort((a, b) => {
-          let fa = a.difficulty.toLowerCase(),
-            fb = b.difficulty.toLowerCase();
-          return fa === fb ? 0 : fa < fb ? -1 : 1;
-        }),
-      ]);
-    } else if (sortParam === "area") {
-      setSearchHikes([
-        ...searchHikes.sort((a, b) => {
-          let fa = a.area.toLowerCase(),
-            fb = b.area.toLowerCase();
-          return fa === fb ? 0 : fa < fb ? -1 : 1;
-        }),
-      ]);
-    } else if (sortParam === "city") {
-      setSearchHikes([
-        ...searchHikes.sort((a, b) => {
-          let fa = a.city.toLowerCase(),
-            fb = b.city.toLowerCase();
-          return fa === fb ? 0 : fa < fb ? -1 : 1;
-        }),
-      ]);
-    } else if (sortParam === "leashRule") {
-      setSearchHikes([
-        ...searchHikes.sort((a, b) => {
-          let fa = a.leash_rule.toLowerCase(),
-            fb = b.leash_rule.toLowerCase();
-          return fa === fb ? 0 : fa < fb ? -1 : 1;
-        }),
-      ]);
-    } else if (sortParam === "parking") {
-      setSearchHikes([
-        ...searchHikes.sort((a, b) => {
-          let fa = a.parking.toLowerCase(),
-            fb = b.parking.toLowerCase();
-          return fa === fb ? 0 : fa < fb ? -1 : 1;
-        }),
-      ]);
-    }
-  }
-
-  function getFilteredHikes() {}
-
-  const timestamp = new Date();
-
+  const timestamp = Date.now();
   const allHikeRows = searchHikes.map((hike) => (
-    <HikeTableRow hike={hike} key={`${timestamp}-${hike}`} />
+    <HikeTableRow hike={hike} key={`${timestamp}-${hike.hike_id}`} />
   ));
 
   console.log(
-    allHikeRows.map((hike) => hike.props),
+    allHikeRows.map((hike) => hike.props.hike.difficulty),
     "ALL HIKE ROWS"
   );
 
@@ -713,29 +745,36 @@ function AllHikesContainer(props) {
                   <h3>Hikes</h3>
                 </div>
                 <div className="d-flex float-end">
-                  <form method="GET" action="/hikes/search" className="d-flex">
-                    <input
-                      className="form-control me-2 input-sm"
-                      type="search"
-                      name="search_term"
-                      placeholder="Search hikes"
-                      aria-label="Search"
-                    ></input>
-                    <button
-                      className="btn btn-sm me-2"
-                      role="button"
-                      type="submit"
-                    >
-                      <small>
-                        <i
-                          data-bs-toggle="tooltip"
-                          data-bs-placement="right"
-                          title="search"
-                          className="bi bi-search"
-                        ></i>
-                      </small>
-                    </button>
-                  </form>
+                  <div className="d-flex">
+                    <div className="input-group">
+                      <input
+                        className="form-control input-sm"
+                        type="search"
+                        name="search_term"
+                        placeholder="Search by hike name"
+                        aria-label="Search"
+                        value={keywordFilter}
+                        onChange={(event) =>
+                          setKeywordFilter(event.target.value)
+                        }
+                      ></input>
+                      <button
+                        className="btn btn-sm me-2"
+                        role="button"
+                        style={{ border: "1px solid #ced4da" }}
+                        onClick={getHikesByKeyword}
+                      >
+                        <small>
+                          <i
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="right"
+                            title="search"
+                            className="bi bi-search"
+                          ></i>
+                        </small>
+                      </button>
+                    </div>
+                  </div>
                   <a
                     className="btn btn-sm mt-1"
                     data-bs-toggle="offcanvas"
@@ -750,133 +789,71 @@ function AllHikesContainer(props) {
                         title="advanced search"
                         className="bi bi-sliders"
                       ></i>
+                      &nbsp; filter
                     </small>
                   </a>
-                  <button
-                    type="button"
-                    className="btn btn-sm dropdown-toggle"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    <small>
-                      <i
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="right"
-                        title="sort"
-                        className="bi bi-sort-down"
-                      ></i>
-                      &nbsp; sort
-                    </small>
-                  </button>
-                  <ul className="dropdown-menu dropdown-menu-end">
-                    <li>
-                      <a
-                        className="btn btn-sm dropdown-item"
-                        onClick={() => setSortParam("name")}
-                      >
-                        by name
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        className="btn btn-sm dropdown-item"
-                        onClick={() => {
-                          setSortParam("difficulty");
-                          sortHikes;
-                        }}
-                        // onClick={() => setSortParam("difficulty")}
-                      >
-                        by difficulty
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        className="btn btn-sm dropdown-item"
-                        onClick={() => setSortParam("length")}
-                      >
-                        by length
-                      </a>
-                    </li>
-
-                    <li>
-                      <a
-                        className="btn btn-sm dropdown-item"
-                        onClick={() => setSortParam("area")}
-                      >
-                        by area
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        className="btn btn-sm dropdown-item"
-                        onClick={() => setSortParam("city")}
-                      >
-                        by city
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        className="btn btn-sm dropdown-item"
-                        onClick={() => setSortParam("leashRule")}
-                      >
-                        by leash rule
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        className="btn btn-sm dropdown-item"
-                        onClick={() => setSortParam("parking")}
-                      >
-                        by parking
-                      </a>
-                    </li>
-                  </ul>
                 </div>
               </div>
             </div>
 
-            <div className="card-body">
+            <div className="card-body pt-0">
               <div className="all-hikes-container">
-                <table className="table table-striped table-sm">
-                  <thead>
-                    <tr>
-                      <th role="columnheader">
-                        <small>Name</small>
-                      </th>
-                      <th role="columnheader">
-                        <small>Difficulty</small>
-                      </th>
-                      <th role="columnheader">
-                        <small>Length</small>
-                      </th>
-                      <th role="columnheader">
-                        <small>State</small>
-                      </th>
-                      <th role="columnheader">
-                        <small>Area</small>
-                      </th>
-                      <th role="columnheader">
-                        <small>City</small>
-                      </th>
-                      <th role="columnheader">
-                        <small>Leash rule</small>
-                      </th>
-                      <th role="columnheader">
-                        <small>Parking</small>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {allHikeRows}
-                    {/* {error ? (
-                      <i>{error.message}</i>
-                    ) : !isLoaded ? (
-                      <i>Loading...</i>
-                    ) : (
-                      <React.Fragment>{allHikeRows}</React.Fragment>
-                    )} */}
-                  </tbody>
-                </table>
+                {/* {allHikeRows} */}
+                {error ? (
+                  <i>{error.message}</i>
+                ) : !isLoaded ? (
+                  <i className="mt-3">Loading...</i>
+                ) : (
+                  <table className="table table-striped table-sm">
+                    <thead>
+                      <tr>
+                        <TableHeader
+                          header={"Name"}
+                          handleClickAsc={() => setSortParam("name-asc")}
+                          handleClickDesc={() => setSortParam("name-desc")}
+                        />
+                        <TableHeader
+                          header={"Difficulty"}
+                          handleClickAsc={() => setSortParam("difficulty-asc")}
+                          handleClickDesc={() =>
+                            setSortParam("difficulty-desc")
+                          }
+                        />
+                        <TableHeader
+                          header={"Length"}
+                          handleClickAsc={() => setSortParam("length-asc")}
+                          handleClickDesc={() => setSortParam("length-desc")}
+                        />
+                        <TableHeader
+                          header={"State"}
+                          handleClickAsc={() => setSortParam("state-asc")}
+                          handleClickDesc={() => setSortParam("state-desc")}
+                        />
+                        <TableHeader
+                          header={"Area"}
+                          handleClickAsc={() => setSortParam("area-asc")}
+                          handleClickDesc={() => setSortParam("area-desc")}
+                        />
+                        <TableHeader
+                          header={"City"}
+                          handleClickAsc={() => setSortParam("city-asc")}
+                          handleClickDesc={() => setSortParam("city-desc")}
+                        />
+                        <TableHeader
+                          header={"Leash Rule"}
+                          handleClickAsc={() => setSortParam("leashRule-asc")}
+                          handleClickDesc={() => setSortParam("leashRule-desc")}
+                        />
+                        <TableHeader
+                          header={"Parking"}
+                          handleClickAsc={() => setSortParam("parking-asc")}
+                          handleClickDesc={() => setSortParam("parking-desc")}
+                        />
+                      </tr>
+                    </thead>
+                    <tbody>{allHikeRows}</tbody>
+                  </table>
+                )}
               </div>
             </div>
           </div>
@@ -897,9 +874,7 @@ function AllHikesContainer(props) {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav me-auto">
-              <FooterSearchBar />
-            </ul>
+            {/* <FooterSearchBar /> */}
             <div className="d-flex">
               <ul className="navbar-nav me-auto navbar-center">
                 <FooterNavItemOffCanvas

@@ -26,37 +26,65 @@ function FooterNavItemOffCanvas(props) {
 }
 
 function FooterSearchBar(props) {
+  const [keywordFilter, setKeywordFilter] = React.useState("");
+  const [searchHikes, setSearchHikes] = React.useState([]);
+
+  function getFilteredHikes() {
+    let url =
+      "http://api.example.com/results?q=" +
+      encodeURI(this.state.term) +
+      "&json=1";
+    axios
+      .get(url)
+      .then((response) => {
+        let data = {
+          results: response.data,
+        };
+        this.setState(data);
+      })
+      .catch((error) => console.log(error));
+  }
+
   function doNothing() {}
   return (
     <React.Fragment>
-      <form method="GET" action="/hikes/search">
+      <ul className="navbar-nav me-auto">
         <li className="nav-item d-flex">
-          <input
-            className="form-control me-2 input-sm"
-            type="search"
-            name="search_term"
-            placeholder="Search hikes"
-            aria-label="Search"
-          ></input>
-          <button className="btn btn-sm nav-link" role="button" type="submit">
-            <small>
-              <i
-                data-bs-toggle="tooltip"
-                data-bs-placement="right"
-                title="search"
-                className="bi bi-search"
-              ></i>
-            </small>
-          </button>
+          <div className="input-group">
+            <input
+              className="form-control input-sm"
+              type="search"
+              name="search_term"
+              placeholder="Search by hike name"
+              aria-label="Search"
+              value={keywordFilter}
+              onChange={(event) => setKeywordFilter(event.target.value)}
+            ></input>
+            <button
+              className="btn btn-sm nav-link"
+              role="button"
+              style={{ border: "1px solid #ced4da" }}
+              onClick={getFilteredHikes}
+            >
+              <small>
+                <i
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="right"
+                  title="search"
+                  className="bi bi-search"
+                ></i>
+              </small>
+            </button>
+          </div>
         </li>
-      </form>
-      <FooterNavItemOffCanvas
-        name="Advanced Search"
-        href="Search"
-        tooltip="advanced search"
-        icon="bi bi-sliders"
-        getFunction={doNothing}
-      />
+        <FooterNavItemOffCanvas
+          name="Filter"
+          href="Search"
+          tooltip="filter"
+          icon="bi bi-sliders"
+          getFunction={doNothing}
+        />
+      </ul>
     </React.Fragment>
   );
 }
