@@ -21,7 +21,7 @@ Do you love going on hikes with your dogs? Pup Journey is a platform where users
 
 ### REGISTRATION & LOGIN
 
-> <p align="justify"> Users either register as a patient or a provider, where anyone can register as a patient, but a provider is required to register with a National Provider ID (NPI). When the form receives an 'NPI' input by the user, that input is verified using an HTTPS fetch request to NPPES NPI Registry's API, which I've also implemented to auto-fill provider registration text fields based on the data returned. Lastly, providers are prompted to select for their activities by using the text-autocomplete lookup feature, or by scrolling through the database's activity list. </p>
+> <p align="justify">  </p>
 
 ### SEARCH HIKES
 
