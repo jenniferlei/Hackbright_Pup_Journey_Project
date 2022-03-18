@@ -1,107 +1,105 @@
 {% extends 'base.html' %} {% block title %}{{ hike.hike_name }} - Details{%
 endblock %} {% block body %}
 
+
+<div class="bg"></div>
+<div class="bg-fade-div"></div>
 <div id="hikeDetailsRoot"></div>
 
-<div class="container-fluid">
-  <div class="d-flex justify-content-start">
-    <div class="card col mt-3" style="width:100vw">
-      <div class="card-header pb-0">
-        <div class="clearfix">
-          <div class="float-start">
-            <h3 class="mt-1">{{hike.hike_name}}</h3>
-          </div>
-          <div class="d-flex float-end" id="actions"></div>
+<div class="container-fluid full-page-container">
+  <div class="ms-4 mt-1">
+    <h3>{{hike.hike_name}}</h3>
+  </div>
+
+  <div class="card hike-details-card">
+    <div class="row g-0" style="height: 100%">
+      <div class="col-md-5">
+        <div class="card-body fw-300">
+          {{hike.description}}
+          <br></br>
+          <ul class="no-bullets">
+            <li>
+              <strong>
+                <span id="area">Area:</span>
+              </strong>
+              {{hike.area}}, {{hike.city}},
+              {{hike.state}}
+            </li>
+            <li>
+              <strong>
+                <span id="difficulty">Difficulty:</span>
+              </strong>
+              {{hike.difficulty}}
+            </li>
+            <li>
+              <strong>
+                <span id="leash_rule">Leash Rule:</span>
+              </strong>
+              {{hike.leash_rule}}
+            </li>
+            <li>
+              <strong>
+                <span id="address">Address:</span>
+              </strong>
+              {{hike.address}}
+            </li>
+            <li>
+              <strong>
+                <span id="coordinates">Coordinates:</span>
+              </strong>
+              <span id="latitude">{{hike.latitude}}</span>,
+              <span id="longitude">{{hike.longitude}}</span>
+            </li>
+            <li>
+              <strong>
+                <span id="length">Length:</span>
+              </strong>
+              {{hike.miles}} {{hike.path}}
+            </li>
+            <li>
+              <strong>
+                <span id="parking">Parking:</span>
+              </strong>
+              {{hike.parking}}
+            </li>
+            <li>
+              <strong>
+                <span id="resources">Resources:</span>
+              </strong>
+              <br />
+              <a
+                class="link-dark"
+                href={{hike.resources}}
+                target="_blank"
+              >
+                {{hike.resources}}
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
-
-      <div class="row g-0">
-        <div class="col-md-5">
-          <div class="card-body">
-            {{hike.description}}
-            <br></br>
-            <ul class="no-bullets">
-              <li>
-                <strong>
-                  <span id="area">Area:</span>
-                </strong>
-                {{hike.area}}, {{hike.city}},
-                {{hike.state}}
-              </li>
-              <li>
-                <strong>
-                  <span id="difficulty">Difficulty:</span>
-                </strong>
-                {{hike.difficulty}}
-              </li>
-              <li>
-                <strong>
-                  <span id="leash_rule">Leash Rule:</span>
-                </strong>
-                {{hike.leash_rule}}
-              </li>
-              <li>
-                <strong>
-                  <span id="address">Address:</span>
-                </strong>
-                {{hike.address}}
-              </li>
-              <li>
-                <strong>
-                  <span id="coordinates">Coordinates:</span>
-                </strong>
-                <span id="latitude">{{hike.latitude}}</span>,
-                <span id="longitude">{{hike.longitude}}</span>
-              </li>
-              <li>
-                <strong>
-                  <span id="length">Length:</span>
-                </strong>
-                {{hike.miles}} {{hike.path}}
-              </li>
-              <li>
-                <strong>
-                  <span id="parking">Parking:</span>
-                </strong>
-                {{hike.parking}}
-              </li>
-              <li>
-                <strong>
-                  <span id="resources">Resources:</span>
-                </strong>
-                <br />
-                <a
-                  class="link-dark"
-                  href={{hike.resources}}
-                  target="_blank"
-                >
-                  {{hike.resources}}
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div class="col-md-7">
-          <div class="embed-google-map">
-            <iframe
-              width="100%"
-              height="500"
-              frame-border="0"
-              scrolling="no"
-              margin-height="0"
-              margin-width="0"
-              src="https://maps.google.com/maps?q={{hike.latitude}},{{hike.longitude}}&t=&zoom=11&maptype=roadmap&ie=UTF8&iwloc=&output=embed"
-            ></iframe>
-            <!-- API MAP -->
-          <!-- <iframe
-            width="500"
-            height="300"
-            frameBorder="0"
-            style="border:0"
-            src={`"https://www.google.com/maps/embed/v1/directions?key={{ GOOGLE_KEY }}&origin=Current+Location&destination=${hike.latitude},${hike.longitude}&center=${hike.latitude},${hike.longitude}&avoid=tolls&zoom=11"`}
-            allowfullscreen
-          ></iframe> -->
-          </div>
+      <div class="col-md-7" style="height: 100%">
+        <div class="embed-google-map" style="border: 1px solid rgba(0, 0, 0, 0.125);
+            border-radius: 10px;
+            padding: 5px; height: 100%">
+          <iframe
+            width="100%"
+            height="100%"
+            frame-border="0"
+            scrolling="no"
+            margin-height="0"
+            margin-width="0"
+            src="https://maps.google.com/maps?q={{hike.latitude}},{{hike.longitude}}&t=&zoom=11&maptype=roadmap&ie=UTF8&iwloc=&output=embed"
+          ></iframe>
+          <!-- API MAP -->
+        <!-- <iframe
+          width="500"
+          height="300"
+          frameBorder="0"
+          style="border:0"
+          src={`"https://www.google.com/maps/embed/v1/directions?key={{ GOOGLE_KEY }}&origin=Current+Location&destination=${hike.latitude},${hike.longitude}&center=${hike.latitude},${hike.longitude}&avoid=tolls&zoom=11"`}
+          allowfullscreen
+        ></iframe> -->
         </div>
       </div>
     </div>

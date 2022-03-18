@@ -27,10 +27,6 @@ const AllHikesCheckInContainer = React.forwardRef((props, ref) => {
   const allCheckIns = [];
   const allEditCheckIns = [];
 
-  // the following line will print out the value of cards
-  // pay attention to what it is initially and what it is when the component re-renders
-  // console.log(`checkIns: `, checkIns);
-
   for (const currentCheckIn of checkIns) {
     const date_hiked = new Date(currentCheckIn.date_hiked);
     const date_hiked_formatted = date_hiked.toLocaleDateString();
@@ -85,36 +81,26 @@ const AllHikesCheckInContainer = React.forwardRef((props, ref) => {
             All Check Ins
           </h3>
           {session_login === "True" ? (
-            <div className="d-flex float-end">
-              <div className="btn-group mt-1">
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-dark dropdown-toggle"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  actions <i className="bi bi-check-circle"></i>
-                </button>
-                <ul className="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <a
-                      className="btn btn-sm dropdown-item"
-                      href=""
-                      data-bs-toggle="modal"
-                      data-bs-target="#modal-add-check-in"
-                    >
-                      add a check in
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
+            <a
+              className="btn btn-sm btn-outline-dark fw-300"
+              href=""
+              data-bs-toggle="modal"
+              data-bs-target="#modal-add-check-in"
+            >
+              <i
+                data-bs-toggle="tooltip"
+                data-bs-placement="right"
+                title="add a check in"
+                className="bi bi-check-circle"
+              ></i>{" "}
+              add a check in
+            </a>
           ) : null}
         </div>
 
         <div className="offcanvas-body">
           {session_login !== "True" ? (
-            <div>Please log in to add a check in.</div>
+            <div className="fw-300">Please log in to add a check in.</div>
           ) : (
             <div>{allCheckIns}</div>
           )}
@@ -172,10 +158,6 @@ const AllHikesCommentContainer = React.forwardRef((props, ref) => {
 
   const allComments = [];
   const allEditComments = [];
-
-  // the following line will print out the value of cards
-  // pay attention to what it is initially and what it is when the component re-renders
-  // console.log(`comments: `, comments);
 
   for (const currentComment of comments) {
     const date_edited = new Date(currentComment.date_edited);
@@ -235,36 +217,26 @@ const AllHikesCommentContainer = React.forwardRef((props, ref) => {
             Your Comments For All Hikes
           </h3>
           {session_login === "True" ? (
-            <div className="d-flex float-end">
-              <div className="btn-group mt-1">
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-dark dropdown-toggle"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  actions <i className="bi bi-chat-text"></i>
-                </button>
-                <ul className="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <a
-                      className="btn btn-sm dropdown-item"
-                      href=""
-                      data-bs-toggle="modal"
-                      data-bs-target="#modal-add-comment"
-                    >
-                      add a comment
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
+            <a
+              className="btn btn-sm btn-outline-dark fw-300"
+              href=""
+              data-bs-toggle="modal"
+              data-bs-target="#modal-add-comment"
+            >
+              <i
+                data-bs-toggle="tooltip"
+                data-bs-placement="right"
+                title="add a comment for any hike"
+                className="bi bi-chat-text"
+              ></i>{" "}
+              add a comment
+            </a>
           ) : null}
         </div>
 
         <div className="offcanvas-body">
           {session_login !== "True" ? (
-            <div>Please log in to view your comments.</div>
+            <div className="fw-300">Please log in to view your comments.</div>
           ) : (
             <div>{allComments}</div>
           )}
@@ -384,36 +356,26 @@ const AllHikesBookmarksListContainer = React.forwardRef((props, ref) => {
             All Bookmarks
           </h3>
           {session_login === "True" ? (
-            <div className="d-flex float-end">
-              <div className="btn-group mt-1">
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-dark dropdown-toggle"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  actions <i className="bi bi-bookmark-star"></i>
-                </button>
-                <ul className="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <a
-                      className="btn btn-sm dropdown-item"
-                      href=""
-                      data-bs-toggle="modal"
-                      data-bs-target="#modal-create-bookmarks-list"
-                    >
-                      create a list
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
+            <a
+              className="btn btn-sm btn-outline-dark fw-300"
+              href=""
+              data-bs-toggle="modal"
+              data-bs-target="#modal-create-bookmarks-list"
+            >
+              <i
+                data-bs-toggle="tooltip"
+                data-bs-placement="right"
+                title="create a bookmarks list"
+                className="bi bi-bookmark-star"
+              ></i>{" "}
+              create a list
+            </a>
           ) : null}
         </div>
 
         <div className="offcanvas-body">
           {session_login !== "True" ? (
-            <div>Please log in to add a bookmark.</div>
+            <div className="fw-300">Please log in to add a bookmark.</div>
           ) : (
             <div>{allBookmarksLists}</div>
           )}
@@ -443,42 +405,115 @@ function HikeTableRow(props) {
   return (
     <tr>
       <td>
-        <span
-          className="d-inline-block text-truncate"
-          style={{ minWidth: 0, maxWidth: "400px" }}
-        >
-          <a className="link-dark" href={`/hikes/${props.hike.hike_id}`}>
-            <small>{props.hike.hike_name}</small>
-          </a>
-        </span>
+        {props.sortParam === "name-asc" || props.sortParam === "name-desc" ? (
+          <span
+            className="td-hike-name d-inline-block text-truncate fw-400"
+            style={{
+              minWidth: 0,
+              maxWidth: "400px",
+            }}
+          >
+            <a className="link-dark" href={`/hikes/${props.hike.hike_id}`}>
+              <small>{props.hike.hike_name}</small>
+            </a>
+          </span>
+        ) : (
+          <span
+            className="td-hike-name d-inline-block text-truncate fw-300"
+            style={{ minWidth: 0, maxWidth: "400px" }}
+          >
+            <a className="link-dark" href={`/hikes/${props.hike.hike_id}`}>
+              <small>{props.hike.hike_name}</small>
+            </a>
+          </span>
+        )}
       </td>
       <td>
-        <small>{props.hike.difficulty}</small>
+        {props.sortParam === "difficulty-asc" ||
+        props.sortParam === "difficulty-desc" ? (
+          <span className="td-difficulty fw-400">
+            <small>{props.hike.difficulty}</small>
+          </span>
+        ) : (
+          <span className="td-difficulty fw-300">
+            <small>{props.hike.difficulty}</small>
+          </span>
+        )}
       </td>
       <td>
-        <small>{props.hike.miles} miles</small>
+        {props.sortParam === "length-asc" ||
+        props.sortParam === "length-desc" ? (
+          <span className="td-miles fw-400">
+            <small>{props.hike.miles} miles</small>
+          </span>
+        ) : (
+          <span className="td-miles fw-300">
+            <small>{props.hike.miles} miles</small>
+          </span>
+        )}
       </td>
       <td>
-        <small>{props.hike.state}</small>
+        {props.sortParam === "state-asc" || props.sortParam === "state-desc" ? (
+          <span className="td-state fw-400">
+            <small>{props.hike.state}</small>
+          </span>
+        ) : (
+          <span className="td-state fw-300">
+            <small>{props.hike.state}</small>
+          </span>
+        )}
       </td>
       <td>
-        <span className="flex-truncate-text">
-          <small>{props.hike.area}</small>
-        </span>
+        {props.sortParam === "area-asc" || props.sortParam === "area-desc" ? (
+          <span className="td-area fw-400">
+            <small>{props.hike.area}</small>
+          </span>
+        ) : (
+          <span className="td-area fw-300">
+            <small>{props.hike.area}</small>
+          </span>
+        )}
       </td>
       <td>
-        <small>{props.hike.city}</small>
+        {props.sortParam === "city-asc" || props.sortParam === "city-desc" ? (
+          <span className="td-city fw-400">
+            <small>{props.hike.city}</small>
+          </span>
+        ) : (
+          <span className="td-city fw-300">
+            <small>{props.hike.city}</small>
+          </span>
+        )}
       </td>
       <td>
-        <small>{props.hike.leash_rule}</small>
+        {props.sortParam === "leashRule-asc" ||
+        props.sortParam === "leashRule-desc" ? (
+          <span className="td-leash-rule fw-400">
+            <small>{props.hike.leash_rule}</small>
+          </span>
+        ) : (
+          <span className="td-leash-rule fw-300">
+            <small>{props.hike.leash_rule}</small>
+          </span>
+        )}
       </td>
       <td>
-        <span
-          className="d-inline-block text-truncate"
-          style={{ maxWidth: "130px" }}
-        >
-          <small>{props.hike.parking}</small>
-        </span>
+        {props.sortParam === "parking-asc" ||
+        props.sortParam === "parking-desc" ? (
+          <span
+            className="td-parking d-inline-block text-truncate fw-400"
+            style={{ maxWidth: "130px" }}
+          >
+            <small>{props.hike.parking}</small>
+          </span>
+        ) : (
+          <span
+            className="td-parking d-inline-block text-truncate fw-300"
+            style={{ maxWidth: "130px" }}
+          >
+            <small>{props.hike.parking}</small>
+          </span>
+        )}
       </td>
     </tr>
   );
@@ -520,7 +555,7 @@ function TableHeader(props) {
           </li>
           <li>
             <a
-              className="btn btn-sm dropdown-item"
+              className="btn btn-sm dropdown-item fw-300"
               onClick={props.handleClickAsc}
             >
               sort ascending
@@ -528,7 +563,7 @@ function TableHeader(props) {
           </li>
           <li>
             <a
-              className="btn btn-sm dropdown-item"
+              className="btn btn-sm dropdown-item fw-300"
               onClick={props.handleClickDesc}
             >
               sort descending
@@ -704,13 +739,18 @@ function AllHikesContainer(props) {
       .then((response) => response.json())
       .then((responseJson) => {
         const { hikes } = responseJson;
+        setSortParam("");
         setSearchHikes(hikes);
       });
   }
 
   const timestamp = Date.now();
   const allHikeRows = searchHikes.map((hike) => (
-    <HikeTableRow hike={hike} key={`${timestamp}-${hike.hike_id}`} />
+    <HikeTableRow
+      hike={hike}
+      key={`${timestamp}-${hike.hike_id}`}
+      sortParam={sortParam}
+    />
   ));
 
   console.log(
@@ -747,125 +787,120 @@ function AllHikesContainer(props) {
       <AllHikesCheckInContainer ref={AllHikesCheckInContainerRef} />
       <AllHikesCommentContainer ref={AllHikesCommentContainerRef} />
 
-      <div className="container-fluid">
-        <div className="d-flex justify-content-start">
-          <div className="card col mt-3" style={{ width: "100vw" }}>
-            <div className="card-header pb-0">
-              <div className="clearfix">
-                <div className="d-flex float-start mt-1">
-                  <h3>Hikes</h3>
-                </div>
-                <div className="d-flex float-end">
-                  <div className="d-flex">
-                    <div className="input-group">
-                      <input
-                        className="form-control input-sm"
-                        type="search"
-                        name="search_term"
-                        placeholder="Search by hike name"
-                        aria-label="Search"
-                        value={keywordFilter}
-                        onChange={(event) =>
-                          setKeywordFilter(event.target.value)
-                        }
-                      ></input>
-                      <button
-                        className="btn btn-sm me-2"
-                        role="button"
-                        style={{ border: "1px solid #ced4da" }}
-                        onClick={getHikesByKeyword}
-                      >
-                        <small>
-                          <i
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="right"
-                            title="search"
-                            className="bi bi-search"
-                          ></i>
-                        </small>
-                      </button>
-                    </div>
-                  </div>
-                  <a
-                    className="btn btn-sm mt-1"
-                    data-bs-toggle="offcanvas"
-                    href="#Search"
-                    role="button"
-                    aria-controls="Search"
-                  >
-                    <small>
-                      <i
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="right"
-                        title="advanced search"
-                        className="bi bi-sliders"
-                      ></i>
-                      &nbsp; filter
-                    </small>
-                  </a>
-                </div>
+      <div className="container-fluid full-page-container">
+        <div className="clearfix">
+          <div className="d-flex float-start ms-4 mt-1">
+            <h3>Hikes</h3>
+          </div>
+          <div className="d-flex float-end">
+            <div className="d-flex">
+              <div className="input-group">
+                <input
+                  className="form-control input-sm"
+                  type="search"
+                  name="search_term"
+                  placeholder="Search by hike name"
+                  aria-label="Search"
+                  value={keywordFilter}
+                  onChange={(event) => setKeywordFilter(event.target.value)}
+                  style={{ fontWeight: 300, fontSize: "0.875rem" }}
+                ></input>
+                <button
+                  className="btn btn-sm me-2"
+                  role="button"
+                  style={{ border: "1px solid #ced4da" }}
+                  onClick={getHikesByKeyword}
+                >
+                  <small>
+                    <i
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="right"
+                      title="search"
+                      className="bi bi-search"
+                    ></i>
+                  </small>
+                </button>
               </div>
             </div>
+            <a
+              className="btn btn-sm mt-1"
+              data-bs-toggle="offcanvas"
+              href="#Search"
+              role="button"
+              aria-controls="Search"
+            >
+              <small style={{ fontWeight: 300 }}>
+                <i
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="right"
+                  title="advanced search"
+                  className="bi bi-sliders"
+                ></i>
+                &nbsp; filter
+              </small>
+            </a>
+          </div>
+        </div>
 
-            <div className="card-body pt-0">
-              <div className="all-hikes-container">
-                {/* {allHikeRows} */}
-                {error ? (
-                  <i>{error.message}</i>
-                ) : !isLoaded ? (
-                  <i className="mt-3">Loading...</i>
-                ) : (
-                  <table className="table table-striped table-sm">
-                    <thead>
-                      <tr>
-                        <TableHeader
-                          header={"Name"}
-                          handleClickAsc={() => setSortParam("name-asc")}
-                          handleClickDesc={() => setSortParam("name-desc")}
-                        />
-                        <TableHeader
-                          header={"Difficulty"}
-                          handleClickAsc={() => setSortParam("difficulty-asc")}
-                          handleClickDesc={() =>
-                            setSortParam("difficulty-desc")
-                          }
-                        />
-                        <TableHeader
-                          header={"Length"}
-                          handleClickAsc={() => setSortParam("length-asc")}
-                          handleClickDesc={() => setSortParam("length-desc")}
-                        />
-                        <TableHeader
-                          header={"State"}
-                          handleClickAsc={() => setSortParam("state-asc")}
-                          handleClickDesc={() => setSortParam("state-desc")}
-                        />
-                        <TableHeader
-                          header={"Area"}
-                          handleClickAsc={() => setSortParam("area-asc")}
-                          handleClickDesc={() => setSortParam("area-desc")}
-                        />
-                        <TableHeader
-                          header={"City"}
-                          handleClickAsc={() => setSortParam("city-asc")}
-                          handleClickDesc={() => setSortParam("city-desc")}
-                        />
-                        <TableHeader
-                          header={"Leash Rule"}
-                          handleClickAsc={() => setSortParam("leashRule-asc")}
-                          handleClickDesc={() => setSortParam("leashRule-desc")}
-                        />
-                        <TableHeader
-                          header={"Parking"}
-                          handleClickAsc={() => setSortParam("parking-asc")}
-                          handleClickDesc={() => setSortParam("parking-desc")}
-                        />
-                      </tr>
-                    </thead>
-                    <tbody>{allHikeRows}</tbody>
-                  </table>
-                )}
-              </div>
+        <div className="card full-page-card">
+          <div className="card-body pt-0">
+            <div className="all-hikes-container">
+              {error ? (
+                <i>{error.message}</i>
+              ) : !isLoaded ? (
+                <p>
+                  <i>Loading...</i>
+                </p>
+              ) : (
+                <table className="table table-striped table-sm">
+                  <thead>
+                    <tr>
+                      <TableHeader
+                        header={"Name"}
+                        handleClickAsc={() => setSortParam("name-asc")}
+                        handleClickDesc={() => setSortParam("name-desc")}
+                      />
+                      <TableHeader
+                        header={"Difficulty"}
+                        handleClickAsc={() => setSortParam("difficulty-asc")}
+                        handleClickDesc={() => setSortParam("difficulty-desc")}
+                      />
+                      <TableHeader
+                        header={"Length"}
+                        handleClickAsc={() => setSortParam("length-asc")}
+                        handleClickDesc={() => setSortParam("length-desc")}
+                      />
+                      <TableHeader
+                        header={"State"}
+                        handleClickAsc={() => setSortParam("state-asc")}
+                        handleClickDesc={() => setSortParam("state-desc")}
+                      />
+                      <TableHeader
+                        header={"Area"}
+                        handleClickAsc={() => setSortParam("area-asc")}
+                        handleClickDesc={() => setSortParam("area-desc")}
+                      />
+                      <TableHeader
+                        header={"City"}
+                        handleClickAsc={() => setSortParam("city-asc")}
+                        handleClickDesc={() => setSortParam("city-desc")}
+                      />
+                      <TableHeader
+                        header={"Leash Rule"}
+                        handleClickAsc={() => setSortParam("leashRule-asc")}
+                        handleClickDesc={() => setSortParam("leashRule-desc")}
+                      />
+                      <TableHeader
+                        header={"Parking"}
+                        handleClickAsc={() => setSortParam("parking-asc")}
+                        handleClickDesc={() => setSortParam("parking-desc")}
+                      />
+                    </tr>
+                  </thead>
+
+                  <tbody>{allHikeRows}</tbody>
+                </table>
+              )}
             </div>
           </div>
         </div>

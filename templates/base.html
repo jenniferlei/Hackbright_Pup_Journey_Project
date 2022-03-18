@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <title>{% block title %}{% endblock %}</title>
+  <link rel="icon" href="/static/img/test_logo2.png">
   <!-- JQuery -->
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <!-- React dependencies -->
@@ -28,7 +29,8 @@
   <link rel="stylesheet" href="/static/css/site.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600&family=Rubik:wght@300&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600&family=Rubik:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 
   {% block head %}{% endblock %}
 </head>
@@ -38,36 +40,36 @@
 
 
 <div class="flex-wrap">
-  <nav class="navbar navbar-dark bg-dark navbar-expand-sm sticky-top">
+  <nav class="navbar navbar-light navbar-expand-sm sticky-top">
     <div class="container-fluid">
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
       </button>
-      <a class="navbar-brand" href="/"><i class="bi bi-tree-fill"></i> Pup Journey</a>
+      <a class="navbar-brand" href="/"><img src="/static/img/test_logo2.png" style="width: 45px; height: 45px; margin-right: 1em">&nbsp;&nbsp;Pup Journey</a>
       <div class="collapse navbar-collapse" id="navbarToggler">
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a class="nav-link" href="/"><i class="bi bi-house-fill"></i></a>
+            <a class="header-nav-link nav-link" href="/"><i class="bi bi-house"></i></a>
           </li>
           <li class="nav-item">
-                <a class="nav-link" href="/hikes">Hikes</a>
+                <a class="header-nav-link nav-link fw-300" href="/hikes">Hikes</a>
           </li>
           <li class="nav-item">
-                <a class="nav-link" href="/dashboard">Dashboard</a>
+                <a class="header-nav-link nav-link fw-300" href="/dashboard">Dashboard</a>
           </li>
         </ul>
         <div class="d-flex">
           <ul class="navbar-nav me-auto">
             {% if "login" in session %}
             <li class="nav-item">
-                <a class="nav-link" href="/logout">Log Out</a>
+                <a class="header-nav-link nav-link fw-300" href="/logout">Log Out</a>
             </li>
             {% else %}
             <li class="nav-item">
-                <a class="nav-link" href="" data-bs-toggle="modal" data-bs-target="#modal-sign-up">Sign Up</a>
+                <a class="header-nav-link nav-link fw-300" href="" data-bs-toggle="modal" data-bs-target="#modal-sign-up">Sign Up</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="" data-bs-toggle="modal" data-bs-target="#modal-login">Log In</a>
+                <a class="header-nav-link nav-link fw-300" href="" data-bs-toggle="modal" data-bs-target="#modal-login">Log In</a>
             </li>
           {% endif %}
           </ul>
@@ -85,14 +87,14 @@
           <h5 class="modal-title" id="modal-sign-up-label">Sign Up</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body fw-300">
 
           <form action="/users" class="form-sign-up" method="POST">
         
             <div class="form-floating mb-3">
               <input type="text"
                       name="full_name"
-                      class="form-control"
+                      class="form-control fw-300"
                       id="floating-signup-full_name"
                       placeholder="Full Name"
                       required>
@@ -102,7 +104,7 @@
             <div class="form-floating mb-3">
               <input type="email"
                       name="email"
-                      class="form-control"
+                      class="form-control fw-300"
                       id="floating-signup-email"
                       placeholder="name@example.com"
                       required>
@@ -113,7 +115,7 @@
             <div class="form-floating mb-3">
               <input type="password"
                       name="new-password"
-                      class="form-control"
+                      class="form-control fw-300"
                       id="new-password"
                       placeholder="Password"
                       required>
@@ -121,8 +123,8 @@
             </div>
 
           <div class="modal-footer">
-            <button class="btn btn-sm btn-outline-dark btn-block" type="submit">Sign Up</button>
-            <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
+            <button class="btn btn-sm btn-outline-dark btn-block fw-300" type="submit">Sign Up</button>
+            <button type="button" class="btn btn-sm btn-secondary btn-block fw-300" data-bs-dismiss="modal">Close</button>
           </div>
           </form>
         </div>
@@ -139,13 +141,13 @@
           <h5 class="modal-title" id="modal-login-label">Log In</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body fw-300">
           <form action="/login" class="form-signin" method="POST">
 
             <div class="form-floating mb-3">
               <input type="email"
                       name="email"
-                      class="form-control"
+                      class="form-control fw-300"
                       id="floating-login-email"
                       placeholder="name@example.com"
                       required>
@@ -156,7 +158,7 @@
             <div class="form-floating mb-3">
               <input type="password"
                       name="current-password"
-                      class="form-control"
+                      class="form-control fw-300"
                       id="current-password"
                       placeholder="Password"
                       required>
@@ -164,9 +166,9 @@
             </div>
 
           <div class="modal-footer">
-            <button class="btn btn-sm btn-outline-dark btn-block" type="submit">Log In</button>
+            <button class="btn btn-sm btn-outline-dark btn-block fw-300" type="submit">Log In</button>
             </form>
-            <button type="button" class="btn btn-sm btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-sm btn-secondary btn-block fw-300" data-bs-dismiss="modal">Close</button>
           </div>
 
         </div>
@@ -178,7 +180,7 @@
 
 
     {% for msg in get_flashed_messages() %}
-      <div class="flash-msg sticky-top">
+      <div class="flash-msg sticky-top fw-300">
         {{ msg }}
       </div>
     {% endfor %}

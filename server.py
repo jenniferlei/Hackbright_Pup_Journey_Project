@@ -754,7 +754,7 @@ def register_user():
         db.session.commit()
         flash("Success! Account created. Please log in.")
 
-    return redirect("/")
+    return redirect(request.referrer)
 
 
 @app.route("/login", methods=["POST"])
@@ -787,7 +787,7 @@ def process_logout():
     del session["login"]
     del session["user_email"]
     flash("Successfully logged out!")
-    return redirect("/")
+    return redirect(request.referrer)
 
 
 @app.route("/login_session.json")

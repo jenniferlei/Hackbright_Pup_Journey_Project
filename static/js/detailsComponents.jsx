@@ -179,7 +179,7 @@ const HikeDetailsCommentContainer = React.forwardRef((props, ref) => {
 
         <div className="offcanvas-body">
           {session_login !== "True" ? (
-            <div>Please log in to add a comment.</div>
+            <div className="fw-300">Please log in to add a comment.</div>
           ) : null}
           <div>{allComments}</div>
 
@@ -370,7 +370,7 @@ const DetailsAddHikeToNewOrExistingList = React.forwardRef((props, ref) => {
             </div>
             <div className="modal-body">
               {session_login !== "True" ? (
-                <div>Please log in to add a bookmark.</div>
+                <div className="fw-300">Please log in to add a bookmark.</div>
               ) : (
                 <div>
                   <h4>Add to New Bookmark List</h4>
@@ -655,13 +655,13 @@ const HikeDetailsCheckInContainer = React.forwardRef((props, ref) => {
 
         {session_login === "True" &&
         checkInsHeader === "Check Ins For This Hike" ? (
-          <div className="ms-4">
+          <div className="ms-4 fw-300">
             You have this hike on the following check ins:
           </div>
         ) : null}
         <div className="offcanvas-body">
           {session_login !== "True" ? (
-            <div>Please log in to add a check in.</div>
+            <div className="fw-300">Please log in to add a check in.</div>
           ) : (
             <div>{allCheckIns}</div>
           )}
@@ -885,11 +885,13 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
 
         {session_login === "True" &&
         bookmarksListsHeader === "Bookmarks For This Hike" ? (
-          <div className="ms-4">You have this hike on the following lists:</div>
+          <div className="ms-4 fw-300">
+            You have this hike on the following lists:
+          </div>
         ) : null}
         <div className="offcanvas-body">
           {session_login !== "True" ? (
-            <div>Please log in to add a bookmark.</div>
+            <div className="fw-300">Please log in to add a bookmark.</div>
           ) : (
             <div>{allBookmarksLists}</div>
           )}
@@ -983,14 +985,14 @@ function HikeDetails(props) {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-              {/* <FooterSearchBar /> */}
+            {/* <FooterSearchBar /> */}
             <div className="d-flex">
               <ul className="navbar-nav me-auto navbar-center">
                 <li className="nav-item">
                   <div className="dropup">
                     <a
                       href=""
-                      className="btn nav-link"
+                      className="btn nav-link fw-300"
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
                     >

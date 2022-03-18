@@ -29,7 +29,7 @@ function Comment(props) {
     <React.Fragment>
       <div className="card ms-4 mb-1">
         <div className="card-header">
-          <div className="flex-truncate-text">
+          <div className="flex-truncate-text fw-300">
             {props.full_name}&nbsp;&nbsp;<i className="bi bi-chat-text"></i>
             &nbsp;&nbsp;
             <small>
@@ -39,7 +39,7 @@ function Comment(props) {
             </small>
           </div>
 
-          <div className="clearfix">
+          <div className="clearfix fw-300">
             <div className="float-start">
               <small className="text-muted">
                 posted {props.date_created}
@@ -54,9 +54,9 @@ function Comment(props) {
               <div className="d-flex float-end">
                 <a
                   href=""
+                  className="btn btn-sm btn-outline-dark edit-btn"
                   data-bs-toggle="modal"
                   data-bs-target={`#modal-edit-comment-${props.comment_id}`}
-                  style={{ color: "rgb(44, 44, 44)" }}
                 >
                   <small>
                     <i
@@ -67,10 +67,9 @@ function Comment(props) {
                     ></i>
                   </small>
                 </a>
-                &nbsp;&nbsp;&nbsp;
+                &nbsp;
                 <button
-                  className="btn btn-sm"
-                  style={{ padding: 0 }}
+                  className="btn btn-sm btn-outline-dark delete-btn"
                   type="submit"
                   onClick={deleteConfirm}
                 >
@@ -86,7 +85,7 @@ function Comment(props) {
           </div>
         </div>
 
-        <div className="card-body">{props.comment_body}</div>
+        <div className="card-body fw-300">{props.comment_body}</div>
       </div>
     </React.Fragment>
   );
@@ -141,7 +140,7 @@ function EditComment(props) {
             <div className="modal-body">
               <div className="mb-3">
                 <textarea
-                  className="form-control"
+                  className="form-control fw-300"
                   name="body"
                   rows="3"
                   value={commentBody}
@@ -152,7 +151,7 @@ function EditComment(props) {
 
               <div className="modal-footer">
                 <button
-                  className="btn btn-sm btn-outline-dark btn-block"
+                  className="btn btn-sm btn-outline-dark btn-block fw-300"
                   type="submit"
                   data-bs-dismiss="modal"
                   onClick={editExistingComment}
@@ -161,7 +160,7 @@ function EditComment(props) {
                 </button>
                 <button
                   type="button"
-                  className="btn btn-sm btn-secondary btn-block"
+                  className="btn btn-sm btn-secondary btn-block fw-300"
                   data-bs-dismiss="modal"
                 >
                   Close
@@ -244,7 +243,7 @@ function AddHikeComment(props) {
             </div>
             <div className="modal-body">
               {session_login !== "True" ? (
-                <div>Please log in to add a comment.</div>
+                <div className="fw-300">Please log in to add a comment.</div>
               ) : (
                 <div>
                   <div className="mb-3">
@@ -377,7 +376,7 @@ function AddComment(props) {
             </div>
             <div className="modal-body">
               {session_login !== "True" ? (
-                <div>Please log in to add a comment.</div>
+                <div className="fw-300">Please log in to add a comment.</div>
               ) : (
                 <div>
                   <div className="mb-3">

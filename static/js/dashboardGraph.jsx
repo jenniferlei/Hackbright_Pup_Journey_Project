@@ -1,4 +1,10 @@
 const DashboardGraph = React.forwardRef((props, ref) => {
+  const colors = [
+    "rgb(239, 200, 167)",
+    "rgb(239, 200, 167)",
+    "rgb(231, 154, 90)",
+    "rgb(233, 101, 60)",
+  ];
   const [myChart, setMyChart] = React.useState(null);
 
   React.useEffect(() => {
@@ -20,7 +26,7 @@ const DashboardGraph = React.forwardRef((props, ref) => {
             y: checkIn.miles_completed,
           }));
 
-          const lineColor = randomColor();
+          const lineColor = colors[Math.floor(Math.random() * colors.length)];
 
           all_data.push({
             label: label,
@@ -159,41 +165,52 @@ const DashboardGraphContainer = React.forwardRef((props, ref) => {
   const [graphCheckInsTotalMiles, setGraphCheckInsTotalMiles] =
     React.useState("");
 
+  const [error, setError] = React.useState(null);
+  const [isLoaded, setIsLoaded] = React.useState(false);
+
   React.useEffect(() => {
     fetch(`/user_check_ins.json`)
       .then((response) => response.json())
-      .then((data) => {
-        const { checkIns } = data;
-        setAllCheckIns(checkIns);
+      .then(
+        (data) => {
+          const { checkIns } = data;
+          setAllCheckIns(checkIns);
 
-        const date = new Date();
-        const year = date.getFullYear();
-        const month = date.getMonth();
-        const monthName = date.toLocaleString("default", { month: "long" });
-        const startDate = new Date(year, month, 1, 0, 0);
-        const endDate = new Date(year, month + 1, 1, 0, 0) - 1;
+          const date = new Date();
+          const year = date.getFullYear();
+          const month = date.getMonth();
+          const monthName = date.toLocaleString("default", { month: "long" });
+          const startDate = new Date(year, month, 1, 0, 0);
+          const endDate = new Date(year, month + 1, 1, 0, 0) - 1;
 
-        let initCheckIns = [];
-        for (const checkIn of checkIns) {
-          const dateHiked = new Date(checkIn["date_hiked"]);
-          if (dateHiked > startDate && dateHiked < endDate) {
-            initCheckIns.push(checkIn);
+          let initCheckIns = [];
+          for (const checkIn of checkIns) {
+            const dateHiked = new Date(checkIn["date_hiked"]);
+            if (dateHiked > startDate && dateHiked < endDate) {
+              initCheckIns.push(checkIn);
+            }
           }
-        }
 
-        let initMiles = 0;
+          let initMiles = 0;
 
-        let totalMiles = initCheckIns.reduce(function (
-          previousValue,
-          currentValue
-        ) {
-          return previousValue + currentValue.miles_completed;
+          let totalMiles = initCheckIns.reduce(function (
+            previousValue,
+            currentValue
+          ) {
+            return previousValue + currentValue.miles_completed;
+          },
+          initMiles);
+
+          setIsLoaded(true);
+          setGraphHeader(`${monthName} ${year}`);
+          setGraphCheckIns(initCheckIns);
+          setGraphCheckInsTotalMiles(totalMiles);
         },
-        initMiles);
-        setGraphHeader(`${monthName} ${year}`);
-        setGraphCheckIns(initCheckIns);
-        setGraphCheckInsTotalMiles(totalMiles);
-      });
+        (error) => {
+          setIsLoaded(true);
+          setError(error);
+        }
+      );
   }, []);
 
   function parentUpdateGraphView() {
@@ -273,16 +290,16 @@ const DashboardGraphContainer = React.forwardRef((props, ref) => {
   }));
 
   return (
-    <div
-      className="card"
-      style={{
-        border: "0",
-        width: "100%",
-        height: "calc(100vh - 174px)",
-      }}
-    >
+    <div className="card dashboard-card">
       <div className="row g-0" style={{ height: "100%" }}>
-        <div className="col-md-8" style={{ height: "100%" }}>
+        <div
+          className="col-md-8"
+          style={{
+            border: "1px solid rgba(0, 0, 0, 0.125)",
+            borderRadius: "10px",
+            padding: "5px",
+          }}
+        >
           <DashboardGraph
             ref={DashboardGraphRef}
             updateGraphInfo={updateGraphInfo}
@@ -290,7 +307,11 @@ const DashboardGraphContainer = React.forwardRef((props, ref) => {
         </div>
         <div className="col-md-4">
           <div className="card-body">
-            {allCheckIns.length > 0 ? (
+            {error ? (
+              <i>{error.messsage}</i>
+            ) : !isLoaded ? (
+              <i>Loading...</i>
+            ) : allCheckIns.length > 0 ? (
               <React.Fragment>
                 <ViewMonthYear
                   category="graph"
@@ -298,15 +319,17 @@ const DashboardGraphContainer = React.forwardRef((props, ref) => {
                   display="none"
                 />
                 <h5 className="mt-4 card-title">{graphHeader}</h5>
-                <p className="card-text">
+                <div className="card-text fw-300">
                   You have checked in to {graphCheckIns.length} hikes
                   <br></br>and walked {graphCheckInsTotalMiles} miles!
-                </p>
+                </div>
               </React.Fragment>
             ) : (
               <React.Fragment>
-                You haven't checked into any hikes yet!
-                <br></br>Please add a check in to view your stats.
+                <div className="fw-300">
+                  You haven't checked into any hikes yet!
+                  <br></br>Please add a check in to view your stats.
+                </div>
               </React.Fragment>
             )}
           </div>

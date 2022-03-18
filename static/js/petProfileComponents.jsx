@@ -44,9 +44,9 @@ function PetProfile(props) {
                 <div className="float-end">
                   <a
                     href=""
+                    className="btn btn-sm btn-outline-dark edit-btn"
                     data-bs-toggle="modal"
                     data-bs-target={`#modal-edit-${props.pet_id}`}
-                    style={{ color: "rgb(44, 44, 44)" }}
                   >
                     <small>
                       <i
@@ -57,9 +57,9 @@ function PetProfile(props) {
                       ></i>
                     </small>
                   </a>
-                  &nbsp;&nbsp;&nbsp;
+                  &nbsp;
                   <button
-                    className="btn btn-sm"
+                    className="btn btn-sm btn-outline-dark delete-btn"
                     style={{ padding: "0" }}
                     type="submit"
                     onClick={deleteConfirm}
@@ -73,7 +73,7 @@ function PetProfile(props) {
                   </button>
                 </div>
               </div>
-              <div className="card-text">
+              <div className="card-tex fw-300">
                 {props.breed !== null &&
                 props.breed !== "" &&
                 props.breed != "None" ? (
@@ -191,7 +191,7 @@ function EditPetProfile(props) {
                 aria-label="Close"
               ></button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body fw-300">
               <div className="mb-3">
                 <label htmlFor="pet_name"> Name </label>&nbsp;
                 <small className="text-muted">*</small>
@@ -233,7 +233,7 @@ function EditPetProfile(props) {
                   type="text"
                   value={breed}
                   onChange={(event) => setBreed(event.target.value)}
-                  className="form-control"
+                  className="form-control fw-300"
                   placeholder="Breed"
                 />
               </div>
@@ -243,14 +243,14 @@ function EditPetProfile(props) {
                 <input
                   type="file"
                   onChange={(event) => setImageFile(event.target.files[0])}
-                  className="form-control"
+                  className="form-control fw-300"
                   accept="image/png, image/jpeg"
                 />
               </div>
               <div className="modal-footer">
                 <button
                   type="submit"
-                  className="btn btn-sm btn-outline-dark btn-block mt-4"
+                  className="btn btn-sm btn-outline-dark btn-block mt-4 fw-300"
                   data-bs-dismiss="modal"
                   onClick={editExistingPetProfile}
                 >
@@ -258,7 +258,7 @@ function EditPetProfile(props) {
                 </button>
                 <button
                   type="button"
-                  className="btn btn-sm btn-secondary btn-block mt-4"
+                  className="btn btn-sm btn-secondary btn-block mt-4 fw-300"
                   data-bs-dismiss="modal"
                 >
                   Close
@@ -550,7 +550,7 @@ const PetProfileContainer = React.forwardRef((props, ref) => {
           </h3>
           {session_login === "True" ? (
             <a
-              className="btn btn-sm"
+              className="btn btn-sm btn-outline-dark fw-300"
               href=""
               data-bs-toggle="modal"
               data-bs-target="#modal-add-pet"
@@ -565,9 +565,9 @@ const PetProfileContainer = React.forwardRef((props, ref) => {
             </a>
           ) : null}
         </div>
-        <div className="offcanvas-body">
+        <div className="offcanvas-body fw-300">
           {session_login !== "True" ? (
-            <div>Please log in to add a pet profile.</div>
+            <div className="fw-300">Please log in to add a pet profile.</div>
           ) : (
             <div>
               <div style={{ padding: "0.5em" }}>{allPetProfiles}</div>
@@ -714,7 +714,7 @@ const DashboardPetProfileContainer = React.forwardRef((props, ref) => {
             Pet Profile
           </h3>
           <a
-            className="btn btn-sm float-end"
+            className="btn btn-sm btn-outline-dark float-end"
             href=""
             data-bs-toggle="modal"
             data-bs-target="#modal-add-pet"

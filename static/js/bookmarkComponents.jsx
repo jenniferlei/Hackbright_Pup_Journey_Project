@@ -26,7 +26,7 @@ function HikeBookmark(props) {
 
   return (
     <React.Fragment>
-      <div className="row ">
+      <div className="row fw-300">
         <div className="clearfix">
           <div className="d-flex float-start">
             <button
@@ -51,7 +51,7 @@ function HikeBookmark(props) {
           </div>
         </div>
       </div>
-      <div className="row">
+      <div className="row fw-300">
         <small>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           {props.difficulty} | {props.miles} miles | {props.city}, {props.state}{" "}
@@ -149,7 +149,7 @@ const BookmarksList = React.forwardRef((props, ref) => {
             <div className="d-flex float-end">
               <label className="sr-only">Add To List</label>
               <button
-                className="btn btn-sm"
+                className="btn btn-sm btn-outline-dark delete-btn"
                 data-bs-toggle="modal"
                 data-bs-target={`#modal-add-hikes-${props.bookmarks_list_id}`}
               >
@@ -161,9 +161,10 @@ const BookmarksList = React.forwardRef((props, ref) => {
                   onClick={props.parentSetHikesOptionState}
                 ></i>
               </button>
+              &nbsp;
               <label className="sr-only">Rename List</label>
               <button
-                className="btn btn-sm"
+                className="btn btn-sm btn-outline-dark edit-btn"
                 data-bs-toggle="modal"
                 data-bs-target={`#modal-rename-bookmark-${props.bookmarks_list_id}`}
               >
@@ -176,9 +177,10 @@ const BookmarksList = React.forwardRef((props, ref) => {
                   ></i>
                 </small>
               </button>
+              &nbsp;
               <label className="sr-only">Delete List</label>
               <button
-                className="btn btn-sm"
+                className="btn btn-sm btn-outline-dark delete-btn"
                 type="submit"
                 onClick={deleteConfirm}
               >
@@ -259,12 +261,12 @@ function RenameBookmarksList(props) {
                 aria-label="Close"
               ></button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body fw-300">
               <div className="mb-3">
                 <label htmlFor="bookmarksListNameInput">List Name</label>
                 <input
                   type="text"
-                  className="form-control"
+                  className="form-control fw-300"
                   value={bookmarksListName}
                   onChange={(event) => setBookmarksListName(event.target.value)}
                   required
@@ -273,7 +275,7 @@ function RenameBookmarksList(props) {
 
               <div className="modal-footer">
                 <button
-                  className="btn btn-sm btn-outline-dark btn-block"
+                  className="btn btn-sm btn-outline-dark btn-block fw-300"
                   type="submit"
                   data-bs-dismiss="modal"
                   onClick={editExistingBookmarksList}
@@ -282,7 +284,7 @@ function RenameBookmarksList(props) {
                 </button>
                 <button
                   type="button"
-                  className="btn btn-sm btn-secondary btn-block"
+                  className="btn btn-sm btn-secondary btn-block fw-300"
                   data-bs-dismiss="modal"
                 >
                   Close
@@ -361,12 +363,12 @@ function CreateBookmarksList(props) {
                 aria-label="Close"
               ></button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body fw-300">
               <div className="mb-3">
                 <label htmlFor="bookmarksListNameInput">List Name</label>
                 <input
                   type="text"
-                  className="form-control"
+                  className="form-control fw-300"
                   name="bookmarks-list-name"
                   placeholder="Hikes I Want To Visit"
                   value={bookmarksListName}
@@ -376,7 +378,7 @@ function CreateBookmarksList(props) {
 
               <div className="modal-footer">
                 <button
-                  className="btn btn-sm btn-outline-dark btn-block"
+                  className="btn btn-sm btn-outline-dark btn-block fw-300"
                   type="submit"
                   data-bs-dismiss="modal"
                   onClick={validateBookmarksList}
@@ -385,7 +387,7 @@ function CreateBookmarksList(props) {
                 </button>
                 <button
                   type="button"
-                  className="btn btn-sm btn-secondary btn-block"
+                  className="btn btn-sm btn-secondary btn-block fw-300"
                   data-bs-dismiss="modal"
                 >
                   Close

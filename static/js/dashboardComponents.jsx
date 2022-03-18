@@ -32,7 +32,7 @@ function Footer(props) {
 }
 
 const ViewMonthYear = (props) => {
-  const [yearOptions, setYearOptions] = React.useState([]);
+  const [yearOptions, setYearOptions] = React.useState([2021, 2022]);
   const monthOptions = [
     { monthNum: 1, monthAbbr: "Jan" },
     { monthNum: 2, monthAbbr: "Feb" },
@@ -48,26 +48,27 @@ const ViewMonthYear = (props) => {
     { monthNum: 12, monthAbbr: "Dec" },
   ];
 
-  React.useEffect(() => {
-    getYearOptions();
-  }, []);
+  // React.useEffect(() => {
+  //   getYearOptions();
+  // }, []);
 
-  function getYearOptions() {
-    fetch("/user_check_ins.json")
-      .then((response) => response.json())
-      .then((jsonResponse) => {
-        const { checkIns } = jsonResponse;
-        let years = [];
-        for (const checkIn of checkIns) {
-          const dateHiked = new Date(checkIn.date_hiked);
-          const year = dateHiked.getFullYear();
-          if (!years.includes(year)) {
-            years.push(year);
-          }
-        }
-        setYearOptions(years);
-      });
-  }
+  // function getYearOptions() {
+  //   fetch("/user_check_ins.json")
+  //     .then((response) => response.json())
+  //     .then((jsonResponse) => {
+  //       const { checkIns } = jsonResponse;
+  //       let years = [];
+  //       for (const checkIn of checkIns) {
+  //         const dateHiked = new Date(checkIn.date_hiked);
+  //         const year = dateHiked.getFullYear();
+  //         if (!years.includes(year)) {
+  //           years.push(year);
+  //         }
+  //       }
+  //       // setYearOptions(years);
+  //       setYearOptions([2021, 2022]);
+  //     });
+  // }
 
   function changeMonthYearForm() {
     if (document.getElementById(`${props.category}-month-view`).checked) {
@@ -102,7 +103,7 @@ const ViewMonthYear = (props) => {
 
   return (
     <div>
-      <div className="row">
+      <div className="row fw-300">
         <div className="d-flex">
           <div className="mt-1">View by&nbsp;&nbsp;</div>
           <input
@@ -115,7 +116,7 @@ const ViewMonthYear = (props) => {
             onClick={changeMonthYearForm}
           />
           <label
-            className="btn btn-outline-dark btn-sm"
+            className="btn btn-outline-dark btn-sm fw-300"
             for={`${props.category}-month-view`}
           >
             month
@@ -131,7 +132,7 @@ const ViewMonthYear = (props) => {
             onClick={changeMonthYearForm}
           />
           <label
-            className="btn btn-outline-dark btn-sm"
+            className="btn btn-outline-dark btn-sm fw-300"
             for={`${props.category}-year-view`}
           >
             year
@@ -148,7 +149,7 @@ const ViewMonthYear = (props) => {
               onClick={changeMonthYearForm}
             />
             <label
-              className="btn btn-outline-dark btn-sm"
+              className="btn btn-outline-dark btn-sm fw-300"
               for={`${props.category}-all-view`}
             >
               all time
@@ -164,7 +165,7 @@ const ViewMonthYear = (props) => {
         <div className="d-flex">
           <div>
             <select
-              className="form-select btn-sm"
+              className="form-select btn-sm fw-300"
               name={`${props.category}-month-view-month`}
               aria-label={`${props.category}-month-view-select-month`}
               style={{ width: "5em" }}
@@ -182,7 +183,7 @@ const ViewMonthYear = (props) => {
           &nbsp;
           <div>
             <select
-              className="form-select btn-sm"
+              className="form-select btn-sm fw-300"
               name={`${props.category}-month-view-year`}
               aria-label={`${props.category}-month-view-select-year`}
               style={{ width: "6em" }}
@@ -194,7 +195,7 @@ const ViewMonthYear = (props) => {
           </div>
           &nbsp;
           <button
-            className={`${props.category}-view-submit btn btn-sm btn-outline-dark`}
+            className={`${props.category}-view-submit btn btn-sm btn-outline-dark fw-300`}
             type="submit"
             name="view"
             value="month"
@@ -212,7 +213,7 @@ const ViewMonthYear = (props) => {
         <div className="d-flex">
           <div>
             <select
-              className="form-select btn-sm"
+              className="form-select btn-sm fw-300"
               name={`${props.category}-year-view-year`}
               aria-label={`${props.category}-year-view-select-year`}
               style={{ width: "6em" }}
@@ -224,7 +225,7 @@ const ViewMonthYear = (props) => {
           </div>
           &nbsp;
           <button
-            className={`${props.category}-view-submit btn btn-sm btn-outline-dark`}
+            className={`${props.category}-view-submit btn btn-sm btn-outline-dark fw-300`}
             type="submit"
             name="view"
             value="year"
@@ -263,7 +264,7 @@ const DashboardHeader = (props) => {
       </h3>
       <div className="float-end">
         <a
-          className="btn btn-sm"
+          className="btn btn-sm btn-outline-dark"
           href=""
           data-bs-toggle="modal"
           data-bs-target={props.modalTarget}
@@ -579,7 +580,7 @@ function SideBarMenu(props) {
   return (
     <React.Fragment>
       <div className="side-bar-menu d-flex flex-column flex-shrink-0 bg-light">
-        <ul className="nav nav-pills nav-flush flex-column mb-auto text-center">
+        <ul className="sidebar-ul nav nav-pills nav-flush flex-column mb-auto text-center">
           <li>
             <a
               href="#"

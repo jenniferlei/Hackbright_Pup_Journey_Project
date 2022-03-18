@@ -288,14 +288,24 @@ const DashboardMapContainer = React.forwardRef((props, ref) => {
   const [mapHeader, setMapHeader] = React.useState("Hikes Visited - All Time");
   const [mapCheckIns, setMapCheckIns] = React.useState([]);
 
+  const [error, setError] = React.useState(null);
+  const [isLoaded, setIsLoaded] = React.useState(false);
+
   React.useEffect(() => {
     fetch(`/user_check_ins.json`)
       .then((response) => response.json())
-      .then((data) => {
-        const { checkIns } = data;
-        setCheckIns(checkIns);
-        countHikeOccurrences(checkIns);
-      });
+      .then(
+        (data) => {
+          const { checkIns } = data;
+          setIsLoaded(true);
+          setCheckIns(checkIns);
+          countHikeOccurrences(checkIns);
+        },
+        (error) => {
+          setIsLoaded(true);
+          setError(error);
+        }
+      );
   }, []);
 
   function updateMapInfo() {
@@ -402,21 +412,25 @@ const DashboardMapContainer = React.forwardRef((props, ref) => {
   }));
 
   return (
-    <div
-      className="card"
-      style={{
-        border: "0",
-        width: "100%",
-        height: "calc(100vh - 190px)",
-      }}
-    >
+    <div className="card dashboard-card">
       <div className="row g-0" style={{ height: "100%" }}>
-        <div className="col-md-6">
+        <div
+          className="col-md-6"
+          style={{
+            border: "1px solid rgba(0, 0, 0, 0.125)",
+            borderRadius: "10px",
+            padding: "5px",
+          }}
+        >
           <DashboardMap ref={DashboardMapRef} />
         </div>
         <div className="col-md-6" style={{ height: "100%", overflowY: "auto" }}>
           <div className="card-body">
-            {checkIns.length > 0 ? (
+            {error ? (
+              <i>{error.message}</i>
+            ) : !isLoaded ? (
+              <i>Loading...</i>
+            ) : checkIns.length > 0 ? (
               <React.Fragment>
                 <ViewMonthYear
                   category="map"
@@ -424,7 +438,7 @@ const DashboardMapContainer = React.forwardRef((props, ref) => {
                   display="block"
                 />
                 <h5 className="mt-4 card-title">{mapHeader}</h5>
-                <p className="card-text">
+                <div className="card-text fw-300">
                   {mapCheckIns.map((hikeCount) => (
                     <React.Fragment>
                       <br></br>
@@ -439,12 +453,14 @@ const DashboardMapContainer = React.forwardRef((props, ref) => {
                       {hikeCount.occurrence > 1 ? "times" : "time"}
                     </React.Fragment>
                   ))}
-                </p>
+                </div>
               </React.Fragment>
             ) : (
               <React.Fragment>
-                You haven't checked into any hikes yet!
-                <br></br>Please add a check in to view your stats.
+                <div className="fw-300">
+                  You haven't checked into any hikes yet!
+                  <br></br>Please add a check in to view your stats.
+                </div>
               </React.Fragment>
             )}
           </div>

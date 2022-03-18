@@ -31,7 +31,7 @@ function CheckIn(props) {
 
   return (
     <React.Fragment>
-      <div className="card card-body ms-4 mb-1">
+      <div className="card card-body ms-4 mb-1 fw-300">
         <div className="clearfix">
           <div className="float-start">
             <small>
@@ -49,9 +49,9 @@ function CheckIn(props) {
           <div className="d-flex float-end">
             <a
               href=""
+              className="btn btn-sm btn-outline-dark edit-btn"
               data-bs-toggle="modal"
               data-bs-target={`#modal-edit-check-in-${props.check_in_id}`}
-              style={{ color: "rgb(44, 44, 44)" }}
             >
               <small>
                 <i
@@ -62,9 +62,9 @@ function CheckIn(props) {
                 ></i>
               </small>
             </a>
-            &nbsp;&nbsp;&nbsp;
+            &nbsp;
             <button
-              className="btn btn-sm"
+              className="btn btn-sm btn-outline-dark delete-btn"
               style={{ padding: 0 }}
               type="submit"
               onClick={deleteConfirm}
@@ -80,7 +80,7 @@ function CheckIn(props) {
             </button>
           </div>
         </div>
-        <div>
+        <div className="fw-300">
           <small>
             <a className="link-dark" href={`/hikes/${props.hike_id}`}>
               {props.hike_name}
@@ -497,7 +497,7 @@ function AddCheckIn(props) {
             </div>
             <div className="modal-body">
               {session_login !== "True" ? (
-                <div>Please log in to add a check in.</div>
+                <div className="fw-300">Please log in to add a check in.</div>
               ) : (
                 <div>
                   <div className="mb-3">
@@ -758,7 +758,7 @@ function AddHikeCheckIn(props) {
             </div>
             <div className="modal-body">
               {session_login !== "True" ? (
-                <div>Please log in to add a check in.</div>
+                <div className="fw-300">Please log in to add a check in.</div>
               ) : (
                 <div>
                   <div className="mb-3">

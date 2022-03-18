@@ -4,7 +4,7 @@ function FooterNavItemOffCanvas(props) {
   return (
     <li className="nav-item">
       <a
-        className="nav-link"
+        className="nav-link fw-300"
         data-bs-toggle="offcanvas"
         href={`#${props.href}`}
         role="button"
