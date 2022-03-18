@@ -5,13 +5,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 import datetime
 
-# app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///pupjourney"
-# app.config["SQLALCHEMY_ECHO"] = True
-# app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
 
 db = SQLAlchemy()
-# ma = Marshmallow(app)
 
 
 class User(db.Model):
@@ -195,84 +190,6 @@ class HikeBookmarksList(db.Model):
 
     def __repr__(self):
         return f"<Hike on Bookmarks List hike_bookmarks_list_id={self.hike_bookmarks_list_id} hike_id={self.hike_id} bookmarks_list_id={self.bookmarks_list_id}>"
-
-
-# class UserSchema(ma.SQLAlchemyAutoSchema):
-#     class Meta:
-#         model = User
-#         load_instance = True
-
-#     # Make sure to use the 'only' or 'exclude'
-#     # to avoid infinite recursion
-#     pets = fields.List(fields.Nested("PetSchema", exclude=("user",)))
-#     bookmarks_lists = fields.List(fields.Nested("BookmarksListSchema", exclude=("user",)))
-#     comments = fields.List(fields.Nested("CommentSchema", exclude=("user",)))
-
-
-# class PetSchema(ma.SQLAlchemyAutoSchema):
-#     class Meta:
-#         model = Pet
-#         include_fk = True
-#         load_instance = True
-        
-#     check_ins = fields.Nested("PetCheckInSchema", many=True)
-
-
-# class HikeSchema(ma.SQLAlchemyAutoSchema):
-#     class Meta:
-#         model = Hike
-#         load_instance = True
-
-#     comments = fields.List(fields.Nested("CommentSchema", exclude=("hike", "user")))
-#     check_ins = fields.List(fields.Nested("CheckInSchema", exclude=("hike", "pets")))
-#     bookmarks_lists = fields.List(fields.Nested("BookmarksListSchema", exclude=("hikes",)))
-
-
-# class CommentSchema(ma.SQLAlchemyAutoSchema):
-#     class Meta:
-#         model = Comment
-#         include_fk = True
-#         load_instance = True
-
-#     hike = fields.Nested(HikeSchema(exclude=("check_ins", "comments", "bookmarks_lists",)))
-#     user = fields.Nested(UserSchema(exclude=("pets", "comments", "bookmarks_lists",)))
-
-
-# class CheckInSchema(ma.SQLAlchemyAutoSchema):
-#     class Meta:
-#         model = CheckIn
-#         include_fk = True
-#         load_instance = True
-
-#     hike = fields.Nested(HikeSchema(exclude=("check_ins", "comments", "bookmarks_lists")))
-#     pets = fields.Nested("PetCheckInSchema", many=True)
-
-
-# class PetCheckInSchema(ma.SQLAlchemyAutoSchema):
-#     class Meta:
-#         model = PetCheckIn
-#         include_fk = True
-#         load_instance = True
-
-#     check_in = fields.Nested(CheckInSchema)
-
-
-# class HikeBookmarksListSchema(ma.SQLAlchemyAutoSchema):
-#     class Meta:
-#         model = HikeBookmarksList
-#         include_fk = True
-#         load_instance = True
-
-#     hike = fields.Nested(HikeSchema(exclude=("check_ins", "comments", "bookmarks_lists",)))
-
-
-# class BookmarksListSchema(ma.SQLAlchemyAutoSchema):
-#     class Meta:
-#         model = BookmarksList
-#         include_fk = True
-#         load_instance = True
-
-#     hikes = fields.List(fields.Nested(HikeBookmarksListSchema))
 
 
 def connect_to_db(flask_app, db_uri="postgresql:///pupjourney", echo=True):

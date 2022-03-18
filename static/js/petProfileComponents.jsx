@@ -60,7 +60,6 @@ function PetProfile(props) {
                   &nbsp;
                   <button
                     className="btn btn-sm btn-outline-dark delete-btn"
-                    style={{ padding: "0" }}
                     type="submit"
                     onClick={deleteConfirm}
                   >

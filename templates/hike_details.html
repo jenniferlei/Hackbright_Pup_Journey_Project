@@ -67,13 +67,20 @@ endblock %} {% block body %}
                 <span id="resources">Resources:</span>
               </strong>
               <br />
-              <a
-                class="link-dark"
-                href={{hike.resources}}
-                target="_blank"
-              >
-                {{hike.resources}}
-              </a>
+              {% set resources = hike.resources.split(',') %}
+              <ul class="ps-2" style="list-style-type: none">
+              {% for resource in resources %}
+                <li>
+                <a
+                  class="link-dark"
+                  href={{resource}}
+                  target="_blank"
+                >
+                  {{resource}}
+                </a>
+                </li>
+              {% endfor %}
+              </ul>
             </li>
           </ul>
         </div>
