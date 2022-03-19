@@ -1,9 +1,14 @@
 const DashboardGraph = React.forwardRef((props, ref) => {
   const colors = [
+    "rgb(218, 203, 192)",
     "rgb(239, 200, 167)",
     "rgb(239, 200, 167)",
     "rgb(231, 154, 90)",
     "rgb(233, 101, 60)",
+    "rgb(104, 117, 138)",
+    "rgb(79, 109, 158)",
+    "rgb(49, 74, 114)",
+    "rgb(151, 166, 190)",
   ];
   const [myChart, setMyChart] = React.useState(null);
   const [yearRange, setYearRange] = React.useState([2021, 2022]);

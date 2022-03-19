@@ -327,6 +327,13 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
   const [checkIns, setCheckIns] = React.useState([]);
   const [bookmarksLists, setBookmarksLists] = React.useState([]);
   const [comments, setComments] = React.useState([]);
+  const [errorCheckIns, setErrorCheckIns] = React.useState(null);
+  const [isLoadedCheckIns, setIsLoadedCheckIns] = React.useState(false);
+  const [errorBookmarksLists, setErrorBookmarksLists] = React.useState(null);
+  const [isLoadedBookmarksLists, setIsLoadedBookmarksLists] =
+    React.useState(false);
+  const [errorComments, setErrorComments] = React.useState(null);
+  const [isLoadedComments, setIsLoadedComments] = React.useState(false);
 
   function refreshProfiles() {
     props.parentGetPetProfiles();
@@ -341,25 +348,46 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
   function getCheckIns() {
     fetch("/user_check_ins.json")
       .then((response) => response.json())
-      .then((data) => {
-        setCheckIns(data.checkIns);
-      });
+      .then(
+        (data) => {
+          setCheckIns(data.checkIns);
+          setIsLoadedCheckIns(true);
+        },
+        (error) => {
+          setIsLoadedCheckIns(true);
+          setErrorCheckIns(error);
+        }
+      );
   }
 
   function getBookmarksLists() {
     fetch("/user_bookmarks_lists.json")
       .then((response) => response.json())
-      .then((data) => {
-        setBookmarksLists(data.bookmarksLists);
-      });
+      .then(
+        (data) => {
+          setBookmarksLists(data.bookmarksLists);
+          setIsLoadedBookmarksLists(true);
+        },
+        (error) => {
+          setIsLoadedBookmarksLists(true);
+          setErrorBookmarksLists(error);
+        }
+      );
   }
 
   function getComments() {
     fetch("/user_comments.json")
       .then((response) => response.json())
-      .then((data) => {
-        setComments(data.comments);
-      });
+      .then(
+        (data) => {
+          setComments(data.comments);
+          setIsLoadedComments(true);
+        },
+        (error) => {
+          setIsLoadedComments(true);
+          setErrorComments(error);
+        }
+      );
   }
 
   function parentGetGraphData() {
@@ -510,7 +538,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
       {allAddMultHikesToExistingList}
       <CreateBookmarksList getBookmarksLists={getBookmarksLists} />
       <div className="dashboard-container d-flex flex-column flex-shrink-0">
-        <div id="display-map">
+        <div className="dashboard-display pt-1 pe-1" id="display-map">
           <DashboardHeader
             headerLabel="MapLabel"
             title="Where We've Been 🗺"
@@ -520,7 +548,11 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
           />
           <DashboardMapContainer ref={DashboardMapContainerRef} />
         </div>
-        <div id="display-graph" style={{ display: "none" }}>
+        <div
+          className="dashboard-display pt-1 pe-1"
+          id="display-graph"
+          style={{ display: "none" }}
+        >
           <DashboardHeader
             headerLabel="GraphLabel"
             title="How Far We've Traveled 🐾"
@@ -531,7 +563,11 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
           <DashboardGraphContainer ref={DashboardGraphContainerRef} />
         </div>
 
-        <div id="display-check-ins" style={{ display: "none" }}>
+        <div
+          className="dashboard-display pt-1 pe-1"
+          id="display-check-ins"
+          style={{ display: "none" }}
+        >
           <DashboardHeader
             headerLabel="CheckInsLabel"
             title="Check Ins"
@@ -540,12 +576,32 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
             modalText="add a check in"
           />
 
-          <div style={{ height: "100%", overflowY: "auto" }}>
-            <div>{allCheckIns}</div>
+          <div style={{ height: "calc(100% - 50px)", overflowY: "auto" }}>
+            {errorCheckIns ? (
+              <i>{errorCheckIns.message}</i>
+            ) : !isLoadedCheckIns ? (
+              <div class="loading-container">
+                <div class="loading"></div>
+                <div id="loading-text">loading</div>
+              </div>
+            ) : allCheckIns.length > 0 ? (
+              <React.Fragment>{allCheckIns}</React.Fragment>
+            ) : (
+              <React.Fragment>
+                <div className="fw-300">
+                  You haven't checked into any hikes yet!
+                  <br></br>Please add a check in to view your stats.
+                </div>
+              </React.Fragment>
+            )}
           </div>
         </div>
 
-        <div id="display-bookmarks" style={{ display: "none" }}>
+        <div
+          className="dashboard-display pt-1 pe-1"
+          id="display-bookmarks"
+          style={{ display: "none" }}
+        >
           <DashboardHeader
             headerLabel="BookmarksLabel"
             title="Bookmarks"
@@ -553,13 +609,32 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
             icon="bi bi-bookmark-star"
             modalText="create a list"
           />
-
-          <div style={{ height: "100%", overflowY: "auto" }}>
-            <div>{allBookmarksLists}</div>
+          <div style={{ height: "calc(100% - 50px)", overflowY: "auto" }}>
+            {errorBookmarksLists ? (
+              <i>{errorBookmarksLists.message}</i>
+            ) : !isLoadedBookmarksLists ? (
+              <div class="loading-container">
+                <div class="loading"></div>
+                <div id="loading-text">loading</div>
+              </div>
+            ) : allBookmarksLists.length > 0 ? (
+              <React.Fragment>{allBookmarksLists}</React.Fragment>
+            ) : (
+              <React.Fragment>
+                <div className="fw-300">
+                  You haven't added any bookmarks yet!
+                  <br></br>Please add a bookmark to view your bookmarks.
+                </div>
+              </React.Fragment>
+            )}
           </div>
         </div>
 
-        <div id="display-comments" style={{ display: "none" }}>
+        <div
+          className="dashboard-display pt-1 pe-1"
+          id="display-comments"
+          style={{ display: "none" }}
+        >
           <DashboardHeader
             headerLabel="CommentsLabel"
             title="Your Comments For All Hikes"
@@ -567,10 +642,27 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
             icon="bi bi-chat-text"
             modalText="add a comment"
           />
-
-          <div style={{ height: "100%", overflowY: "auto" }}>
-            <div>{allComments}</div>
+          <div style={{ height: "calc(100% - 50px)", overflowY: "auto" }}>
+            {errorComments ? (
+              <i>{errorComments.message}</i>
+            ) : !isLoadedComments ? (
+              <div class="loading-container">
+                <div class="loading"></div>
+                <div id="loading-text">loading</div>
+              </div>
+            ) : allComments.length > 0 ? (
+              <React.Fragment>{allComments}</React.Fragment>
+            ) : (
+              <React.Fragment>
+                <div className="fw-300">
+                  You haven't added any comments yet!
+                  <br></br>Please add a comment to view your comments.
+                </div>
+              </React.Fragment>
+            )}
           </div>
+
+          <div style={{ height: "100%", overflowY: "auto" }}>{allComments}</div>
         </div>
       </div>
     </React.Fragment>

@@ -53,7 +53,7 @@ Do you love going on hikes with your dogs? Pup Journey is a platform where users
 
 > **CREATE A CHECK IN**
 
-> **RENAME A CHECK IN**
+> **EDIT A CHECK IN**
 
 > **DELETE A CHECK IN**
 
@@ -61,7 +61,7 @@ Do you love going on hikes with your dogs? Pup Journey is a platform where users
 
 > **CREATE A COMMENT**
 
-> **RENAME A COMMENT**
+> **EDIT A COMMENT**
 
 > **DELETE A COMMENT**
 
@@ -119,6 +119,8 @@ Start backend server:
 ```
 (env) $ python3 server.py
 ```
+
+Navigate to `localhost:5000/` to begin your dog-friendly hike search!
 
 ## About the Developer
 

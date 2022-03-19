@@ -353,7 +353,9 @@ ul.no-bullets {
   top: 70px;
   left: 90px;
 }
-
+.dashboard-display {
+  height: 100%;
+}
 /* cards for dashboard map and graph */
 .dashboard-card {
   border: 0;

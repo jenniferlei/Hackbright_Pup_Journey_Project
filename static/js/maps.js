@@ -7,7 +7,7 @@ function initMap() {
 
   const latitude = Number(document.querySelector("#latitude").innerText);
   const longitude = Number(document.querySelector("#longitude").innerText);
-  const hike_name = document.querySelector("#hike_name").innerText;
+  const hike_name = document.querySelector(".hike-name").innerText;
 
   const hikeCoords = {
     lat: latitude,
