@@ -64,6 +64,10 @@
             <li class="nav-item">
                 <a class="header-nav-link nav-link fw-300" href="/logout">Log Out</a>
             </li>
+            <li class="nav-item">
+                <a class="header-nav-link nav-link fw-300" href="" data-bs-toggle="modal" data-bs-target="#modal-settings"><i class="bi bi-gear"></i>
+</a>
+            </li>
             {% else %}
             <li class="nav-item">
                 <a class="header-nav-link nav-link fw-300" href="" data-bs-toggle="modal" data-bs-target="#modal-sign-up">Sign Up</a>
@@ -177,6 +181,55 @@
   </div>
 
 
+    <div class="modal fade" id="modal-settings" tabindex="-1" aria-labelledby="modal-settings-label" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modal-settings-label">Settings</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body fw-300">
+
+          <form action="/edit-user" class="form-settings" method="POST">
+        
+            <div class="form-floating mb-3">
+              <input type="text"
+                      name="full_name"
+                      class="form-control fw-300"
+                      id="floating-settings-full_name"
+                      placeholder="Full Name">
+              <label for="floating-settings-full_name">Change Full Name</label>
+            </div>
+            
+            <div class="form-floating mb-3">
+              <input type="email"
+                      name="email"
+                      class="form-control fw-300"
+                      id="floating-settings-email"
+                      placeholder="name@example.com">
+              <label for="floating-settings-email">Change Email Address</label>
+              
+            </div>
+
+            <div class="form-floating mb-3">
+              <input type="password"
+                      name="new-password"
+                      class="form-control fw-300"
+                      id="new-password"
+                      placeholder="Password">
+              <label for="new-password">Change Password</label>
+            </div>
+
+          <div class="modal-footer">
+            <button class="btn btn-sm btn-outline-dark btn-block fw-300" type="submit">Modify</button>
+            <button type="button" class="btn btn-sm btn-secondary btn-block fw-300" data-bs-dismiss="modal">Close</button>
+          </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
 
 
     {% for msg in get_flashed_messages() %}

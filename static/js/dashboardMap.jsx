@@ -9,6 +9,7 @@ const DashboardMap = React.forwardRef((props, ref) => {
     initMap();
   }, []);
 
+  // Initialize map with check ins from all time
   function initMap() {
     fetch("/user_check_ins.json")
       .then((response) => response.json())
@@ -16,7 +17,7 @@ const DashboardMap = React.forwardRef((props, ref) => {
         const basicMap = new google.maps.Map(
           document.querySelector("#dashboard-map"),
           {
-            zoom: 4,
+            zoom: 5,
           }
         );
 
@@ -429,13 +430,16 @@ const DashboardMapContainer = React.forwardRef((props, ref) => {
             {error ? (
               <i>{error.message}</i>
             ) : !isLoaded ? (
-              <i>Loading...</i>
+              <div class="loading-container">
+                <div class="loading"></div>
+                <div id="loading-text">loading</div>
+              </div>
             ) : checkIns.length > 0 ? (
               <React.Fragment>
                 <ViewMonthYear
                   category="map"
                   getFunction={getMapData}
-                  display="block"
+                  // display="block"
                 />
                 <h5 className="mt-4 card-title">{mapHeader}</h5>
                 <div className="card-text fw-300">

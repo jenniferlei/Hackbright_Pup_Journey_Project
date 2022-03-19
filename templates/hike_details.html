@@ -8,13 +8,13 @@ endblock %} {% block body %}
 
 <div class="container-fluid full-page-container">
   <div class="ms-4 mt-1">
-    <h3>{{hike.hike_name}}</h3>
+    <h3 class="hike-name">{{hike.hike_name}}</h3>
   </div>
 
   <div class="card hike-details-card">
     <div class="row g-0" style="height: 100%">
       <div class="col-md-5">
-        <div class="card-body fw-300">
+        <div class="card-body ms-2 fw-300">
           {{hike.description}}
           <br></br>
           <ul class="no-bullets">
@@ -89,7 +89,7 @@ endblock %} {% block body %}
         <div class="embed-google-map" style="border: 1px solid rgba(0, 0, 0, 0.125);
             border-radius: 10px;
             padding: 5px; height: 100%">
-          <iframe
+          <!-- <iframe
             width="100%"
             height="100%"
             frame-border="0"
@@ -97,16 +97,16 @@ endblock %} {% block body %}
             margin-height="0"
             margin-width="0"
             src="https://maps.google.com/maps?q={{hike.latitude}},{{hike.longitude}}&t=&zoom=11&maptype=roadmap&ie=UTF8&iwloc=&output=embed"
-          ></iframe>
+          ></iframe> -->
           <!-- API MAP -->
-        <!-- <iframe
-          width="500"
-          height="300"
+        <iframe
+          width="100%"
+          height="100%"
           frameBorder="0"
           style="border:0"
-          src={`"https://www.google.com/maps/embed/v1/directions?key={{ GOOGLE_KEY }}&origin=Current+Location&destination=${hike.latitude},${hike.longitude}&center=${hike.latitude},${hike.longitude}&avoid=tolls&zoom=11"`}
+          src="https://www.google.com/maps/embed/v1/place?key={{ GOOGLE_KEY }}&q={{hike.latitude}},{{hike.longitude}}&center={{hike.latitude}},{{hike.longitude}}&zoom=11"
           allowfullscreen
-        ></iframe> -->
+        ></iframe>
         </div>
       </div>
     </div>
@@ -132,13 +132,11 @@ endblock %} {% block body %}
 
 
 <!-- Google Maps API -->
-<!-- <script src="/static/js/maps.js"></script>
+<script src="/static/js/maps.js"></script>
 <script
   async
   src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_KEY }}&callback=initMap">
-</script> -->
-
-<!-- <script src="/static/js/hikeDetails.js"></script> -->
+</script>
 
 <script src="/static/js/petProfileComponents.jsx" type="text/jsx"></script>
 <script src="/static/js/checkInComponents.jsx" type="text/jsx"></script>

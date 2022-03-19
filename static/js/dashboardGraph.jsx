@@ -6,6 +6,7 @@ const DashboardGraph = React.forwardRef((props, ref) => {
     "rgb(233, 101, 60)",
   ];
   const [myChart, setMyChart] = React.useState(null);
+  const [yearRange, setYearRange] = React.useState([2021, 2022]);
 
   React.useEffect(() => {
     initGraph();
@@ -19,7 +20,22 @@ const DashboardGraph = React.forwardRef((props, ref) => {
 
         const all_data = [];
 
+        // let years = [];
+        // const currentDate = new Date();
+        // const currentYear = currentDate.getFullYear();
+
         for (const petCheckIn of petCheckIns) {
+          const dateHiked = new Date(petCheckIn.date_hiked);
+          // const year = dateHiked.getFullYear();
+          // if (!years.includes(year)) {
+          //   years.push(year);
+          // }
+
+          // const orderedYears = years.sort((a, b) => {
+          //   return a - b;
+          // });
+          // setYearRange([orderedYears[0], currentYear]);
+
           const label = petCheckIn.pet_name;
           const data = petCheckIn.data.map((checkIn) => ({
             x: checkIn.date_hiked,
@@ -39,10 +55,6 @@ const DashboardGraph = React.forwardRef((props, ref) => {
           });
         }
 
-        const date = new Date();
-        const year = date.getFullYear();
-        const month = date.getMonth();
-
         const myLineChart = new Chart(
           document.querySelector("#check-in-graph"),
           {
@@ -60,8 +72,8 @@ const DashboardGraph = React.forwardRef((props, ref) => {
               scales: {
                 x: {
                   type: "time",
-                  min: new Date(year, month, 1, 0, 0),
-                  max: new Date(year, month + 1, 1, 0, 0) - 1,
+                  min: new Date(yearRange[0], 0),
+                  max: new Date(yearRange[1], 11, 31),
                   time: {
                     tooltipFormat: "LLLL dd", // Luxon format string
                     unit: "day",
@@ -102,15 +114,30 @@ const DashboardGraph = React.forwardRef((props, ref) => {
           const { petCheckIns } = responseJson;
 
           const all_data = [];
+          // let years = [];
+          // const currentDate = new Date();
+          // const currentYear = currentDate.getFullYear();
 
           for (const petCheckIn of petCheckIns) {
+            // set year range for viewing graph by all time
+            const dateHiked = new Date(petCheckIn.date_hiked);
+            // const year = dateHiked.getFullYear();
+            // if (!years.includes(year)) {
+            //   years.push(year);
+            // }
+
+            // const orderedYears = years.sort((a, b) => {
+            //   return a - b;
+            // });
+            // setYearRange([orderedYears[0], currentYear]);
+
             const label = petCheckIn.pet_name;
             const data = petCheckIn.data.map((checkIn) => ({
               x: checkIn.date_hiked,
               y: checkIn.miles_completed,
             }));
 
-            const lineColor = randomColor();
+            const lineColor = colors[Math.floor(Math.random() * colors.length)];
 
             all_data.push({
               label: label,
@@ -142,14 +169,19 @@ const DashboardGraph = React.forwardRef((props, ref) => {
         myChart.options.scales.x.min = new Date(year, month, 1, 0, 0);
         myChart.options.scales.x.max = new Date(year, month + 1, 1, 0, 0) - 1;
         myChart.update();
-      } else {
+      } else if (view === "graph-year-view") {
         const year = document.querySelector(
           "select[name=graph-year-view-year]"
         ).value;
         myChart.options.scales.x.min = new Date(year, 0);
         myChart.options.scales.x.max = new Date(year, 11, 31);
         myChart.update();
+      } else if (view === "graph-all-view") {
+        myChart.options.scales.x.min = new Date(yearRange[0], 0);
+        myChart.options.scales.x.max = new Date(yearRange[1], 11, 31);
+        myChart.update();
       }
+
       props.updateGraphInfo();
     },
   }));
@@ -169,31 +201,20 @@ const DashboardGraphContainer = React.forwardRef((props, ref) => {
   const [isLoaded, setIsLoaded] = React.useState(false);
 
   React.useEffect(() => {
-    fetch(`/user_check_ins.json`)
+    getAllTimeGraphInfo();
+  }, []);
+
+  function getAllTimeGraphInfo() {
+    fetch("/user_check_ins.json")
       .then((response) => response.json())
       .then(
         (data) => {
           const { checkIns } = data;
           setAllCheckIns(checkIns);
 
-          const date = new Date();
-          const year = date.getFullYear();
-          const month = date.getMonth();
-          const monthName = date.toLocaleString("default", { month: "long" });
-          const startDate = new Date(year, month, 1, 0, 0);
-          const endDate = new Date(year, month + 1, 1, 0, 0) - 1;
-
-          let initCheckIns = [];
-          for (const checkIn of checkIns) {
-            const dateHiked = new Date(checkIn["date_hiked"]);
-            if (dateHiked > startDate && dateHiked < endDate) {
-              initCheckIns.push(checkIn);
-            }
-          }
-
           let initMiles = 0;
 
-          let totalMiles = initCheckIns.reduce(function (
+          let totalMiles = checkIns.reduce(function (
             previousValue,
             currentValue
           ) {
@@ -201,17 +222,17 @@ const DashboardGraphContainer = React.forwardRef((props, ref) => {
           },
           initMiles);
 
-          setIsLoaded(true);
-          setGraphHeader(`${monthName} ${year}`);
-          setGraphCheckIns(initCheckIns);
+          setGraphHeader("All Time");
+          setGraphCheckIns(checkIns);
           setGraphCheckInsTotalMiles(totalMiles);
+          setIsLoaded(true);
         },
         (error) => {
           setIsLoaded(true);
           setError(error);
         }
       );
-  }, []);
+  }
 
   function parentUpdateGraphView() {
     DashboardGraphRef.current.updateGraphView();
@@ -225,15 +246,8 @@ const DashboardGraphContainer = React.forwardRef((props, ref) => {
 
         setAllCheckIns(checkIns);
         const view = document.querySelector("input[name=graph-view]:checked");
-        if (view === null) {
-          const date = new Date();
-          const year = date.getFullYear();
-          const month = date.getMonth();
-          const monthName = date.toLocaleString("default", { month: "long" });
-          const startDate = new Date(year, month, 1, 0, 0);
-          const endDate = new Date(year, month + 1, 1, 0, 0) - 1;
-          setGraphHeader(`${monthName} ${year}`);
-          filterCheckInsByDate(checkIns, startDate, endDate);
+        if (view === null || view.value === "graph-all-view") {
+          getAllTimeGraphInfo();
         } else if (view.value === "graph-month-view") {
           const date = new Date(
             document.querySelector("select[name=graph-month-view-year]").value,
@@ -263,6 +277,10 @@ const DashboardGraphContainer = React.forwardRef((props, ref) => {
   }
 
   const filterCheckInsByDate = (checkIns, startDate, endDate) => {
+    // let filteredCheckIns = checkIns.filter((checkIn) => {
+    //   Date(checkIn["date_hiked"]) > startDate &&
+    //     Date(checkIn["date_hiked"]) < endDate;
+    // });
     let filteredCheckIns = [];
     for (const checkIn of checkIns) {
       const dateHiked = new Date(checkIn["date_hiked"]);
@@ -272,13 +290,9 @@ const DashboardGraphContainer = React.forwardRef((props, ref) => {
     }
     setGraphCheckIns(filteredCheckIns);
     let initMiles = 0;
-    let totalMiles = filteredCheckIns.reduce(function (
-      previousValue,
-      currentValue
-    ) {
+    let totalMiles = filteredCheckIns.reduce((previousValue, currentValue) => {
       return previousValue + currentValue.miles_completed;
-    },
-    initMiles);
+    }, initMiles);
     setGraphCheckInsTotalMiles(totalMiles);
   };
 
@@ -310,17 +324,22 @@ const DashboardGraphContainer = React.forwardRef((props, ref) => {
             {error ? (
               <i>{error.messsage}</i>
             ) : !isLoaded ? (
-              <i>Loading...</i>
+              <div class="loading-container">
+                <div class="loading"></div>
+                <div id="loading-text">loading</div>
+              </div>
             ) : allCheckIns.length > 0 ? (
               <React.Fragment>
                 <ViewMonthYear
                   category="graph"
                   getFunction={parentUpdateGraphView}
-                  display="none"
                 />
-                <h5 className="mt-4 card-title">{graphHeader}</h5>
+                <h5 className="mt-4 card-title">
+                  Distance Hiked - {graphHeader}
+                </h5>
                 <div className="card-text fw-300">
-                  You have checked in to {graphCheckIns.length} hikes
+                  Altogether, your pets have checked in to{" "}
+                  {graphCheckIns.length} hikes
                   <br></br>and walked {graphCheckInsTotalMiles} miles!
                 </div>
               </React.Fragment>

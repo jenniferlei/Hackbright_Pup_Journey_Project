@@ -192,14 +192,6 @@ def advanced_search():
 
     # Populate the list of hike objects that fulfill the search criteria
     search_hikes = crud_hikes.get_hikes_by_advanced_search(keyword, difficulties, leash_rules, areas, cities, state, length_min, length_max, parking)
- 
-    # logged_in_email = session.get("user_email")
-
-    # if logged_in_email is None:
-    #     return render_template("all_hikes.html", search_hikes=search_hikes)
-    
-    # user = crud_users.get_user_by_email(logged_in_email)
-    # return render_template("all_hikes.html", user=user, search_hikes=search_hikes)
 
     hikes_schema = HikeSchema(many=True, exclude=["comments", "check_ins", "bookmarks_lists"])
     hikes_json = hikes_schema.dump(search_hikes)
@@ -220,6 +212,42 @@ def show_hike(hike_id):
     else:
         user = crud_users.get_user_by_email(logged_in_email)
         return render_template("hike_details.html", user=user, hike=hike, GOOGLE_KEY=GOOGLE_KEY)
+
+@app.route("/edit-user", methods=["POST"])
+def edit_user():
+    """Edit a user"""
+
+    logged_in_email = session.get("user_email")
+    user = crud_users.get_user_by_email(logged_in_email)
+
+    full_name = request.form.get("full_name")
+    email = request.form.get("email")
+    password = request.form.get("new-password")
+
+    if full_name != "":
+        user.full_name = full_name
+        flash("Name updated ✓")
+
+    if email != "":
+        user_exists = crud_users.get_user_by_email(email)
+        if user_exists:
+            flash(
+                "There is already an account associated with that email."
+            )
+        else:
+            user.email = email
+            session["user_email"] = user.email
+            flash("Email updated ✓")
+
+
+    if password != "":
+        user.password = password
+        flash("Password updated ✓")
+
+
+    db.session.commit()
+
+    return redirect(request.referrer)
 
 
 @app.route("/add-pet", methods=["POST"])

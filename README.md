@@ -15,7 +15,7 @@ Do you love going on hikes with your dogs? Pup Journey is a platform where users
 **Backend:** Python3, Flask, Flask-Marshmallow, Jinja, SQLAlchemy\
 **Frontend:** React, React Hooks, JavaScript, HTML5, CSS3, Bootstrap\
 **Database:** PostgreSQL\
-**API:** Google Maps JavaScript, Cloudinary API
+**API:** Google Maps JavaScript, Google Maps Embed API, Cloudinary API
 
 ## Features
 

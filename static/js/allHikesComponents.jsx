@@ -603,6 +603,10 @@ function AllHikesContainer(props) {
           setIsLoaded(true);
           setAllHikes(responseJson.hikes);
           setSearchHikes(responseJson.hikes);
+          const boldTableData = document.querySelectorAll("td>span.fw-400");
+          boldTableData.forEach((tableData) =>
+            tableData.classList.remove("fw-400")
+          );
         },
         (error) => {
           setIsLoaded(true);
@@ -803,12 +807,21 @@ function AllHikesContainer(props) {
                   aria-label="Search"
                   value={keywordFilter}
                   onChange={(event) => setKeywordFilter(event.target.value)}
-                  style={{ fontWeight: 300, fontSize: "0.875rem" }}
+                  style={{
+                    fontWeight: 300,
+                    fontSize: "0.875rem",
+                    height: "33px",
+                    marginTop: "4px",
+                  }}
                 ></input>
                 <button
-                  className="btn btn-sm me-2"
+                  className="btn btn-sm btn-outline-dark me-2"
                   role="button"
-                  style={{ border: "1px solid #ced4da" }}
+                  style={{
+                    border: "1px solid #ced4da",
+                    height: "33px",
+                    marginTop: "4px",
+                  }}
                   onClick={getHikesByKeyword}
                 >
                   <small>
@@ -823,7 +836,7 @@ function AllHikesContainer(props) {
               </div>
             </div>
             <a
-              className="btn btn-sm mt-1"
+              className="btn btn-sm btn-outline-dark mt-1"
               data-bs-toggle="offcanvas"
               href="#Search"
               role="button"
@@ -839,6 +852,14 @@ function AllHikesContainer(props) {
                 &nbsp; filter
               </small>
             </a>
+            &nbsp;
+            <button
+              className="btn btn-sm btn-outline-dark mt-1"
+              role="button"
+              onClick={getSearchHikes}
+            >
+              <small style={{ fontWeight: 300 }}>clear filter</small>
+            </button>
           </div>
         </div>
 
@@ -848,9 +869,10 @@ function AllHikesContainer(props) {
               {error ? (
                 <i>{error.message}</i>
               ) : !isLoaded ? (
-                <p>
-                  <i>Loading...</i>
-                </p>
+                <div class="loading-container">
+                  <div class="loading"></div>
+                  <div id="loading-text">loading</div>
+                </div>
               ) : (
                 <table className="table table-striped table-sm">
                   <thead>

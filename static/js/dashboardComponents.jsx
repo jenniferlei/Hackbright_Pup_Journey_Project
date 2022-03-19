@@ -32,7 +32,7 @@ function Footer(props) {
 }
 
 const ViewMonthYear = (props) => {
-  const [yearOptions, setYearOptions] = React.useState([2021, 2022]);
+  const [yearOptions, setYearOptions] = React.useState([]);
   const monthOptions = [
     { monthNum: 1, monthAbbr: "Jan" },
     { monthNum: 2, monthAbbr: "Feb" },
@@ -48,29 +48,33 @@ const ViewMonthYear = (props) => {
     { monthNum: 12, monthAbbr: "Dec" },
   ];
 
-  // React.useEffect(() => {
-  //   getYearOptions();
-  // }, []);
+  React.useEffect(() => {
+    getYearOptions();
+  }, []);
 
-  // function getYearOptions() {
-  //   fetch("/user_check_ins.json")
-  //     .then((response) => response.json())
-  //     .then((jsonResponse) => {
-  //       const { checkIns } = jsonResponse;
-  //       let years = [];
-  //       for (const checkIn of checkIns) {
-  //         const dateHiked = new Date(checkIn.date_hiked);
-  //         const year = dateHiked.getFullYear();
-  //         if (!years.includes(year)) {
-  //           years.push(year);
-  //         }
-  //       }
-  //       // setYearOptions(years);
-  //       setYearOptions([2021, 2022]);
-  //     });
-  // }
+  function getYearOptions() {
+    fetch("/user_check_ins.json")
+      .then((response) => response.json())
+      .then((jsonResponse) => {
+        const { checkIns } = jsonResponse;
+        let years = [];
+        for (const checkIn of checkIns) {
+          const dateHiked = new Date(checkIn.date_hiked);
+          const year = dateHiked.getFullYear();
+          if (!years.includes(year)) {
+            years.push(year);
+          }
+        }
+        setYearOptions(
+          years.sort((a, b) => {
+            return b - a;
+          })
+        );
+      });
+  }
 
   function changeMonthYearForm() {
+    getYearOptions();
     if (document.getElementById(`${props.category}-month-view`).checked) {
       document.getElementById(
         `${props.category}-show-month-view`
@@ -138,7 +142,7 @@ const ViewMonthYear = (props) => {
             year
           </label>
           &nbsp;
-          <div style={{ display: `${props.display}` }}>
+          <div>
             <input
               type="radio"
               className="btn-check"
@@ -281,48 +285,42 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
   const AddMultHikesToExistingListRef = React.useRef();
   const DashboardGraphContainerRef = React.useRef();
   const DashboardMapContainerRef = React.useRef();
-  const [checkInsDisplay, setCheckInsDisplay] = React.useState(false);
-  const [bookmarksDisplay, setBookmarksDisplay] = React.useState(false);
-  const [commentsDisplay, setCommentsDisplay] = React.useState(false);
 
   React.useImperativeHandle(ref, () => ({
     displayMap() {
-      setCheckInsDisplay(false);
-      setBookmarksDisplay(false);
-      setCommentsDisplay(false);
       document.getElementById("display-map").style.display = "block";
       document.getElementById("display-graph").style.display = "none";
+      document.getElementById("display-check-ins").style.display = "none";
+      document.getElementById("display-bookmarks").style.display = "none";
+      document.getElementById("display-comments").style.display = "none";
     },
     displayGraph() {
-      setCheckInsDisplay(false);
-      setBookmarksDisplay(false);
-      setCommentsDisplay(false);
       document.getElementById("display-map").style.display = "none";
       document.getElementById("display-graph").style.display = "block";
+      document.getElementById("display-check-ins").style.display = "none";
+      document.getElementById("display-bookmarks").style.display = "none";
+      document.getElementById("display-comments").style.display = "none";
     },
     displayCheckIns() {
-      setCheckInsDisplay(true);
-      setBookmarksDisplay(false);
-      setCommentsDisplay(false);
-      getCheckIns();
       document.getElementById("display-map").style.display = "none";
       document.getElementById("display-graph").style.display = "none";
+      document.getElementById("display-check-ins").style.display = "block";
+      document.getElementById("display-bookmarks").style.display = "none";
+      document.getElementById("display-comments").style.display = "none";
     },
     displayBookmarks() {
-      setCheckInsDisplay(false);
-      setBookmarksDisplay(true);
-      setCommentsDisplay(false);
-      getBookmarksLists();
       document.getElementById("display-map").style.display = "none";
       document.getElementById("display-graph").style.display = "none";
+      document.getElementById("display-check-ins").style.display = "none";
+      document.getElementById("display-bookmarks").style.display = "block";
+      document.getElementById("display-comments").style.display = "none";
     },
     displayComments() {
-      setCheckInsDisplay(false);
-      setBookmarksDisplay(false);
-      setCommentsDisplay(true);
-      getComments();
       document.getElementById("display-map").style.display = "none";
       document.getElementById("display-graph").style.display = "none";
+      document.getElementById("display-check-ins").style.display = "none";
+      document.getElementById("display-bookmarks").style.display = "none";
+      document.getElementById("display-comments").style.display = "block";
     },
   }));
 
@@ -333,6 +331,12 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
   function refreshProfiles() {
     props.parentGetPetProfiles();
   }
+
+  React.useEffect(() => {
+    getCheckIns();
+    getBookmarksLists();
+    getComments();
+  }, []);
 
   function getCheckIns() {
     fetch("/user_check_ins.json")
@@ -526,51 +530,48 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
           />
           <DashboardGraphContainer ref={DashboardGraphContainerRef} />
         </div>
-        {checkInsDisplay === true ? (
-          <React.Fragment>
-            <DashboardHeader
-              headerLabel="CheckInsLabel"
-              title="Check Ins"
-              modalTarget="#modal-add-check-in"
-              icon="bi bi-check-circle"
-              modalText="add a check in"
-            />
 
-            <div style={{ height: "100%", overflowY: "auto" }}>
-              <div>{allCheckIns}</div>
-            </div>
-          </React.Fragment>
-        ) : null}
-        {bookmarksDisplay === true ? (
-          <React.Fragment>
-            <DashboardHeader
-              headerLabel="BookmarksLabel"
-              title="Bookmarks"
-              modalTarget="#modal-create-bookmarks-list"
-              icon="bi bi-bookmark-star"
-              modalText="create a list"
-            />
+        <div id="display-check-ins" style={{ display: "none" }}>
+          <DashboardHeader
+            headerLabel="CheckInsLabel"
+            title="Check Ins"
+            modalTarget="#modal-add-check-in"
+            icon="bi bi-check-circle"
+            modalText="add a check in"
+          />
 
-            <div style={{ height: "100%", overflowY: "auto" }}>
-              <div>{allBookmarksLists}</div>
-            </div>
-          </React.Fragment>
-        ) : null}
-        {commentsDisplay === true ? (
-          <React.Fragment>
-            <DashboardHeader
-              headerLabel="CommentsLabel"
-              title="Your Comments For All Hikes"
-              modalTarget="#modal-add-comment"
-              icon="bi bi-chat-text"
-              modalText="add a comment"
-            />
+          <div style={{ height: "100%", overflowY: "auto" }}>
+            <div>{allCheckIns}</div>
+          </div>
+        </div>
 
-            <div style={{ height: "100%", overflowY: "auto" }}>
-              <div>{allComments}</div>
-            </div>
-          </React.Fragment>
-        ) : null}
+        <div id="display-bookmarks" style={{ display: "none" }}>
+          <DashboardHeader
+            headerLabel="BookmarksLabel"
+            title="Bookmarks"
+            modalTarget="#modal-create-bookmarks-list"
+            icon="bi bi-bookmark-star"
+            modalText="create a list"
+          />
+
+          <div style={{ height: "100%", overflowY: "auto" }}>
+            <div>{allBookmarksLists}</div>
+          </div>
+        </div>
+
+        <div id="display-comments" style={{ display: "none" }}>
+          <DashboardHeader
+            headerLabel="CommentsLabel"
+            title="Your Comments For All Hikes"
+            modalTarget="#modal-add-comment"
+            icon="bi bi-chat-text"
+            modalText="add a comment"
+          />
+
+          <div style={{ height: "100%", overflowY: "auto" }}>
+            <div>{allComments}</div>
+          </div>
+        </div>
       </div>
     </React.Fragment>
   );

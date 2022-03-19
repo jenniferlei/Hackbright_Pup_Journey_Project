@@ -131,13 +131,6 @@ function SearchOffCanvas(props) {
           <h3 className="offcanvas-title" id="SearchLabel">
             Search Hikes
           </h3>
-          <div className="float-end">
-            <small>
-              <a className="link-dark" href="/hikes">
-                View all hikes
-              </a>
-            </small>
-          </div>
         </div>
         <div className="offcanvas-body" style={{ position: "relative" }}>
           <div style={{ padding: "0.5em" }}>
@@ -299,7 +292,7 @@ function SearchOffCanvas(props) {
                       border: "1px solid #ced4da",
                       borderRadius: "5px",
                       paddingLeft: "1em",
-                      height: "10vh",
+                      height: "11vh",
                       overflow: "auto",
                     }}
                   >
@@ -328,7 +321,7 @@ function SearchOffCanvas(props) {
                               className="form-check-label"
                               htmlFor={areaOption.area}
                             >
-                              {areaOption.area}
+                              <small>{areaOption.area}</small>
                             </label>
                           </div>
                         ))
@@ -359,7 +352,7 @@ function SearchOffCanvas(props) {
                       border: "1px solid #ced4da",
                       borderRadius: "5px",
                       paddingLeft: "1em",
-                      height: "10vh",
+                      height: "11vh",
                       overflow: "auto",
                     }}
                   >
@@ -388,7 +381,7 @@ function SearchOffCanvas(props) {
                               className="form-check-label"
                               htmlFor={cityOption.city}
                             >
-                              {cityOption.city}
+                              <small>{cityOption.city}</small>
                             </label>
                           </div>
                         ))
