@@ -21,19 +21,31 @@ Do you love going on hikes with your dogs? Pup Journey is a platform where any u
 
 ## Features
 
+### SEARCH HIKES
+
+![All Hikes](/static/img/readme/Pup_Journey_All_Hikes.png "All Hikes")
+
+> **FILTER** ![Filter Hikes](/static/img/readme/Pup_Journey_Filter.png "Filter Hikes")
+
+> **SORT** ![Sort Hikes](/static/img/readme/Pup_Journey_Sort.png "Sort Hikes")
+
+### HIKE DETAILS
+
+![Hike Details](/static/img/readme/Pup_Journey_Hike_Details.png "Hike Details")
+
 ### REGISTRATION & LOGIN
 
 ![Sign Up](/static/img/readme/Pup_Journey_Sign_Up.png "Sign Up")
 
 ![Log In](/static/img/readme/Pup_Journey_Log_In.png "Log In")
 
-### SEARCH HIKES
+### DASHBOARD
 
-![All Hikes](/static/img/readme/Pup_Journey_All_Hikes.png "All Hikes")
+> **MAP**
+> ![Dashboard Map](/static/img/readme/Pup_Journey_Dashboard_Map.png "Dashboard Map")
 
-> **FILTER** > ![Filter Hikes](/static/img/readme/Pup_Journey_Filter.png "Filter Hikes")
-
-> **SORT** > ![Sort Hikes](/static/img/readme/Pup_Journey_Sort.png "Sort Hikes")
+> **GRAPH**
+> ![Dashboard Graph](/static/img/readme/Pup_Journey_Dashboard_Graph.png "Dashboard Graph")
 
 ### PET PROFILES
 
@@ -42,12 +54,6 @@ Do you love going on hikes with your dogs? Pup Journey is a platform where any u
 > **EDIT A PROFILE**
 
 > **DELETE A PROFILE**
-
-### DASHBOARD
-
-> **MAP**
-
-> **GRAPH**
 
 ### BOOKMARKS LISTS
 
