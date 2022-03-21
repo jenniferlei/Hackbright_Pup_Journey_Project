@@ -25,11 +25,13 @@ Do you love going on hikes with your dogs? Pup Journey is a platform where any u
 
 ![All Hikes](/static/img/readme/Pup_Journey_All_Hikes.png "All Hikes")
 
-**FILTER**
+#### FILTER
+
 Users can search for hikes by keyword from the search bar, which filters all hikes in the database. Alternatively, users can add multiple filters from the off canvas form. When the user clicks Submit, the input from the form is passed to the postgres database asynchronously and returns the results that meet the parameters requested.
 ![Filter Hikes](/static/img/readme/Pup_Journey_Filter.png "Filter Hikes")
 
-**SORT**
+#### SORT
+
 Users can sort their results ascending or descending
 ![Sort Hikes](/static/img/readme/Pup_Journey_Sort.png "Sort Hikes")
 
@@ -50,47 +52,49 @@ Users can view a summary of the hike's details and its map location
 
 Users must register and log in to view the dashboard.
 
-**MAP**
+#### MAP
+
 Registered users can view a map of locations they have visited
 ![Dashboard Map](/static/img/readme/Pup_Journey_Dashboard_Map.png "Dashboard Map")
 
-**GRAPH**
+#### GRAPH
+
 Registered users can view a chart of how many miles they have walked and number of hikes they have completed
 ![Dashboard Graph](/static/img/readme/Pup_Journey_Dashboard_Graph.png "Dashboard Graph")
 
 ### PET PROFILES
 
-**CREATE A PROFILE**
+#### CREATE A PROFILE
 
-**EDIT A PROFILE**
+#### EDIT A PROFILE
 
-**DELETE A PROFILE**
+#### DELETE A PROFILE
 
 ### BOOKMARKS LISTS
 
-**CREATE A LIST**
+#### CREATE A LIST
 
-**ADD HIKES TO A LIST**
+#### ADD HIKES TO A LIST
 
-**RENAME A LIST**
+#### RENAME A LIST
 
-**DELETE A LIST**
+#### DELETE A LIST
 
 ### CHECK INS
 
-**CREATE A CHECK IN**
+#### CREATE A CHECK IN
 
-**EDIT A CHECK IN**
+#### EDIT A CHECK IN
 
-**DELETE A CHECK IN**
+#### DELETE A CHECK IN
 
 ### COMMENTS
 
-**CREATE A COMMENT**
+#### CREATE A COMMENT
 
-**EDIT A COMMENT**
+#### EDIT A COMMENT
 
-**DELETE A COMMENT**
+#### DELETE A COMMENT
 
 ## Future Features
 
