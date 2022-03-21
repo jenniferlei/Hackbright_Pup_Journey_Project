@@ -1,6 +1,8 @@
 # Pup Journey
 
-Do you love going on hikes with your dogs? Pup Journey is a platform where users can search, bookmark and comment on dog-friendly hikes in the west coast. Users can create pet profiles and track their dog's hike activities
+Do you love going on hikes with your dogs? Pup Journey is a platform where any user can search, filter and sort dog-friendly hikes on the west coast. Users can view a hike’s details, including its map location and comments registered users have made. To access additional features, users can create an account and log in. Registered users can create, update and delete pet profiles, hike check ins, bookmarks lists and comments. On the dashboard, users can view a map of all the locations they have visited and a chart of how many miles they have walked and number of hikes they have completed.
+
+![Homepage](/static/img/readme/Pup_Journey_Homepage.png "Homepage")
 
 **CONTENTS**
 
@@ -21,11 +23,17 @@ Do you love going on hikes with your dogs? Pup Journey is a platform where users
 
 ### REGISTRATION & LOGIN
 
-> <p align="justify">  </p>
+![Sign Up](/static/img/readme/Pup_Journey_Sign_Up.png "Sign Up")
+
+![Log In](/static/img/readme/Pup_Journey_Log_In.png "Log In")
 
 ### SEARCH HIKES
 
-> <p align="justify"> Dog-friendly hikes are searchable by several parameters and can be sorted. </p>
+![All Hikes](/static/img/readme/Pup_Journey_All_Hikes.png "All Hikes")
+
+> **FILTER** > ![Filter Hikes](/static/img/readme/Pup_Journey_Filter.png "Filter Hikes")
+
+> **SORT** > ![Sort Hikes](/static/img/readme/Pup_Journey_Sort.png "Sort Hikes")
 
 ### PET PROFILES
 
@@ -44,6 +52,8 @@ Do you love going on hikes with your dogs? Pup Journey is a platform where users
 ### BOOKMARKS LISTS
 
 > **CREATE A LIST**
+
+> **ADD HIKES TO A LIST**
 
 > **RENAME A LIST**
 
