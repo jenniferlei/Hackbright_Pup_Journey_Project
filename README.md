@@ -25,61 +25,72 @@ Do you love going on hikes with your dogs? Pup Journey is a platform where any u
 
 ![All Hikes](/static/img/readme/Pup_Journey_All_Hikes.png "All Hikes")
 
-> **FILTER** ![Filter Hikes](/static/img/readme/Pup_Journey_Filter.png "Filter Hikes")
+**FILTER**
+Users can search for hikes by keyword from the search bar, which filters all hikes in the database. Alternatively, users can add multiple filters from the off canvas form. When the user clicks Submit, the input from the form is passed to the postgres database asynchronously and returns the results that meet the parameters requested.
+![Filter Hikes](/static/img/readme/Pup_Journey_Filter.png "Filter Hikes")
 
-> **SORT** ![Sort Hikes](/static/img/readme/Pup_Journey_Sort.png "Sort Hikes")
+**SORT**
+Users can sort their results ascending or descending
+![Sort Hikes](/static/img/readme/Pup_Journey_Sort.png "Sort Hikes")
 
 ### HIKE DETAILS
 
+Users can view a summary of the hike's details and its map location
 ![Hike Details](/static/img/readme/Pup_Journey_Hike_Details.png "Hike Details")
 
-### REGISTRATION & LOGIN
+### REGISTRATION, LOGIN & USER SETTINGS
 
 ![Sign Up](/static/img/readme/Pup_Journey_Sign_Up.png "Sign Up")
 
 ![Log In](/static/img/readme/Pup_Journey_Log_In.png "Log In")
 
+![User Settings](/static/img/readme/Pup_Journey_User_Settings.png "User Settings")
+
 ### DASHBOARD
 
-> **MAP**
-> ![Dashboard Map](/static/img/readme/Pup_Journey_Dashboard_Map.png "Dashboard Map")
+Users must register and log in to view the dashboard.
 
-> **GRAPH**
-> ![Dashboard Graph](/static/img/readme/Pup_Journey_Dashboard_Graph.png "Dashboard Graph")
+**MAP**
+Registered users can view a map of locations they have visited
+![Dashboard Map](/static/img/readme/Pup_Journey_Dashboard_Map.png "Dashboard Map")
+
+**GRAPH**
+Registered users can view a chart of how many miles they have walked and number of hikes they have completed
+![Dashboard Graph](/static/img/readme/Pup_Journey_Dashboard_Graph.png "Dashboard Graph")
 
 ### PET PROFILES
 
-> **CREATE A PROFILE**
+**CREATE A PROFILE**
 
-> **EDIT A PROFILE**
+**EDIT A PROFILE**
 
-> **DELETE A PROFILE**
+**DELETE A PROFILE**
 
 ### BOOKMARKS LISTS
 
-> **CREATE A LIST**
+**CREATE A LIST**
 
-> **ADD HIKES TO A LIST**
+**ADD HIKES TO A LIST**
 
-> **RENAME A LIST**
+**RENAME A LIST**
 
-> **DELETE A LIST**
+**DELETE A LIST**
 
 ### CHECK INS
 
-> **CREATE A CHECK IN**
+**CREATE A CHECK IN**
 
-> **EDIT A CHECK IN**
+**EDIT A CHECK IN**
 
-> **DELETE A CHECK IN**
+**DELETE A CHECK IN**
 
 ### COMMENTS
 
-> **CREATE A COMMENT**
+**CREATE A COMMENT**
 
-> **EDIT A COMMENT**
+**EDIT A COMMENT**
 
-> **DELETE A COMMENT**
+**DELETE A COMMENT**
 
 ## Future Features
 
