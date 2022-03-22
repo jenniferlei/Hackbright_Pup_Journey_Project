@@ -23,30 +23,20 @@ Do you love going on hikes with your dogs? Pup Journey is a platform where any u
 
 ### SEARCH HIKES
 
-![All Hikes](/static/img/readme/Pup_Journey_All_Hikes.png "All Hikes")
-
-#### FILTER
-
-Users can search for hikes by keyword from the search bar, which filters all hikes in the database. Alternatively, users can add multiple filters from the off canvas form. When the user clicks Submit, the input from the form is passed to the postgres database asynchronously and returns the results that meet the parameters requested.
-![Filter Hikes](/static/img/readme/Pup_Journey_Filter.png "Filter Hikes")
-
-#### SORT
-
-Users can sort their results ascending or descending
-![Sort Hikes](/static/img/readme/Pup_Journey_Sort.png "Sort Hikes")
+Users can search for hikes by keyword from the search bar, which filters all hikes in the database.
+Alternatively, users can add multiple filters from the off canvas form. When the user clicks Submit, the input from the form is passed to the postgres database asynchronously and returns the results that meet the parameters requested.
+Users can sort their results by column, ascending or descending
+<img src="https://user-images.githubusercontent.com/43583599/159387972-7141c4aa-1bef-4867-b09c-b3d5c0c8e055.gif" width="75%" height="75%"/>
 
 ### HIKE DETAILS
 
 Users can view a summary of the hike's details and its map location
-![Hike Details](/static/img/readme/Pup_Journey_Hike_Details.png "Hike Details")
+<img src="/static/img/readme/Pup_Journey_Hike_Details.png" width="75%" height="75%"/>
 
-### REGISTRATION, LOGIN & USER SETTINGS
+### REGISTRATION, LOG IN, USER SETTINGS & LOG OUT
 
-![Sign Up](/static/img/readme/Pup_Journey_Sign_Up.png "Sign Up")
-
-![Log In](/static/img/readme/Pup_Journey_Log_In.png "Log In")
-
-![User Settings](/static/img/readme/Pup_Journey_User_Settings.png "User Settings")
+Users can register, log in, change their user settings, and log out
+<img src="https://user-images.githubusercontent.com/43583599/159392083-f33b1c47-1e36-4d97-9fd9-b2b03d75cd4c.gif" width="75%" height="75%"/>
 
 ### DASHBOARD
 
@@ -55,46 +45,50 @@ Users must register and log in to view the dashboard
 #### MAP
 
 Registered users can view a map of locations they have visited and change views by month, year, or all time
-![Dashboard Map](/static/img/readme/Pup_Journey_Dashboard_Map.png "Dashboard Map")
+<img src="https://user-images.githubusercontent.com/43583599/159396971-e517d4e8-9184-4b51-a0a5-f8fc84134915.gif" width="75%" height="75%"/>
 
 #### GRAPH
 
 Registered users can view a chart of how many miles they have walked and number of hikes they have completed and change views by month, year, or all time
-![Dashboard Graph](/static/img/readme/Pup_Journey_Dashboard_Graph.png "Dashboard Graph")
+<br/><img src="https://user-images.githubusercontent.com/43583599/159396955-e7dcf5ab-1b99-44fe-856c-9fb4768fc155.gif" width="75%" height="75%"/>
 
 ### PET PROFILES
 
-#### CREATE A PROFILE
+#### CREATE, VIEW, UPDATE, DELETE A PET PROFILE
 
-#### EDIT A PROFILE
+Registered users can create, view, update and delete pet profiles from the dashboard
+<img src="https://user-images.githubusercontent.com/43583599/159401165-9b5fb75a-df84-4464-a9b0-df331671e9ea.gif" width="75%" height="75%"/>
 
-#### DELETE A PROFILE
+Pet profile components are also accessible from the search hikes and hike details pages
+<img src="https://user-images.githubusercontent.com/43583599/159401176-6e33f9b5-9907-4dd9-8b0c-b6ff8586cf69.gif" width="75%" height="75%"/>
+
 
 ### BOOKMARKS LISTS
 
-#### CREATE A LIST
+Registered users can create, view, update and delete bookmarks lists from the dashboard
 
-#### ADD HIKES TO A LIST
+Bookmarks list components are also accessible from the search hikes and hike details pages
 
-#### RENAME A LIST
+#### CREATE, VIEW, UPDATE, DELETE A BOOKMARKS LIST
 
-#### DELETE A LIST
+
 
 ### CHECK INS
 
-#### CREATE A CHECK IN
+#### CREATE, VIEW, UPDATE, DELETE A CHECK IN
 
-#### EDIT A CHECK IN
+Registered users can create, view, update and delete check ins from the dashboard
 
-#### DELETE A CHECK IN
+Check in components are also accessible from the search hikes and hike details pages
+
 
 ### COMMENTS
 
-#### CREATE A COMMENT
+#### CREATE, VIEW, UPDATE, DELETE A COMMENT
 
-#### EDIT A COMMENT
+Registered users can create, view, update and delete check ins from the dashboard
 
-#### DELETE A COMMENT
+Comment components are also accessible from the search hikes and hike details pages. Non-registered users can view comments.
 
 ## Future Features
 
