@@ -45,12 +45,12 @@ Users must register and log in to view the dashboard
 #### MAP
 
 Registered users can view a map of locations they have visited and change views by month, year, or all time
-<img src="https://user-images.githubusercontent.com/43583599/159396971-e517d4e8-9184-4b51-a0a5-f8fc84134915.gif" width="75%" height="75%"/>
+<img src="https://user-images.githubusercontent.com/43583599/159410647-247399dc-2398-4522-ba1a-ed3690402506.gif" width="75%" height="75%"/>
 
 #### GRAPH
 
 Registered users can view a chart of how many miles they have walked and number of hikes they have completed and change views by month, year, or all time
-<br/><img src="https://user-images.githubusercontent.com/43583599/159396955-e7dcf5ab-1b99-44fe-856c-9fb4768fc155.gif" width="75%" height="75%"/>
+<br/><img src="https://user-images.githubusercontent.com/43583599/159410658-042082bf-8d11-43a9-b07c-8694cdeb312a.gif" width="75%" height="75%"/>
 
 ### PET PROFILES
 
@@ -65,30 +65,33 @@ Pet profile components are also accessible from the search hikes and hike detail
 
 ### BOOKMARKS LISTS
 
-Registered users can create, view, update and delete bookmarks lists from the dashboard
-
-Bookmarks list components are also accessible from the search hikes and hike details pages
-
 #### CREATE, VIEW, UPDATE, DELETE A BOOKMARKS LIST
 
+Registered users can create, view, update and delete bookmarks lists from the dashboard
+<img src="https://user-images.githubusercontent.com/43583599/159410557-48d3bf29-9ac7-40a5-a987-9bf57e385b2d.gif" width="75%" height="75%"/>
 
+Bookmarks list components are also accessible from the search hikes and hike details pages
+<img src="https://user-images.githubusercontent.com/43583599/159410574-110f815a-a817-4b13-ba17-352ac95bf716.gif" width="75%" height="75%"/>
 
 ### CHECK INS
 
 #### CREATE, VIEW, UPDATE, DELETE A CHECK IN
 
 Registered users can create, view, update and delete check ins from the dashboard
+<img src="https://user-images.githubusercontent.com/43583599/159410714-dccf3aa8-d2d9-4f33-95c7-b7a6e8d175fb.gif" width="75%" height="75%"/>
 
 Check in components are also accessible from the search hikes and hike details pages
-
+<img src="https://user-images.githubusercontent.com/43583599/159410757-f38cec76-a7b4-4f80-a4e1-12b35b384ac2.gif" width="75%" height="75%"/>
 
 ### COMMENTS
 
 #### CREATE, VIEW, UPDATE, DELETE A COMMENT
 
 Registered users can create, view, update and delete check ins from the dashboard
+<img src="https://user-images.githubusercontent.com/43583599/159410785-1166192f-933d-4cf8-b2cd-3d69d4e7433b.gif" width="75%" height="75%"/>
 
 Comment components are also accessible from the search hikes and hike details pages. Non-registered users can view comments.
+<img src="https://user-images.githubusercontent.com/43583599/159410801-aeab7fb4-86af-49b7-beb3-4b551649ffc7.gif" width="75%" height="75%"/>
 
 ## Future Features
 
