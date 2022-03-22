@@ -211,3 +211,18 @@ Navigate to `localhost:5000/` to begin your dog-friendly hike search!
 ## About the Developer
 
 Jennifer Lei is a software engineer in the Greater Los Angeles Area, and previously worked in multiple fields, such as B2B tech sales, finance and e-commerce. A combined love for dogs, hiking, and learning new things (React!) led to the creation of Pup Journey, her capstone project for Hackbright Academy.
+
+Let's connect!
+
+<p><a href="https://www.linkedin.com/in/jenniferlei/">
+  <img
+    alt="LinkedIn"
+    src="https://img.shields.io/badge/linkedin-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white"
+  />
+</a>
+<a href="https://twitter.com/JenniferLei_">
+  <img
+    alt="Twitter"
+    src="https://img.shields.io/badge/twitter-%231DA1F2.svg?&style=for-the-badge&logo=twitter&logoColor=white"
+  />
+</a></p>
