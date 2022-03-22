@@ -50,16 +50,16 @@ Users can view a summary of the hike's details and its map location
 
 ### DASHBOARD
 
-Users must register and log in to view the dashboard.
+Users must register and log in to view the dashboard
 
 #### MAP
 
-Registered users can view a map of locations they have visited
+Registered users can view a map of locations they have visited and change views by month, year, or all time
 ![Dashboard Map](/static/img/readme/Pup_Journey_Dashboard_Map.png "Dashboard Map")
 
 #### GRAPH
 
-Registered users can view a chart of how many miles they have walked and number of hikes they have completed
+Registered users can view a chart of how many miles they have walked and number of hikes they have completed and change views by month, year, or all time
 ![Dashboard Graph](/static/img/readme/Pup_Journey_Dashboard_Graph.png "Dashboard Graph")
 
 ### PET PROFILES
