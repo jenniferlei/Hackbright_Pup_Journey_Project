@@ -115,10 +115,9 @@ The data for the components are retrieved or modified using fetch requests to Pu
 
 Non-registered users can view comments from the hikes and hike details pages.
 
-| Dashboard View                                                                                                      | Search Hikes/Hike Details View |
-| ------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
-| <img src="https://user-images.githubusercontent.com/43583599/159410785-1166192f-933d-4cf8-b2cd-3d69d4e7433b.gif" /> |
-| <img src="https://user-images.githubusercontent.com/43583599/159410801-aeab7fb4-86af-49b7-beb3-4b551649ffc7.gif" /> |
+| Dashboard View                                                                                                      | Search Hikes/Hike Details View                                                                                      |
+| ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| <img src="https://user-images.githubusercontent.com/43583599/159410785-1166192f-933d-4cf8-b2cd-3d69d4e7433b.gif" /> | <img src="https://user-images.githubusercontent.com/43583599/159410801-aeab7fb4-86af-49b7-beb3-4b551649ffc7.gif" /> |
 
 </details>
 
