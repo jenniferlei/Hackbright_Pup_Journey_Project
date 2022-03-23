@@ -1,6 +1,6 @@
 """CRUD operations for Pet model."""
 
-from model import db, User, Pet, Hike, Comment, CheckIn, PetCheckIn, BookmarksList, HikeBookmarksList, connect_to_db
+from model import db, Pet, connect_to_db
 
 
 def create_pet(user, pet_name, gender, birthday, breed, pet_imgURL, img_public_id, check_ins):

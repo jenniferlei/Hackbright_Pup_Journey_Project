@@ -1,7 +1,7 @@
 """CRUD operations for Hike Model."""
 
 from sqlalchemy import func
-from model import db, User, Pet, Hike, Comment, CheckIn, PetCheckIn, BookmarksList, HikeBookmarksList, connect_to_db
+from model import db, Hike, connect_to_db
 
 
 def create_hike(
@@ -90,64 +90,6 @@ def get_hike_by_keyword(keyword):
     """Return hikes by keyword."""
 
     return db.session.query(Hike).filter(Hike.hike_name.ilike(f"%{keyword}%")).all()
-
-
-# def get_hike_by_difficulty(difficulty):
-#     """Return hikes by difficulty."""
-
-#     return db.session.query(Hike).filter(Hike.difficulty == difficulty).all()
-
-
-# def get_hike_by_leash_rule(leash_rule):
-#     """Return hikes by leash_rule."""
-
-#     return db.session.query(Hike).filter(Hike.leash_rule == leash_rule).all()
-
-
-# def get_hike_by_city(city):
-#     """Return hikes by city."""
-
-#     return db.session.query(Hike).filter(Hike.city == city).all()
-
-
-# def get_hike_by_state(state):
-#     """Return hikes by state."""
-
-#     return db.session.query(Hike).filter(Hike.state == state).all()
-
-
-# def get_hike_by_length(length_min, length_max):
-#     """Return hikes by length."""
-
-#     return (
-#         db.session.query(Hike)
-#         .filter(Hike.miles >= length_min, Hike.miles <= length_max)
-#         .all()
-#     )
-
-
-def get_hike_states():
-    """Return a list of states."""
-
-    return set(db.session.query(Hike.state).all())
-
-
-def get_hike_cities(state):
-    """Return a list of cities for a state."""
-
-    return set(db.session.query(Hike.city).filter(Hike.state == state).all())
-
-
-def get_hike_areas(state):
-    """Return a list of areas for a state."""
-
-    return set(db.session.query(Hike.area).filter(Hike.state == state).all())
-
-
-def get_hike_parking():
-    """Return a list of parking."""
-
-    return set(db.session.query(Hike.parking).all())
 
 
 if __name__ == "__main__":

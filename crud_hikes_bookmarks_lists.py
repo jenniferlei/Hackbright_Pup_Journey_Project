@@ -1,6 +1,6 @@
 """CRUD operations for HikeBookmarksList Model."""
 
-from model import db, User, Pet, Hike, Comment, CheckIn, PetCheckIn, BookmarksList, HikeBookmarksList, connect_to_db
+from model import db, HikeBookmarksList, connect_to_db
 
 
 def create_hike_bookmarks_list(hike_id, bookmarks_list_id):

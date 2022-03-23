@@ -1,7 +1,7 @@
 """CRUD operations for BookmarksList Model."""
 
 from sqlalchemy import func
-from model import db, User, Pet, Hike, Comment, CheckIn, PetCheckIn, BookmarksList, HikeBookmarksList, connect_to_db
+from model import (db, Hike, BookmarksList, connect_to_db)
 
 
 def create_bookmarks_list(bookmarks_list_name, user_id, hikes):
@@ -25,17 +25,6 @@ def get_bookmarks_lists_by_user_id(user_id):
     """Return all bookmarks lists by user_id."""
 
     return db.session.query(BookmarksList).filter_by(user_id=user_id).order_by(func.lower(BookmarksList.bookmarks_list_name).asc()).all()
-    
-
-def get_bookmarks_list_by_user_id_and_bookmarks_list_name(user_id, bookmarks_list_name):
-    """Return bookmarks list by bookmarks_list_name."""
-
-    bookmarks_lists_by_user_and_name = (db.session.query(BookmarksList)
-                                        .filter(BookmarksList.user_id==user_id,
-                                                BookmarksList.bookmarks_list_name==bookmarks_list_name)
-                                        .one())
-
-    return bookmarks_lists_by_user_and_name
 
 
 def get_bookmarks_lists_by_user_id_and_hike_id(user_id, hike_id):

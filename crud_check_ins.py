@@ -1,7 +1,7 @@
 """CRUD operations for CheckIn Model."""
 
 from sqlalchemy import func
-from model import db, User, Pet, Hike, Comment, CheckIn, PetCheckIn, BookmarksList, HikeBookmarksList, connect_to_db
+from model import db, User, Pet, CheckIn, connect_to_db
 import crud_pets
 import crud_pets_check_ins
 
@@ -69,21 +69,6 @@ def get_check_ins_by_user_id_hike_id(user_id, hike_id):
     sorted_check_ins = sorted(check_in_data, key=lambda x: x.date_hiked, reverse=True)
     
     return sorted_check_ins
-
-
-def get_check_ins_by_pet_id_hike_id(pet_id, hike_id):
-    """Return all check ins for a given pet id and hike id"""
-
-    # get list of pet check in objects
-    pet_check_ins = crud_pets_check_ins.get_pet_check_in_by_pet_id(pet_id)
-
-    # loop through pet check in objects to get each check in object
-    check_ins = []
-
-    for pet_check_in in pet_check_ins:
-        check_ins.append(db.session.query(CheckIn).get(pet_check_in.check_in_id))
-
-    return check_ins
 
 
 def get_check_ins_by_pet_id(pet_id):
