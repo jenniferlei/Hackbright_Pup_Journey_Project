@@ -272,9 +272,9 @@ const AllHikesBookmarksListContainer = () => {
       });
   };
 
-  function parentSetHikesOptionState() {
+  const parentSetHikesOptionState = () => {
     AddMultHikesToExistingListRef.current.setHikesOptionsState();
-  }
+  };
 
   const allBookmarksLists = [];
   const allRenameBookmarksLists = [];
@@ -381,7 +381,7 @@ const AllHikesBookmarksListContainer = () => {
   );
 };
 
-function HikeTableRow(props) {
+const HikeTableRow = (props) => {
   return (
     <tr>
       <td>
@@ -497,9 +497,9 @@ function HikeTableRow(props) {
       </td>
     </tr>
   );
-}
+};
 
-function TableHeader(props) {
+const TableHeader = (props) => {
   return (
     <React.Fragment>
       <th role="columnheader">
@@ -553,7 +553,7 @@ function TableHeader(props) {
       </th>
     </React.Fragment>
   );
-}
+};
 
 const AllHikesContainer = () => {
   const [allHikes, setAllHikes] = React.useState([]);
@@ -699,15 +699,15 @@ const AllHikesContainer = () => {
 
   console.log(searchHikes);
 
-  function getHikesByKeyword() {
+  const getHikesByKeyword = () => {
     setSearchHikes([
       ...allHikes.filter((hike) =>
         hike.hike_name.toLowerCase().includes(keywordFilter.toLowerCase())
       ),
     ]);
-  }
+  };
 
-  function getFilteredHikes(url) {
+  const getFilteredHikes = (url) => {
     fetch(url)
       .then((response) => response.json())
       .then((responseJson) => {
@@ -715,7 +715,7 @@ const AllHikesContainer = () => {
         setSortParam("");
         setSearchHikes(hikes);
       });
-  }
+  };
 
   const timestamp = Date.now();
   const allHikeRows = searchHikes.map((hike) => (
