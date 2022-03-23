@@ -70,7 +70,7 @@ Registered users can view a map of locations they have visited and change views 
 #### GRAPH
 
 Registered users can view a chart of how many miles they have walked and number of hikes they have completed and change views by month, year, or all time
-The chart is created with chart.js 
+The chart is created with chart.js
 
 <details>
   <summary>Click to see gif</summary>
@@ -85,11 +85,11 @@ The data for the components are retrieved or modified using fetch requests to Pu
 
 <details>
   <summary>Click to see pet profiles</summary>
-  
-<img src="https://user-images.githubusercontent.com/43583599/159401165-9b5fb75a-df84-4464-a9b0-df331671e9ea.gif" width="75%" height="75%"/>
-  
-Pet profile components are also accessible from the search hikes and hike details pages
-<img src="https://user-images.githubusercontent.com/43583599/159401176-6e33f9b5-9907-4dd9-8b0c-b6ff8586cf69.gif" width="75%" height="75%"/>
+
+| Dashboard View                                                                                                                              | Search Hikes/Hike Details View                                                                                                              |
+| ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| <img src="https://user-images.githubusercontent.com/43583599/159401165-9b5fb75a-df84-4464-a9b0-df331671e9ea.gif" width="50%" height="50%"/> | <img src="https://user-images.githubusercontent.com/43583599/159401176-6e33f9b5-9907-4dd9-8b0c-b6ff8586cf69.gif" width="50%" height="50%"/> |
+
 </details>
 
 <details>
