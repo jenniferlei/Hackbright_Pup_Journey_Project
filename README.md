@@ -86,37 +86,40 @@ The data for the components are retrieved or modified using fetch requests to Pu
 <details>
   <summary>Click to see pet profiles</summary>
 
-| Dashboard View                                                                                                                              | Search Hikes/Hike Details View                                                                                                              |
-| ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| <img src="https://user-images.githubusercontent.com/43583599/159401165-9b5fb75a-df84-4464-a9b0-df331671e9ea.gif" width="50%" height="50%"/> | <img src="https://user-images.githubusercontent.com/43583599/159401176-6e33f9b5-9907-4dd9-8b0c-b6ff8586cf69.gif" width="50%" height="50%"/> |
+| Dashboard View                                                                                                     | Search Hikes/Hike Details View                                                                                      |
+| ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| <img src="https://user-images.githubusercontent.com/43583599/159401165-9b5fb75a-df84-4464-a9b0-df331671e9ea.gif"/> | <img src="https://user-images.githubusercontent.com/43583599/159401176-6e33f9b5-9907-4dd9-8b0c-b6ff8586cf69.gif" /> |
 
 </details>
 
 <details>
   <summary>Click to see bookmarks lists</summary>
-  
-<img src="https://user-images.githubusercontent.com/43583599/159410557-48d3bf29-9ac7-40a5-a987-9bf57e385b2d.gif" width="75%" height="75%"/>
-  
-Bookmarks list components are also accessible from the search hikes and hike details pages
-<img src="https://user-images.githubusercontent.com/43583599/159410574-110f815a-a817-4b13-ba17-352ac95bf716.gif" width="75%" height="75%"/>
+
+| Dashboard View                                                                                                      | Search Hikes/Hike Details View                                                                                      |
+| ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| <img src="https://user-images.githubusercontent.com/43583599/159410557-48d3bf29-9ac7-40a5-a987-9bf57e385b2d.gif" /> | <img src="https://user-images.githubusercontent.com/43583599/159410574-110f815a-a817-4b13-ba17-352ac95bf716.gif" /> |
+
 </details>
 
 <details>
   <summary>Click to see check ins</summary>
-  
-<img src="https://user-images.githubusercontent.com/43583599/159410714-dccf3aa8-d2d9-4f33-95c7-b7a6e8d175fb.gif" width="75%" height="75%"/>
-  
-Check in components are also accessible from the search hikes and hike details pages
-<img src="https://user-images.githubusercontent.com/43583599/159410757-f38cec76-a7b4-4f80-a4e1-12b35b384ac2.gif" width="75%" height="75%"/>
+
+| Dashboard View                                                                                                      | Search Hikes/Hike Details View                                                                                      |
+| ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| <img src="https://user-images.githubusercontent.com/43583599/159410714-dccf3aa8-d2d9-4f33-95c7-b7a6e8d175fb.gif" /> | <img src="https://user-images.githubusercontent.com/43583599/159410757-f38cec76-a7b4-4f80-a4e1-12b35b384ac2.gif" /> |
+
 </details>
 
 <details>
   <summary>Click to see comments</summary>
-  
-<img src="https://user-images.githubusercontent.com/43583599/159410785-1166192f-933d-4cf8-b2cd-3d69d4e7433b.gif" width="75%" height="75%"/>
-  
-Comment components are also accessible from the search hikes and hike details pages. Non-registered users can view comments from the hikes and hike details pages.
-<img src="https://user-images.githubusercontent.com/43583599/159410801-aeab7fb4-86af-49b7-beb3-4b551649ffc7.gif" width="75%" height="75%"/>
+
+Non-registered users can view comments from the hikes and hike details pages.
+
+| Dashboard View                                                                                                      | Search Hikes/Hike Details View |
+| ------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| <img src="https://user-images.githubusercontent.com/43583599/159410785-1166192f-933d-4cf8-b2cd-3d69d4e7433b.gif" /> |
+| <img src="https://user-images.githubusercontent.com/43583599/159410801-aeab7fb4-86af-49b7-beb3-4b551649ffc7.gif" /> |
+
 </details>
 
 ## Future Features
