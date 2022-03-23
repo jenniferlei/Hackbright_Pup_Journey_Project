@@ -7,7 +7,7 @@ const HikeDetailsCommentContainer = React.forwardRef((props, ref) => {
   const hike_id = document.querySelector("#hike_id").innerText;
 
   React.useEffect(() => {
-    getComments();
+    getHikeComments();
   }, []);
 
   const [commentsHeader, setCommentsHeader] = React.useState(
@@ -481,6 +481,10 @@ const HikeDetailsCheckInContainer = React.forwardRef((props, ref) => {
     "Check Ins For This Hike"
   );
 
+  React.useEffect(() => {
+    getHikeCheckIns();
+  }, []);
+
   function getCheckIns() {
     if (
       document.querySelector("#CheckInsLabel").innerText ===
@@ -702,6 +706,10 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
     "Bookmarks For This Hike"
   );
 
+  React.useEffect(() => {
+    getHikeBookmarksLists();
+  }, []);
+
   function getBookmarksLists() {
     if (
       document.querySelector("#BookmarksLabel").innerText ===
@@ -918,36 +926,14 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
 });
 
 function HikeDetails(props) {
-  const PetProfileContainerRef = React.useRef();
   const HikeDetailsBookmarksListContainerRef = React.useRef();
-  const HikeDetailsCheckInContainerRef = React.useRef();
-  const HikeDetailsCommentContainerRef = React.useRef();
   const DetailsAddHikeToNewOrExistingListRef = React.useRef();
 
-  const hike_id = document.querySelector("#hike_id").innerText;
   const session_login = document.querySelector("#login").innerText;
 
   function parentGetBookmarksLists() {
     if (session_login === "True") {
       HikeDetailsBookmarksListContainerRef.current.getHikeBookmarksLists();
-    }
-  }
-
-  function parentGetPetProfiles() {
-    if (session_login === "True") {
-      PetProfileContainerRef.current.getPetProfiles();
-    }
-  }
-
-  function parentGetCheckIns() {
-    if (session_login === "True") {
-      HikeDetailsCheckInContainerRef.current.getHikeCheckIns();
-    }
-  }
-
-  function parentGetComments() {
-    if (session_login === "True") {
-      HikeDetailsCommentContainerRef.current.getHikeComments();
     }
   }
 
@@ -957,6 +943,8 @@ function HikeDetails(props) {
     }
   }
 
+  function doNothing() {}
+
   return (
     <React.Fragment>
       <SearchOffCanvas />
@@ -964,13 +952,13 @@ function HikeDetails(props) {
         ref={DetailsAddHikeToNewOrExistingListRef}
         parentGetBookmarksLists={parentGetBookmarksLists}
       />
-      <PetProfileContainer ref={PetProfileContainerRef} />
+      <PetProfileContainer />
       <HikeDetailsBookmarksListContainer
         parentSetListOptionsState={parentSetListOptionsState}
         ref={HikeDetailsBookmarksListContainerRef}
       />
-      <HikeDetailsCheckInContainer ref={HikeDetailsCheckInContainerRef} />
-      <HikeDetailsCommentContainer ref={HikeDetailsCommentContainerRef} />
+      <HikeDetailsCheckInContainer />
+      <HikeDetailsCommentContainer />
       <nav className="footer-menu navbar navbar-expand-sm navbar-light bg-light fixed-bottom">
         <div className="container-fluid">
           <button
@@ -985,7 +973,6 @@ function HikeDetails(props) {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            {/* <FooterSearchBar /> */}
             <div className="d-flex">
               <ul className="navbar-nav me-auto navbar-center">
                 <li className="nav-item">
@@ -1046,28 +1033,28 @@ function HikeDetails(props) {
                   href="Profile"
                   tooltip="profile"
                   icon="fa-solid fa-paw"
-                  getFunction={parentGetPetProfiles}
+                  getFunction={doNothing}
                 />
                 <FooterNavItemOffCanvas
                   name="Bookmarks"
                   href="Bookmarks"
                   tooltip="bookmarks"
                   icon="bi bi-bookmark-star"
-                  getFunction={parentGetBookmarksLists}
+                  getFunction={doNothing}
                 />
                 <FooterNavItemOffCanvas
                   name="Check Ins"
                   href="CheckIns"
                   tooltip="check ins"
                   icon="bi bi-check-circle"
-                  getFunction={parentGetCheckIns}
+                  getFunction={doNothing}
                 />
                 <FooterNavItemOffCanvas
                   name="Comments"
                   href="Comments"
                   tooltip="comments"
                   icon="bi bi-chat-text"
-                  getFunction={parentGetComments}
+                  getFunction={doNothing}
                 />
               </ul>
             </div>

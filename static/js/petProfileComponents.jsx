@@ -432,6 +432,10 @@ const PetProfileContainer = React.forwardRef((props, ref) => {
 
   const session_login = document.querySelector("#login").innerText;
 
+  React.useEffect(() => {
+    getPetProfiles();
+  }, []);
+
   function getPetProfiles() {
     if (session_login === "True") {
       fetch("/pets.json")
