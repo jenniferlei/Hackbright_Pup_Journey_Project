@@ -9,7 +9,6 @@ function FooterNavItemOffCanvas(props) {
         href={`#${props.href}`}
         role="button"
         aria-controls={props.href}
-        onClick={props.getFunction}
       >
         <small>
           <i

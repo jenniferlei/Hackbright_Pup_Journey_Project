@@ -1,28 +1,24 @@
 "use strict";
 
 // All Hikes Check In container component
-const AllHikesCheckInContainer = React.forwardRef((props, ref) => {
+const AllHikesCheckInContainer = () => {
   const session_login = document.querySelector("#login").innerText;
 
   const [checkIns, setCheckIns] = React.useState([]);
 
-  function getCheckIns() {
+  if (session_login === "True") {
+    React.useEffect(() => {
+      getCheckIns();
+    }, []);
+  }
+
+  const getCheckIns = () => {
     fetch(`/user_check_ins.json`)
       .then((response) => response.json())
       .then((data) => {
         setCheckIns(data.checkIns);
       });
-  }
-
-  React.useImperativeHandle(ref, () => ({
-    getCheckIns() {
-      fetch(`/user_check_ins.json`)
-        .then((response) => response.json())
-        .then((data) => {
-          setCheckIns(data.checkIns);
-        });
-    },
-  }));
+  };
 
   const allCheckIns = [];
   const allEditCheckIns = [];
@@ -125,10 +121,9 @@ const AllHikesCheckInContainer = React.forwardRef((props, ref) => {
       </div>
     </React.Fragment>
   );
-});
+};
 
-// All Hikes Comment container component
-const AllHikesCommentContainer = React.forwardRef((props, ref) => {
+const AllHikesCommentContainer = () => {
   const session_login = document.querySelector("#login").innerText;
   const [comments, setComments] = React.useState([]);
 
@@ -138,23 +133,13 @@ const AllHikesCommentContainer = React.forwardRef((props, ref) => {
     }, []);
   }
 
-  function getComments() {
+  const getComments = () => {
     fetch(`/user_comments.json`)
       .then((response) => response.json())
       .then((data) => {
         setComments(data.comments);
       });
-  }
-
-  React.useImperativeHandle(ref, () => ({
-    getComments() {
-      fetch(`/user_comments.json`)
-        .then((response) => response.json())
-        .then((data) => {
-          setComments(data.comments);
-        });
-    },
-  }));
+  };
 
   const allComments = [];
   const allEditComments = [];
@@ -261,10 +246,10 @@ const AllHikesCommentContainer = React.forwardRef((props, ref) => {
       </div>
     </React.Fragment>
   );
-});
+};
 
 // Bookmarks Lists Container Component
-const AllHikesBookmarksListContainer = React.forwardRef((props, ref) => {
+const AllHikesBookmarksListContainer = () => {
   const session_login = document.querySelector("#login").innerText;
 
   const AddMultHikesToExistingListRef = React.useRef();
@@ -273,24 +258,19 @@ const AllHikesBookmarksListContainer = React.forwardRef((props, ref) => {
   // Set States
   const [bookmarksLists, setBookmarksLists] = React.useState([]);
 
-  function getBookmarksLists() {
+  if (session_login === "True") {
+    React.useEffect(() => {
+      getBookmarksLists();
+    }, []);
+  }
+
+  const getBookmarksLists = () => {
     fetch("/user_bookmarks_lists.json")
       .then((response) => response.json())
       .then((data) => {
         setBookmarksLists(data.bookmarksLists);
       });
-  }
-
-  // Access getHikeBookmarksLists function from Footer component
-  React.useImperativeHandle(ref, () => ({
-    getBookmarksLists() {
-      fetch("/user_bookmarks_lists.json")
-        .then((response) => response.json())
-        .then((data) => {
-          setBookmarksLists(data.bookmarksLists);
-        });
-    },
-  }));
+  };
 
   function parentSetHikesOptionState() {
     AddMultHikesToExistingListRef.current.setHikesOptionsState();
@@ -399,7 +379,7 @@ const AllHikesBookmarksListContainer = React.forwardRef((props, ref) => {
       </div>
     </React.Fragment>
   );
-});
+};
 
 function HikeTableRow(props) {
   return (
@@ -575,14 +555,7 @@ function TableHeader(props) {
   );
 }
 
-function AllHikesContainer(props) {
-  const session_login = document.querySelector("#login").innerText;
-
-  const PetProfileContainerRef = React.useRef();
-  const AllHikesBookmarksListContainerRef = React.useRef();
-  const AllHikesCheckInContainerRef = React.useRef();
-  const AllHikesCommentContainerRef = React.useRef();
-
+const AllHikesContainer = () => {
   const [allHikes, setAllHikes] = React.useState([]);
   const [searchHikes, setSearchHikes] = React.useState([]);
   const [sortParam, setSortParam] = React.useState("");
@@ -595,7 +568,7 @@ function AllHikesContainer(props) {
     getSearchHikes();
   }, []);
 
-  function getSearchHikes() {
+  const getSearchHikes = () => {
     fetch("/all_hikes.json")
       .then((response) => response.json())
       .then(
@@ -613,7 +586,7 @@ function AllHikesContainer(props) {
           setError(error);
         }
       );
-  }
+  };
 
   React.useEffect(() => {
     console.log(sortParam);
@@ -634,10 +607,6 @@ function AllHikesContainer(props) {
       searchHikes.forEach((hike) => {
         hike.sort_order = order.indexOf(hike.difficulty);
       });
-      // console.log(
-      //   "WATCH 4 ME",
-      //   searchHikes.map((hike) => hike.sort_order)
-      // );
       setSearchHikes([
         ...searchHikes.sort((a, b) => {
           return a.sort_order - b.sort_order;
@@ -757,39 +726,18 @@ function AllHikesContainer(props) {
     />
   ));
 
-  console.log(
-    allHikeRows.map((hike) => hike.props.hike.difficulty),
-    "ALL HIKE ROWS"
-  );
-
-  function parentGetBookmarksLists() {
-    if (session_login === "True") {
-      AllHikesBookmarksListContainerRef.current.getBookmarksLists();
-    }
-  }
-  function parentGetPetProfiles() {
-    if (session_login === "True") {
-      PetProfileContainerRef.current.getPetProfiles();
-    }
-  }
-  function parentGetCheckIns() {
-    if (session_login === "True") {
-      AllHikesCheckInContainerRef.current.getCheckIns();
-    }
-  }
-  function parentGetComments() {
-    if (session_login === "True") {
-      AllHikesCommentContainerRef.current.getComments();
-    }
-  }
+  // console.log(
+  //   allHikeRows.map((hike) => hike.props.hike.difficulty),
+  //   "ALL HIKE ROWS"
+  // );
 
   return (
     <React.Fragment>
       <SearchOffCanvas getFilteredHikes={getFilteredHikes} />
-      <PetProfileContainer ref={PetProfileContainerRef} />
-      <AllHikesBookmarksListContainer ref={AllHikesBookmarksListContainerRef} />
-      <AllHikesCheckInContainer ref={AllHikesCheckInContainerRef} />
-      <AllHikesCommentContainer ref={AllHikesCommentContainerRef} />
+      <PetProfileContainer />
+      <AllHikesBookmarksListContainer />
+      <AllHikesCheckInContainer />
+      <AllHikesCommentContainer />
 
       <div className="container-fluid full-page-container">
         <div className="clearfix">
@@ -950,28 +898,24 @@ function AllHikesContainer(props) {
                   href="Profile"
                   tooltip="profile"
                   icon="fa-solid fa-paw"
-                  getFunction={parentGetPetProfiles}
                 />
                 <FooterNavItemOffCanvas
                   name="Bookmarks"
                   href="Bookmarks"
                   tooltip="bookmarks"
                   icon="bi bi-bookmark-star"
-                  getFunction={parentGetBookmarksLists}
                 />
                 <FooterNavItemOffCanvas
                   name="Check Ins"
                   href="CheckIns"
                   tooltip="check ins"
                   icon="bi bi-check-circle"
-                  getFunction={parentGetCheckIns}
                 />
                 <FooterNavItemOffCanvas
                   name="Comments"
                   href="Comments"
                   tooltip="comments"
                   icon="bi bi-chat-text"
-                  getFunction={parentGetComments}
                 />
               </ul>
             </div>
@@ -980,6 +924,6 @@ function AllHikesContainer(props) {
       </nav>
     </React.Fragment>
   );
-}
+};
 
 ReactDOM.render(<AllHikesContainer />, document.getElementById("root"));

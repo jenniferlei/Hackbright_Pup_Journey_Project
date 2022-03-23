@@ -204,15 +204,6 @@ function AddHikeComment(props) {
       body: JSON.stringify({ comment_body }),
     }).then((response) => {
       response.json().then((jsonResponse) => {
-        const commentAdded = jsonResponse.commentAdded; // same as commentAdded = jsonResponse.commentAdded
-        const comment_id = commentAdded.comment_id;
-        const full_name = commentAdded.user.full_name;
-        const user_id = commentAdded.user_id;
-        const date_created = commentAdded.date_created;
-        const date_edited = commentAdded.date_edited;
-        const edit = commentAdded.edit;
-        const hike_name = commentAdded.hike.hike_name;
-        const hike_id = commentAdded.hike_id;
         props.getComments();
         // console.log(jsonResponse);
       });
@@ -337,15 +328,6 @@ function AddComment(props) {
       body: JSON.stringify({ hikeId, commentBody }),
     }).then((response) => {
       response.json().then((jsonResponse) => {
-        const commentAdded = jsonResponse.commentAdded; // same as commentAdded = jsonResponse.commentAdded
-        const commentId = commentAdded.comment_id;
-        const fullName = commentAdded.user.full_name;
-        const userId = commentAdded.user_id;
-        const dateCreated = commentAdded.date_created;
-        const dateEdited = commentAdded.date_edited;
-        const edit = commentAdded.edit;
-        const hikeName = commentAdded.hike.hike_name;
-        const hikeId = commentAdded.hike_id;
         props.getComments();
         // console.log(jsonResponse);
       });
