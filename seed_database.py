@@ -10,8 +10,6 @@ import crud_check_ins
 import crud_comments
 import crud_hikes_bookmarks_lists
 import crud_hikes
-import crud_pets
-import crud_users
 import model
 import server
 
@@ -101,9 +99,9 @@ for hike in hike_data:
     # append db_movie to hikes_in_db list
     hikes_in_db.append(db_hike)
 
-test_user = crud_users.create_user("Test User 1", "test@test", "test")
-test_pet1 = crud_pets.create_pet(test_user, "Test Pet1", "female", None, "Shiba Inu", "https://res.cloudinary.com/hbpupjourney/image/upload/v1644612543/hvtridjccxxvvsiqgoi6.jpg", None, [])
-test_pet2 = crud_pets.create_pet(test_user, "Test Pet2", "male", None, "German Shepherd Mix", "https://res.cloudinary.com/hbpupjourney/image/upload/v1644711360/l3jnf1aod2h2bglnzpyi.jpg", None, [])
+test_user = User.create_user("Test User 1", "test@test", "test")
+test_pet1 = Pet.create_pet(test_user, "Test Pet1", "female", None, "Shiba Inu", "https://res.cloudinary.com/hbpupjourney/image/upload/v1644612543/hvtridjccxxvvsiqgoi6.jpg", None, [])
+test_pet2 = Pet.create_pet(test_user, "Test Pet2", "male", None, "German Shepherd Mix", "https://res.cloudinary.com/hbpupjourney/image/upload/v1644711360/l3jnf1aod2h2bglnzpyi.jpg", None, [])
 test_bookmarks_list = crud_bookmarks_lists.create_bookmarks_list(
     "Test List", 1, []
 )

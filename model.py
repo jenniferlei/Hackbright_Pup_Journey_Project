@@ -2,6 +2,7 @@
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 
 import datetime
 
@@ -14,9 +15,7 @@ class User(db.Model):
 
     __tablename__ = "users"
 
-    user_id = db.Column(
-        db.Integer, autoincrement=True, primary_key=True, nullable=False
-    )
+    user_id = db.Column(db.Integer, autoincrement=True, primary_key=True, nullable=False)
     full_name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
@@ -29,6 +28,45 @@ class User(db.Model):
 
     def __repr__(self):
         return f"<User user_id={self.user_id} full_name={self.full_name} email={self.email}>"
+
+    @classmethod
+    def create_user(cls, full_name, email, password):
+        """Create and return a new user."""
+
+        user = cls(full_name=full_name,
+                    email=email,
+                    password=password)
+
+        return user
+
+    @classmethod
+    def get_user_by_email(cls, email):
+        """Return a user by email."""
+
+        return db.session.query(cls).filter(cls.email == email).first()
+
+# FIX ME
+    @classmethod
+    def get_check_ins_by_user_id(cls, user_id):
+        """Return all check ins for a given user_id"""
+
+        # Find all pets for a user
+        # Find check ins for each pet and add to a list
+        # Convert to a set to remove duplicate Check In objects
+
+        user = (db.session.query(cls).filter_by(user_id = user_id)
+                                    .options(db.joinedload('pets'))
+                                    .one())
+
+        all_check_ins = []
+
+        for pet in user.pets:
+            check_ins = get_check_ins_by_pet_id(pet.pet_id)
+            all_check_ins.extend(pet.check_ins)
+
+        all_check_ins = set(all_check_ins)
+        
+        return list(all_check_ins)
 
 
 class Pet(db.Model):
@@ -53,6 +91,44 @@ class Pet(db.Model):
 
     def __repr__(self):
         return f"<Pet pet_id={self.pet_id} pet_name={self.pet_name}>"
+
+    @classmethod
+    def create_pet(cls, user, pet_name, gender, birthday, breed, pet_imgURL, img_public_id, check_ins):
+        """Create and return a new pet."""
+
+        pet = cls(user=user,
+                pet_name=pet_name,
+                gender=gender,
+                birthday=birthday,
+                breed=breed,
+                pet_imgURL=pet_imgURL,
+                img_public_id=img_public_id,
+                check_ins=check_ins)
+
+        return pet
+
+    @classmethod
+    def get_pets_by_user_id(cls, user_id):
+        """Return all pets by user_id."""
+
+        return (db.session.query(cls).filter_by(user_id=user_id).order_by(cls.pet_name.asc()).all())
+
+    @classmethod
+    def get_pet_by_id(cls, pet_id):
+        """Return a pet by id"""
+
+        return db.session.query(cls).get(pet_id)
+
+    @classmethod
+    def get_check_ins_by_pet_id(cls, pet_id):
+        """Return all check ins for a given pet id"""
+
+        pet = (db.session.query(cls).options(db.joinedload('check_ins'))
+                                    .get(pet_id))
+
+        check_ins = pet.check_ins
+
+        return check_ins
 
 
 class Hike(db.Model):
@@ -91,6 +167,79 @@ class Hike(db.Model):
     def __repr__(self):
         return f"<Hike hike_id={self.hike_id} hike_name={self.hike_name}>"
 
+    @classmethod
+    def create_hike(cls, hike_name, area, difficulty,leash_rule, description, address, \
+        latitude, longitude, city, state, miles, path, parking, resources, hike_imgURL):
+        """Create and return a new hike."""
+
+        hike = cls(
+            hike_name=hike_name,
+            area=area,
+            difficulty=difficulty,
+            leash_rule=leash_rule,
+            description=description,
+            address=address,
+            latitude=latitude,
+            longitude=longitude,
+            city=city,
+            state=state,
+            miles=miles,
+            path=path,
+            parking=parking,
+            resources=resources,
+            hike_imgURL=hike_imgURL,
+        )
+
+        return hike
+
+    @classmethod
+    def get_hikes(cls):
+        """Return all hikes."""
+
+        return db.session.query(cls).order_by(func.lower(cls.hike_name).asc()).all()
+
+    @classmethod
+    def get_hike_by_id(cls, hike_id):
+        """Return hike by id."""
+
+        return db.session.query(cls).get(hike_id)
+
+    @classmethod
+    def get_hikes_by_advanced_search(cls, keyword, difficulties, leash_rules, areas, cities, state, length_min, length_max, parking
+    ):
+        """Return hikes by query search"""
+
+        queries = []
+
+        if keyword != "":
+            queries.append(cls.hike_name.ilike(f"%{keyword}%"))
+        if difficulties != []:
+            queries.append(cls.difficulty.in_(difficulties))
+        if leash_rules != []:
+            queries.append(cls.leash_rule.in_(leash_rules))
+        if areas != []:
+            queries.append(cls.area.in_(areas))
+        if cities != []:
+            queries.append(cls.city.in_(cities))
+        if state != "":
+            queries.append(cls.state == state)
+        if length_min != "":
+            queries.append(cls.miles >= length_min)
+        if length_max != "":
+            queries.append(cls.miles <= length_max)
+        if len(parking) == 1:
+            queries.append(cls.parking.ilike(f"%{parking[0]}%"))
+        elif len(parking) == 2:
+            queries.append(cls.parking.ilike(f"%{parking[0]}%") | cls.parking.ilike(f"%{parking[1]}%"))
+
+        return db.session.query(cls).filter(*queries).order_by(cls.hike_name.asc()).all()
+
+    @classmethod
+    def get_hike_by_keyword(cls, keyword):
+        """Return hikes by keyword."""
+
+        return db.session.query(cls).filter(cls.hike_name.ilike(f"%{keyword}%")).all()
+
 
 class Comment(db.Model):
     """User comment on a hike."""
@@ -110,6 +259,37 @@ class Comment(db.Model):
 
     def __repr__(self):
         return f"<Comment comment_id={self.comment_id} body={self.body}>"
+
+    @classmethod
+    def create_comment(cls, user, hike, body, date_created, edit, date_edited):
+        """Create and return a new comment."""
+
+        comment = cls(user=user,
+                        hike=hike,
+                        body=body,
+                        date_created=date_created,
+                        edit=edit,
+                        date_edited=date_edited)
+
+        return comment
+
+    @classmethod
+    def get_comment_by_user_id(cls, user_id):
+        """Return all comments by user_id."""
+
+        return db.session.query(cls).filter_by(user_id=user_id).all()
+
+    @classmethod
+    def get_comment_by_hike_id(cls, hike_id):
+        """Return all comments by hike_id."""
+
+        return db.session.query(cls).filter_by(hike_id=hike_id).all()
+
+    @classmethod
+    def get_comment_by_comment_id(cls, comment_id):
+        """Return all comments by hike_id."""
+
+        return db.session.query(cls).filter_by(comment_id=comment_id).one()
 
 
 class CheckIn(db.Model):
@@ -135,6 +315,57 @@ class CheckIn(db.Model):
     def __repr__(self):
         return f"<Check In check_in_id={self.check_in_id} hike_id={self.hike_id} date_hiked={self.date_hiked}>"
 
+    @classmethod
+    def create_check_in(cls, hike, pets, date_hiked, miles_completed, total_time, notes):
+        """Create and return a new hike completed by a pet."""
+
+        check_in = cls(hike=hike,
+                            pets=pets,
+                            date_hiked=date_hiked,
+                            miles_completed=miles_completed,
+                            total_time=total_time,
+                            notes=notes)
+
+        return check_in
+
+    @classmethod
+    def get_check_ins_by_hike_id(cls, hike_id):
+        """Return all check ins for a given hike id"""
+
+        # get list of user's check in objects
+        check_ins = db.session.query(cls).filter_by(hike_id=hike_id).order_by(cls.date_hiked.desc()).all()
+
+        return check_ins
+
+    @classmethod
+    def get_check_ins_by_user_id_hike_id(cls, user_id, hike_id):
+        """Return all unique check ins for a given user id and hike id"""
+
+        # get list of user's check in objects
+        check_ins = (db.session.query(cls).filter_by(hike_id=hike_id)
+                                            .options(db.joinedload('pets'))
+                                            .all())
+
+        check_in_data = []
+
+        for check_in in check_ins:
+            for pet in check_in.pets:
+                if pet.user_id == user_id:
+                    check_in_data.append(check_in)
+                
+        check_in_data = list(set(check_in_data))
+        sorted_check_ins = sorted(check_in_data, key=lambda x: x.date_hiked, reverse=True)
+        
+        return sorted_check_ins
+
+    @classmethod
+    def get_check_ins_by_check_in_id(cls, check_in_id):
+        """Return a check in for a given check in id"""
+
+        check_in = db.session.query(cls).filter_by(check_in_id=check_in_id).one()
+
+        return check_in
+
 
 class BookmarksList(db.Model):
     """A bookmarks list with many hikes."""
@@ -154,6 +385,54 @@ class BookmarksList(db.Model):
     def __repr__(self):
         return f"<Bookmarks List bookmarks_list_id={self.bookmarks_list_id} bookmarks_list_name={self.bookmarks_list_name}>"
 
+    @classmethod
+    def create_bookmarks_list(cls, bookmarks_list_name, user_id, hikes):
+        """Create and return a new bookmarks list."""
+
+        bookmarks_list = (cls(bookmarks_list_name=bookmarks_list_name,
+                                        user_id=user_id,
+                                        hikes=hikes))
+
+        return bookmarks_list
+
+    @classmethod
+    def get_bookmarks_list_by_bookmarks_list_id(cls, bookmarks_list_id):
+        """Get a bookmarks list by bookmarks_list_id."""
+        
+        return (db.session.query(cls).options(db.joinedload('hikes'))
+                                            .get(bookmarks_list_id))
+
+    @classmethod
+    def get_bookmarks_lists_by_user_id(cls, user_id):
+        """Return all bookmarks lists by user_id."""
+
+        return db.session.query(cls).filter_by(user_id=user_id).order_by(func.lower(cls.bookmarks_list_name).asc()).all()
+
+# FIX ME
+    @classmethod
+    def get_bookmarks_lists_by_user_id_and_hike_id(cls, user_id, hike_id):
+        """Return all bookmarks lists objects for a given user_id and hike_id."""
+
+        # Find all bookmarks lists for a given user_id
+        user_bookmarks_lists = (db.session.query(cls)
+                                    .options(db.joinedload('hikes'))
+                                    .filter_by(user_id=user_id)
+                                    .order_by(func.lower(cls.bookmarks_list_name).asc())
+                                    .all())
+        
+        hike = db.session.query(Hike).get(hike_id)
+
+        # For each list, check if there is a hike that matches the given hike_id
+        # If so, add the bookmark list to a new list of bookmark lists and return this list
+
+        hike_user_bookmarks_lists = []
+
+        for bookmarks_list in user_bookmarks_lists:
+            if hike in bookmarks_list.hikes:
+                hike_user_bookmarks_lists.append(bookmarks_list)
+            
+        return hike_user_bookmarks_lists
+
 
 class PetCheckIn(db.Model):
     """Association table for a pet on a check in."""
@@ -170,6 +449,21 @@ class PetCheckIn(db.Model):
 
     def __repr__(self):
         return f"<Pet on Check In pet_check_in_id={self.pet_check_in_id} pet_id={self.pet_id} check_in_id={self.check_in_id}>"
+
+    @classmethod
+    def create_pet_check_in(cls, pet_id, check_in_id):
+        """Create and return a new pet check in object."""
+
+        pet_check_in = (cls(pet_id=pet_id,
+                                check_in_id=check_in_id))
+
+        return pet_check_in
+
+    @classmethod
+    def get_pet_check_in_by_pet_id_check_in_id(cls, pet_id, check_in_id):
+        """Return a pet check in object given a pet_id and check_in_id"""
+
+        return (db.session.query(cls).filter(cls.pet_id == pet_id, cls.check_in_id==check_in_id).one())
 
 
 class HikeBookmarksList(db.Model):
@@ -191,6 +485,20 @@ class HikeBookmarksList(db.Model):
     def __repr__(self):
         return f"<Hike on Bookmarks List hike_bookmarks_list_id={self.hike_bookmarks_list_id} hike_id={self.hike_id} bookmarks_list_id={self.bookmarks_list_id}>"
 
+    @classmethod
+    def create_hike_bookmarks_list(cls, hike_id, bookmarks_list_id):
+        """Create and return a new hike bookmarks list object."""
+
+        hike_bookmarks_list = (cls(hike_id=hike_id, bookmarks_list_id=bookmarks_list_id))
+
+        return hike_bookmarks_list
+
+    @classmethod
+    def get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(cls, hike_id, bookmarks_list_id):
+        """Return a hike bookmarks list object given a hike_id and bookmarks_list_id"""
+
+        return (db.session.query(cls).filter(cls.hike_id==hike_id,
+                                             cls.bookmarks_list_id==bookmarks_list_id).all())
 
 def connect_to_db(flask_app, db_uri="postgresql:///pupjourney", echo=True):
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri

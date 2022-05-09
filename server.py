@@ -7,18 +7,8 @@ import os
 from datetime import datetime
 from calendar import month_abbr
 
-# from model import (connect_to_db, db, ma, User, CheckIn, Pet, Hike, Comment, PetSchema, CheckInSchema, BookmarksListSchema, HikeBookmarksListSchema, HikeSchema, CommentSchema)
-from model import (connect_to_db, db, User, CheckIn, Pet, HikeBookmarksList, 
+from model import (connect_to_db, db, User, CheckIn, Pet, HikeBookmarksList,
 PetCheckIn, Hike, BookmarksList, Comment)
-
-import crud_bookmarks_lists
-import crud_check_ins
-import crud_comments
-import crud_hikes_bookmarks_lists
-import crud_hikes
-import crud_pets_check_ins
-import crud_pets
-import crud_users
 
 from jinja2 import StrictUndefined
 
@@ -130,7 +120,7 @@ def dashboard():
     """View dashboard."""
 
     if "user_email" in session:
-        user = crud_users.get_user_by_email(session["user_email"])
+        user = User.get_user_by_email(session["user_email"])
 
         return render_template("dashboard.html",
                                 user=user,
@@ -146,14 +136,14 @@ def all_hikes():
     """View all hikes."""
 
     # Populate options for the search bar
-    search_hikes = crud_hikes.get_hikes()
+    search_hikes = Hike.get_hikes()
 
     logged_in_email = session.get("user_email")
 
     if logged_in_email is None:
         return render_template("all_hikes.html", search_hikes=search_hikes)
     
-    user = crud_users.get_user_by_email(logged_in_email)
+    user = User.get_user_by_email(logged_in_email)
     return render_template("all_hikes.html", user=user, search_hikes=search_hikes)
 
 
@@ -164,14 +154,14 @@ def search_box():
     search_term = request.args.get("search_term")
 
     # Populate the list of hikes
-    search_hikes = crud_hikes.get_hike_by_keyword(search_term)
+    search_hikes = Hike.get_hike_by_keyword(search_term)
 
     logged_in_email = session.get("user_email")
 
     if logged_in_email is None:
         return render_template("all_hikes.html", search_hikes=search_hikes)
     
-    user = crud_users.get_user_by_email(logged_in_email)
+    user = User.get_user_by_email(logged_in_email)
     return render_template("all_hikes.html", user=user, search_hikes=search_hikes)
 
 
@@ -191,7 +181,7 @@ def advanced_search():
     print(leash_rules, "leash_rules 191")
 
     # Populate the list of hike objects that fulfill the search criteria
-    search_hikes = crud_hikes.get_hikes_by_advanced_search(keyword, difficulties, leash_rules, areas, cities, state, length_min, length_max, parking)
+    search_hikes = Hike.get_hikes_by_advanced_search(keyword, difficulties, leash_rules, areas, cities, state, length_min, length_max, parking)
 
     hikes_schema = HikeSchema(many=True, exclude=["comments", "check_ins", "bookmarks_lists"])
     hikes_json = hikes_schema.dump(search_hikes)
@@ -203,14 +193,14 @@ def advanced_search():
 def show_hike(hike_id):
     """Show details on a particular hike."""
 
-    hike = crud_hikes.get_hike_by_id(hike_id)
+    hike = Hike.get_hike_by_id(hike_id)
 
     logged_in_email = session.get("user_email")
 
     if logged_in_email is None:
         return render_template("hike_details.html", hike=hike, GOOGLE_KEY=GOOGLE_KEY)
     else:
-        user = crud_users.get_user_by_email(logged_in_email)
+        user = User.get_user_by_email(logged_in_email)
         return render_template("hike_details.html", user=user, hike=hike, GOOGLE_KEY=GOOGLE_KEY)
 
 @app.route("/edit-user", methods=["POST"])
@@ -218,7 +208,7 @@ def edit_user():
     """Edit a user"""
 
     logged_in_email = session.get("user_email")
-    user = crud_users.get_user_by_email(logged_in_email)
+    user = User.get_user_by_email(logged_in_email)
 
     full_name = request.form.get("full_name")
     email = request.form.get("email")
@@ -229,7 +219,7 @@ def edit_user():
         flash("Name updated ✓")
 
     if email != "":
-        user_exists = crud_users.get_user_by_email(email)
+        user_exists = User.get_user_by_email(email)
         if user_exists:
             flash(
                 "There is already an account associated with that email."
@@ -255,7 +245,7 @@ def add_pet():
     """Create a pet profile"""
 
     logged_in_email = session.get("user_email")
-    user = crud_users.get_user_by_email(logged_in_email)
+    user = User.get_user_by_email(logged_in_email)
 
     form_data = request.form.to_dict("formData")
     pet_name = form_data["petName"]
@@ -286,7 +276,7 @@ def add_pet():
 
     check_ins = []
 
-    pet = crud_pets.create_pet(
+    pet = Pet.create_pet(
         user,
         pet_name,
         gender,
@@ -310,7 +300,7 @@ def add_pet():
 def edit_pet(pet_id):
     """Edit a pet"""
 
-    pet = crud_pets.get_pet_by_id(pet_id)
+    pet = Pet.get_pet_by_id(pet_id)
 
     form_data = request.form.to_dict("formData")
 
@@ -360,7 +350,7 @@ def edit_pet(pet_id):
 def delete_pet(pet_id):
     """Delete a pet profile"""
 
-    pet = crud_pets.get_pet_by_id(pet_id)
+    pet = Pet.get_pet_by_id(pet_id)
     img_public_id = pet.img_public_id
     if img_public_id is not None:
         cloudinary.uploader.destroy(
@@ -383,8 +373,8 @@ def add_hike_check_in(hike_id):
     """Add check in for a hike."""
 
     # logged_in_email = session.get("user_email")
-    # user = crud_users.get_user_by_email(logged_in_email)
-    hike = crud_hikes.get_hike_by_id(hike_id)
+    # user = User.get_user_by_email(logged_in_email)
+    hike = Hike.get_hike_by_id(hike_id)
     pets_checked = request.get_json().get("allPetOptions") # list of objects (select, pet_name, pet_id)
     date_hiked = request.get_json().get("dateHiked")
     miles_completed = request.get_json().get("milesCompleted")
@@ -399,13 +389,13 @@ def add_hike_check_in(hike_id):
 
     for pet in pets_checked:
         select, _, pet_id = pet
-        pet_obj = crud_pets.get_pet_by_id(pet[pet_id])
+        pet_obj = Pet.get_pet_by_id(pet[pet_id])
         if pet[select] is True:
             pets_to_check_in.append(pet_obj)
         else:
             pets_not_checked_in.append(pet_obj)
 
-    check_in = crud_check_ins.create_check_in(
+    check_in = CheckIn.create_check_in(
         hike,
         pets_to_check_in,
         date_hiked,
@@ -428,7 +418,7 @@ def add_check_in():
     """Add check in for a hike."""
 
     # logged_in_email = session.get("user_email")
-    # user = crud_users.get_user_by_email(logged_in_email)
+    # user = User.get_user_by_email(logged_in_email)
     hike_id = request.get_json().get("hikeId")
     pets_checked = request.get_json().get("allPetOptions") # list of objects (select, pet_name, pet_id)
     date_hiked = request.get_json().get("dateHiked")
@@ -436,7 +426,7 @@ def add_check_in():
     total_time = request.get_json().get("totalTime")
     notes = request.get_json().get("notes")
 
-    hike = crud_hikes.get_hike_by_id(hike_id)
+    hike = Hike.get_hike_by_id(hike_id)
 
     if total_time == "":
         total_time = None
@@ -446,13 +436,13 @@ def add_check_in():
 
     for pet in pets_checked:
         select, _, pet_id = pet
-        pet_obj = crud_pets.get_pet_by_id(pet[pet_id])
+        pet_obj = Pet.get_pet_by_id(pet[pet_id])
         if pet[select] is True:
             pets_to_check_in.append(pet_obj)
         else:
             pets_not_checked_in.append(pet_obj)
 
-    check_in = crud_check_ins.create_check_in(
+    check_in = CheckIn.create_check_in(
         hike,
         pets_to_check_in,
         date_hiked,
@@ -484,16 +474,16 @@ def edit_check_in(check_in_id):
     for pet in pets_to_add: # Add pets to check in
         select, _, pet_id = pet
         if pet[select] is True:
-            pet_check_in = crud_pets_check_ins.create_pet_check_in(pet[pet_id], check_in_id)
+            pet_check_in = Pet_check_ins.create_pet_check_in(pet[pet_id], check_in_id)
             db.session.add(pet_check_in)
 
     for pet in pets_to_remove: # Remove pets from check in
         select, _, pet_id = pet
         if pet[select] is True:
-            pet_check_in = crud_pets_check_ins.get_pet_check_in_by_pet_id_check_in_id(pet[pet_id], check_in_id)
+            pet_check_in = Pet_check_ins.get_pet_check_in_by_pet_id_check_in_id(pet[pet_id], check_in_id)
             db.session.delete(pet_check_in)
 
-    check_in = crud_check_ins.get_check_ins_by_check_in_id(check_in_id)
+    check_in = CheckIn.get_check_ins_by_check_in_id(check_in_id)
 
     if date_hiked == "": # if date_hiked is left blank, use previous date_hiked
         date_hiked = check_in.date_hiked
@@ -523,7 +513,7 @@ def delete_check_in(check_in_id):
 
     logged_in_email = session.get("user_email")
 
-    check_in = crud_check_ins.get_check_ins_by_check_in_id(check_in_id)
+    check_in = CheckIn.get_check_ins_by_check_in_id(check_in_id)
     check_in.pets.clear()
 
     db.session.delete(check_in)
@@ -542,9 +532,9 @@ def delete_pet_check_in():
         flash("You must log in to delete a check in.")
     else:
         pet_id, check_in_id = request.form.get("delete").split(",")
-        pet_check_in = crud_pets_check_ins.get_pet_check_in_by_pet_id_check_in_id(pet_id, check_in_id)
-        check_in = crud_check_ins.get_check_ins_by_check_in_id(check_in_id)
-        pet = crud_pets.get_pet_by_id(pet_id)
+        pet_check_in = Pet_check_ins.get_pet_check_in_by_pet_id_check_in_id(pet_id, check_in_id)
+        check_in = CheckIn.get_check_ins_by_check_in_id(check_in_id)
+        pet = Pet.get_pet_by_id(pet_id)
 
         flash(
             f"Success! Check in at {check_in.hike.hike_name} by {pet.pet_name} has been deleted."
@@ -560,11 +550,11 @@ def delete_pet_check_in():
 def create_bookmarks_list():
     """Create a bookmark list"""
 
-    user = crud_users.get_user_by_email(session["user_email"])
+    user = User.get_user_by_email(session["user_email"])
     bookmarks_list_name = request.get_json().get("bookmarksListName")
     hikes = []
 
-    bookmarks_list = crud_bookmarks_lists.create_bookmarks_list(
+    bookmarks_list = BookmarksList.create_bookmarks_list(
         bookmarks_list_name, user.user_id, hikes
     )
 
@@ -578,7 +568,7 @@ def create_bookmarks_list():
 def edit_bookmarks_list(bookmarks_list_id):
     """Edit a bookmark list"""
 
-    bookmarks_list = crud_bookmarks_lists.get_bookmarks_list_by_bookmarks_list_id(
+    bookmarks_list = BookmarksList.get_bookmarks_list_by_bookmarks_list_id(
         bookmarks_list_id
     )
     bookmarks_list.bookmarks_list_name = request.get_json().get("bookmarksListName")
@@ -592,7 +582,7 @@ def edit_bookmarks_list(bookmarks_list_id):
 def delete_bookmarks_list(bookmarks_list_id):
     """Delete a bookmarks list"""
 
-    bookmarks_list = crud_bookmarks_lists.get_bookmarks_list_by_bookmarks_list_id(
+    bookmarks_list = BookmarksList.get_bookmarks_list_by_bookmarks_list_id(
         bookmarks_list_id
     )
     bookmarks_list.hikes.clear()
@@ -607,23 +597,23 @@ def delete_bookmarks_list(bookmarks_list_id):
 def add_hikes_to_existing_bookmarks_list(bookmarks_list_id):
     """Add hikes to an existing bookmarks list"""
 
-    # hike = crud_hikes.get_hike_by_id(hike_id)
+    # hike = Hike.get_hike_by_id(hike_id)
     hikes = request.get_json().get("allHikesOptions") # this will get a list of objects
     print(hikes)
-    bookmarks_list = crud_bookmarks_lists.get_bookmarks_list_by_bookmarks_list_id(bookmarks_list_id)
+    bookmarks_list = BookmarksList.get_bookmarks_list_by_bookmarks_list_id(bookmarks_list_id)
     bookmarks_list_hikes = bookmarks_list.hikes
     print(bookmarks_list)
     print(bookmarks_list_hikes)
 
     for hike in hikes:
-        hike_obj = crud_hikes.get_hike_by_id(hike["hike_id"])
+        hike_obj = Hike.get_hike_by_id(hike["hike_id"])
         if hike["select"] is True and hike_obj not in bookmarks_list_hikes:
             # if selected and already a connection, create connection
-            hike_bookmark = crud_hikes_bookmarks_lists.create_hike_bookmarks_list(hike["hike_id"], bookmarks_list_id)
+            hike_bookmark = Hike_bookmarks_lists.create_hike_bookmarks_list(hike["hike_id"], bookmarks_list_id)
             db.session.add(hike_bookmark)
         elif hike["select"] is False and hike_obj in bookmarks_list_hikes:
             # if unselected and there's a connection, delete connection
-            hike_bookmarks = crud_hikes_bookmarks_lists.get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(hike["hike_id"], bookmarks_list_id)
+            hike_bookmarks = Hike_bookmarks_lists.get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(hike["hike_id"], bookmarks_list_id)
             for hike_bookmark in hike_bookmarks:
                 db.session.delete(hike_bookmark)
 
@@ -636,19 +626,19 @@ def add_hikes_to_existing_bookmarks_list(bookmarks_list_id):
 def add_hike_to_existing_bookmarks_list(hike_id):
     """Add hike to an existing bookmarks list"""
 
-    hike = crud_hikes.get_hike_by_id(hike_id)
+    hike = Hike.get_hike_by_id(hike_id)
     bookmarks_list_options = request.get_json().get("allBookmarksListOptions") # this will get a list of objects
 
     for bookmarks_list in bookmarks_list_options:
-        bookmarks_list_obj = crud_bookmarks_lists.get_bookmarks_list_by_bookmarks_list_id(bookmarks_list["bookmarks_list_id"])
+        bookmarks_list_obj = BookmarksList.get_bookmarks_list_by_bookmarks_list_id(bookmarks_list["bookmarks_list_id"])
         bookmarks_list_hikes = bookmarks_list_obj.hikes
         if bookmarks_list["select"] is True and hike not in bookmarks_list_hikes:
             # if selected, check if there's already a connection, else add connection
-            hike_bookmark = crud_hikes_bookmarks_lists.create_hike_bookmarks_list(hike_id, bookmarks_list["bookmarks_list_id"])
+            hike_bookmark = Hike_bookmarks_lists.create_hike_bookmarks_list(hike_id, bookmarks_list["bookmarks_list_id"])
             db.session.add(hike_bookmark)
         elif bookmarks_list["select"] is False and hike in bookmarks_list_hikes:
             # if unselected and there's a connection, delete connection
-            hike_bookmarks = crud_hikes_bookmarks_lists.get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(hike_id, bookmarks_list["bookmarks_list_id"])
+            hike_bookmarks = Hike_bookmarks_lists.get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(hike_id, bookmarks_list["bookmarks_list_id"])
             for hike_bookmark in hike_bookmarks:
                 db.session.delete(hike_bookmark)
 
@@ -662,11 +652,11 @@ def add_hike_to_new_bookmarks_list(hike_id):
     """Add hike to a new bookmarks list"""
 
     logged_in_email = session.get("user_email")
-    user = crud_users.get_user_by_email(logged_in_email)
+    user = User.get_user_by_email(logged_in_email)
 
     bookmarks_list_name = request.get_json().get("bookmarksListName")
-    hikes = [crud_hikes.get_hike_by_id(hike_id)]
-    hike_bookmark = crud_bookmarks_lists.create_bookmarks_list(
+    hikes = [Hike.get_hike_by_id(hike_id)]
+    hike_bookmark = BookmarksList.create_bookmarks_list(
         bookmarks_list_name, user.user_id, hikes
     )
 
@@ -680,11 +670,11 @@ def add_hike_to_new_bookmarks_list(hike_id):
 def remove_hike(bookmarks_list_id, hike_id):
     """Delete a hike from a bookmarks list"""
 
-    hike = crud_hikes.get_hike_by_id(hike_id)
-    bookmarks_list = crud_bookmarks_lists.get_bookmarks_list_by_bookmarks_list_id(
+    hike = Hike.get_hike_by_id(hike_id)
+    bookmarks_list = BookmarksList.get_bookmarks_list_by_bookmarks_list_id(
         bookmarks_list_id
     )
-    hikes_bookmarks_lists = crud_hikes_bookmarks_lists.get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(
+    hikes_bookmarks_lists = Hike_bookmarks_lists.get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(
         hike_id, bookmarks_list_id
     )
 
@@ -700,11 +690,11 @@ def add_hike_comment(hike_id):
     """Add a comment for a hike"""
     logged_in_email = session.get("user_email")
 
-    user = crud_users.get_user_by_email(logged_in_email)
-    hike = crud_hikes.get_hike_by_id(hike_id)
+    user = User.get_user_by_email(logged_in_email)
+    hike = Hike.get_hike_by_id(hike_id)
     comment_body = request.get_json().get("comment_body")
 
-    comment = crud_comments.create_comment(
+    comment = Comment.create_comment(
         user, hike, comment_body, date_created=datetime.now(), edit=False, date_edited=None
     )
     db.session.add(comment)
@@ -721,12 +711,12 @@ def add_comment():
     """Add a comment for a hike"""
     logged_in_email = session.get("user_email")
 
-    user = crud_users.get_user_by_email(logged_in_email)
+    user = User.get_user_by_email(logged_in_email)
     hike_id = request.get_json().get("hikeId")
-    hike = crud_hikes.get_hike_by_id(hike_id)
+    hike = Hike.get_hike_by_id(hike_id)
     comment_body = request.get_json().get("commentBody")
 
-    comment = crud_comments.create_comment(
+    comment = Comment.create_comment(
         user, hike, comment_body, date_created=datetime.now(), edit=False, date_edited=None
     )
     db.session.add(comment)
@@ -742,7 +732,7 @@ def add_comment():
 def edit_comment(comment_id):
     """Edit a comment"""
 
-    comment = crud_comments.get_comment_by_comment_id(comment_id)
+    comment = Comment.get_comment_by_comment_id(comment_id)
     comment.body = request.get_json().get("commentBody")
     comment.edit = True
     comment.date_edited = datetime.now()
@@ -756,7 +746,7 @@ def edit_comment(comment_id):
 def delete_comment(comment_id):
     """Delete a comment"""
 
-    comment = crud_comments.get_comment_by_comment_id(comment_id)
+    comment = Comment.get_comment_by_comment_id(comment_id)
 
     db.session.delete(comment)
     db.session.commit()
@@ -771,13 +761,13 @@ def register_user():
     email = request.form.get("email")
     password = request.form.get("new-password")
 
-    user = crud_users.get_user_by_email(email)
+    user = User.get_user_by_email(email)
     if user:
         flash(
             "There is already an account associated with that email. Please try again."
         )
     else:
-        user = crud_users.create_user(full_name, email, password)
+        user = User.create_user(full_name, email, password)
         db.session.add(user)
         db.session.commit()
         flash("Success! Account created. Please log in.")
@@ -791,7 +781,7 @@ def process_login():
     email = request.form.get("email")
     password = request.form.get("current-password")
 
-    user = crud_users.get_user_by_email(email)
+    user = User.get_user_by_email(email)
     if not user or user.password != password:
         flash("The email or password is incorrect.")
     else:
@@ -799,8 +789,6 @@ def process_login():
         session["user_email"] = user.email
         session["login"] = True
         flash(f"Welcome back, {user.full_name}!")
-
-    print(request.referrer, "LINE 768")
 
     return redirect(request.referrer)
 
@@ -828,7 +816,7 @@ def login_session_json():
         login = "False"
         user_id = "None"
     else:
-        user = crud_users.get_user_by_email(logged_in_email)
+        user = User.get_user_by_email(logged_in_email)
         login = "True"
         user_id = user.user_id
 
@@ -839,7 +827,7 @@ def login_session_json():
 def get_hike_comments_json(hike_id):
     """Return a JSON response for a hike's comments."""
     
-    comments = crud_comments.get_comment_by_hike_id(hike_id)
+    comments = Comment.get_comment_by_hike_id(hike_id)
 
     sorted_comments = sorted(comments, key=lambda x: x.date_created, reverse=True)
 
@@ -854,8 +842,8 @@ def get_user_comments_json():
     """Return a JSON response for all user's comments."""
     
     logged_in_email = session.get("user_email")
-    user = crud_users.get_user_by_email(logged_in_email)
-    comments = crud_comments.get_comment_by_user_id(user.user_id)
+    user = User.get_user_by_email(logged_in_email)
+    comments = Comment.get_comment_by_user_id(user.user_id)
 
     sorted_comments = sorted(comments, key=lambda x: x.date_created, reverse=True)
 
@@ -901,9 +889,9 @@ def get_check_in_json(check_in_id):
 def get_hike_check_ins_json(hike_id):
     """Return a JSON response for a hike's check ins."""
     logged_in_email = session.get("user_email")
-    user = crud_users.get_user_by_email(logged_in_email)
+    user = User.get_user_by_email(logged_in_email)
 
-    check_ins = crud_check_ins.get_check_ins_by_user_id_hike_id(user.user_id, hike_id)
+    check_ins = CheckIn.get_check_ins_by_user_id_hike_id(user.user_id, hike_id)
 
     check_ins_schema = CheckInSchema(many=True)
     check_ins_json = check_ins_schema.dump(check_ins)
@@ -922,8 +910,8 @@ def get_user_check_ins_json():
     """Return a JSON response for a user's check ins."""
     logged_in_email = session.get("user_email")
 
-    user = crud_users.get_user_by_email(logged_in_email)
-    check_ins = crud_check_ins.get_check_ins_by_user_id(user.user_id)
+    user = User.get_user_by_email(logged_in_email)
+    check_ins = User.get_check_ins_by_user_id(user.user_id)
     sorted_check_ins = sorted(check_ins, key=lambda x: x.date_hiked, reverse=True)
 
     check_ins_schema = CheckInSchema(many=True, only=["check_in_id","date_hiked","hike_id","miles_completed","notes","pets","total_time","hike.hike_name","hike.latitude","hike.longitude"])
@@ -943,8 +931,8 @@ def get_pets_json():
 
     logged_in_email = session.get("user_email")
 
-    user = crud_users.get_user_by_email(logged_in_email)
-    pets = crud_pets.get_pets_by_user_id(user.user_id)
+    user = User.get_user_by_email(logged_in_email)
+    pets = Pet.get_pets_by_user_id(user.user_id)
 
     pets_schema = PetSchema(many=True)
     pets_json = pets_schema.dump(pets)
@@ -963,10 +951,10 @@ def get_check_ins_by_pets_json():
     """Return a JSON response with all check ins for each pet."""
 
     logged_in_email = session.get("user_email")
-    user = crud_users.get_user_by_email(logged_in_email)
+    user = User.get_user_by_email(logged_in_email)
 
     # Get list of pet objects for the user
-    pets = crud_pets.get_pets_by_user_id(user.user_id)
+    pets = Pet.get_pets_by_user_id(user.user_id)
     
     # For each pet:
     # Create a new object with pet_id, pet_name, and data
@@ -978,7 +966,7 @@ def get_check_ins_by_pets_json():
     for pet in pets:
         pet_data = {"pet_id": pet.pet_id, "pet_name": pet.pet_name, "data": []}
 
-        check_ins = crud_check_ins.get_check_ins_by_pet_id(pet.pet_id)
+        check_ins = Pet.get_check_ins_by_pet_id(pet.pet_id)
 
         sorted_check_ins = sorted(check_ins, key=lambda x: x.date_hiked, reverse=True)
 
@@ -998,7 +986,7 @@ def get_bookmarks_hikes_json(bookmarks_list_id):
 
     # get one bookmarks object with list of hikes
     # convert to JSON
-    hikes_by_bookmark = crud_bookmarks_lists.get_bookmarks_list_by_bookmarks_list_id(bookmarks_list_id)
+    hikes_by_bookmark = BookmarksList.get_bookmarks_list_by_bookmarks_list_id(bookmarks_list_id)
     bookmark_schema = BookmarksListSchema()
     bookmark_json = bookmark_schema.dump(hikes_by_bookmark)
 
@@ -1013,9 +1001,9 @@ def get_bookmarks_hikes_json(bookmarks_list_id):
 @app.route("/hikes/<hike_id>/bookmarks.json")
 def get_hike_bookmarks_json(hike_id):
     """Return a JSON response for a hike's bookmarks."""
-    user = crud_users.get_user_by_email(session["user_email"])
+    user = User.get_user_by_email(session["user_email"])
 
-    bookmarks_by_hike = crud_bookmarks_lists.get_bookmarks_lists_by_user_id_and_hike_id(user.user_id, hike_id)
+    bookmarks_by_hike = BookmarksList.get_bookmarks_lists_by_user_id_and_hike_id(user.user_id, hike_id)
 
     bookmarks_schema = BookmarksListSchema(many=True)
     bookmarks_json = bookmarks_schema.dump(bookmarks_by_hike)
@@ -1034,10 +1022,10 @@ def get_user_bookmarks_lists():
     """Return a JSON response with all bookmarks lists for a user."""
 
     logged_in_email = session.get("user_email")
-    user = crud_users.get_user_by_email(logged_in_email)
+    user = User.get_user_by_email(logged_in_email)
 
     # Get list of bookmark objects for the user
-    bookmarks_by_user = crud_bookmarks_lists.get_bookmarks_lists_by_user_id(user.user_id)
+    bookmarks_by_user = BookmarksList.get_bookmarks_lists_by_user_id(user.user_id)
 
     bookmarks_schema = BookmarksListSchema(many=True)
     bookmarks_json = bookmarks_schema.dump(bookmarks_by_user)
@@ -1060,7 +1048,7 @@ def get_hike(hike_id):
     """Return a JSON response for a hike"""
 
     # Populate the list of hike objects that fulfill the search criteria
-    hike = crud_hikes.get_hike_by_id(hike_id)
+    hike = Hike.get_hike_by_id(hike_id)
  
     hike_schema = HikeSchema(exclude=["comments", "check_ins", "bookmarks_lists"])
     hike_json = hike_schema.dump(hike)
@@ -1073,7 +1061,7 @@ def get_all_hikes():
     """Return a JSON response for all hikes"""
 
     # Populate the list of hike objects that fulfill the search criteria
-    hikes = crud_hikes.get_hikes()
+    hikes = Hike.get_hikes()
  
     hikes_schema = HikeSchema(many=True, exclude=["comments", "check_ins", "bookmarks_lists"])
     hikes_json = hikes_schema.dump(hikes)

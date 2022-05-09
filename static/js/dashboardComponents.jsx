@@ -1,6 +1,6 @@
 "use strict";
 
-function Footer(props) {
+const Footer = () => {
   const session_login = document.querySelector("#login").innerText;
   return (
     <React.Fragment>
@@ -29,7 +29,7 @@ function Footer(props) {
       </nav>
     </React.Fragment>
   );
-}
+};
 
 const ViewMonthYear = (props) => {
   const [yearOptions, setYearOptions] = React.useState([]);
@@ -52,7 +52,7 @@ const ViewMonthYear = (props) => {
     getYearOptions();
   }, []);
 
-  function getYearOptions() {
+  const getYearOptions = () => {
     fetch("/user_check_ins.json")
       .then((response) => response.json())
       .then((jsonResponse) => {
@@ -71,9 +71,9 @@ const ViewMonthYear = (props) => {
           })
         );
       });
-  }
+  };
 
-  function changeMonthYearForm() {
+  const changeMonthYearForm = () => {
     getYearOptions();
     if (document.getElementById(`${props.category}-month-view`).checked) {
       document.getElementById(
@@ -103,7 +103,7 @@ const ViewMonthYear = (props) => {
       document.getElementById(`${props.category}-show-all-view`).style.display =
         "block";
     }
-  }
+  };
 
   return (
     <div>
@@ -335,9 +335,9 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
   const [errorComments, setErrorComments] = React.useState(null);
   const [isLoadedComments, setIsLoadedComments] = React.useState(false);
 
-  function refreshProfiles() {
+  const refreshProfiles = () => {
     props.parentGetPetProfiles();
-  }
+  };
 
   React.useEffect(() => {
     getCheckIns();
@@ -345,7 +345,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
     getComments();
   }, []);
 
-  function getCheckIns() {
+  const getCheckIns = () => {
     fetch("/user_check_ins.json")
       .then((response) => response.json())
       .then(
@@ -358,9 +358,9 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
           setErrorCheckIns(error);
         }
       );
-  }
+  };
 
-  function getBookmarksLists() {
+  const getBookmarksLists = () => {
     fetch("/user_bookmarks_lists.json")
       .then((response) => response.json())
       .then(
@@ -373,9 +373,9 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
           setErrorBookmarksLists(error);
         }
       );
-  }
+  };
 
-  function getComments() {
+  const getComments = () => {
     fetch("/user_comments.json")
       .then((response) => response.json())
       .then(
@@ -388,16 +388,16 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
           setErrorComments(error);
         }
       );
-  }
+  };
 
-  function parentGetGraphData() {
+  const parentGetGraphData = () => {
     // When a check in is added, edited, deleted, update graph data
     DashboardGraphContainerRef.current.updateGraphData();
-  }
+  };
 
-  function parentGetMapData() {
+  const parentGetMapData = () => {
     DashboardMapContainerRef.current.getMapData();
-  }
+  };
 
   const allCheckIns = [];
   const allEditCheckIns = [];
@@ -637,7 +637,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
         >
           <DashboardHeader
             headerLabel="CommentsLabel"
-            title="Your Comments For All Hikes"
+            title="Comments"
             modalTarget="#modal-add-comment"
             icon="bi bi-chat-text"
             modalText="add a comment"
@@ -669,7 +669,7 @@ const DashboardMainContainer = React.forwardRef((props, ref) => {
   );
 });
 
-function SideBarMenu(props) {
+const SideBarMenu = (props) => {
   return (
     <React.Fragment>
       <div className="side-bar-menu d-flex flex-column flex-shrink-0 bg-light">
@@ -741,31 +741,31 @@ function SideBarMenu(props) {
       </div>
     </React.Fragment>
   );
-}
+};
 
-function DashboardEverythingContainer(props) {
+const DashboardEverythingContainer = () => {
   const DashboardMainContainerRef = React.useRef();
   const DashboardPetProfileContainerRef = React.useRef();
 
-  function parentGetPetProfiles() {
+  const parentGetPetProfiles = () => {
     DashboardPetProfileContainerRef.current.getPetProfiles();
-  }
+  };
 
-  function parentDisplayMap() {
+  const parentDisplayMap = () => {
     DashboardMainContainerRef.current.displayMap();
-  }
-  function parentDisplayGraph() {
+  };
+  const parentDisplayGraph = () => {
     DashboardMainContainerRef.current.displayGraph();
-  }
-  function parentDisplayCheckIns() {
+  };
+  const parentDisplayCheckIns = () => {
     DashboardMainContainerRef.current.displayCheckIns();
-  }
-  function parentDisplayBookmarks() {
+  };
+  const parentDisplayBookmarks = () => {
     DashboardMainContainerRef.current.displayBookmarks();
-  }
-  function parentDisplayComments() {
+  };
+  const parentDisplayComments = () => {
     DashboardMainContainerRef.current.displayComments();
-  }
+  };
 
   return (
     <React.Fragment>
@@ -785,7 +785,7 @@ function DashboardEverythingContainer(props) {
       {/* <Footer /> */}
     </React.Fragment>
   );
-}
+};
 
 ReactDOM.render(
   <DashboardEverythingContainer />,
