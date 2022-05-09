@@ -117,7 +117,7 @@ endblock %} {% block body %}
 
 {% if "login" in session %}
 <div hidden id="login">True</div>
-<div hidden id="user_id">{{ user.user_id }}</div>
+<div hidden id="user_id">{{ user_id }}</div>
 {% else %}
 <div hidden id="login">False</div>
 <div hidden id="user_id">None</div>

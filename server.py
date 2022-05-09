@@ -1,11 +1,10 @@
 """Server for pup journey app."""
 
-from flask import Flask, render_template, json, jsonify, request, flash, session, redirect
+from flask import Flask, render_template, jsonify, request, flash, session, redirect
 from flask_sqlalchemy import SQLAlchemy
 import cloudinary.uploader
 import os
 from datetime import datetime
-from calendar import month_abbr
 
 from model import (connect_to_db, db, User, CheckIn, Pet, HikeBookmarksList,
 PetCheckIn, Hike, BookmarksList, Comment)
@@ -31,57 +30,67 @@ GOOGLE_KEY = os.environ["GOOGLE_KEY"]
 
 
 class UserSchema(ma.SQLAlchemyAutoSchema):
+    """User schema"""
     class Meta:
         model = User
         load_instance = True
 
-    # Make sure to use the 'only' or 'exclude'
-    # to avoid infinite recursion
     pets = fields.List(fields.Nested("PetSchema", exclude=("user",)))
     bookmarks_lists = fields.List(fields.Nested("BookmarksListSchema", exclude=("user",)))
     comments = fields.List(fields.Nested("CommentSchema", exclude=("user",)))
+    check_ins = fields.List(fields.Nested("CheckInSchema", exclude=("user",)))
 
 
 class PetSchema(ma.SQLAlchemyAutoSchema):
+    """Pet schema"""
+
     class Meta:
         model = Pet
         include_fk = True
         load_instance = True
-        
+
     check_ins = fields.Nested("PetCheckInSchema", many=True)
 
 
 class HikeSchema(ma.SQLAlchemyAutoSchema):
+    """Hike schema"""
+
     class Meta:
         model = Hike
         load_instance = True
 
-    comments = fields.List(fields.Nested("CommentSchema", exclude=("hike", "user")))
-    check_ins = fields.List(fields.Nested("CheckInSchema", exclude=("hike", "pets")))
+    comments = fields.List(fields.Nested("CommentSchema", exclude=("hike", "user",)))
+    check_ins = fields.List(fields.Nested("CheckInSchema", exclude=("hike", "pets",)))
     bookmarks_lists = fields.List(fields.Nested("BookmarksListSchema", exclude=("hikes",)))
 
 
 class CommentSchema(ma.SQLAlchemyAutoSchema):
+    """Comment schema"""
+
     class Meta:
         model = Comment
         include_fk = True
         load_instance = True
 
     hike = fields.Nested(HikeSchema(exclude=("check_ins", "comments", "bookmarks_lists",)))
-    user = fields.Nested(UserSchema(exclude=("pets", "comments", "bookmarks_lists",)))
+    user = fields.Nested(UserSchema(exclude=("pets", "check_ins", "comments", "bookmarks_lists",)))
 
 
 class CheckInSchema(ma.SQLAlchemyAutoSchema):
+    """Check In schema"""
+
     class Meta:
         model = CheckIn
         include_fk = True
         load_instance = True
 
     hike = fields.Nested(HikeSchema(exclude=("check_ins", "comments", "bookmarks_lists")))
+    user = fields.Nested(UserSchema(exclude=("pets", "check_ins", "comments", "bookmarks_lists",)))
     pets = fields.Nested("PetCheckInSchema", many=True)
 
 
 class PetCheckInSchema(ma.SQLAlchemyAutoSchema):
+    """Pet Check In schema"""
     class Meta:
         model = PetCheckIn
         include_fk = True
@@ -91,6 +100,7 @@ class PetCheckInSchema(ma.SQLAlchemyAutoSchema):
 
 
 class HikeBookmarksListSchema(ma.SQLAlchemyAutoSchema):
+    """Hike Bookmarks List schema"""
     class Meta:
         model = HikeBookmarksList
         include_fk = True
@@ -100,6 +110,7 @@ class HikeBookmarksListSchema(ma.SQLAlchemyAutoSchema):
 
 
 class BookmarksListSchema(ma.SQLAlchemyAutoSchema):
+    """Bookmarks List schema"""
     class Meta:
         model = BookmarksList
         include_fk = True
@@ -135,16 +146,13 @@ def dashboard():
 def all_hikes():
     """View all hikes."""
 
-    # Populate options for the search bar
     search_hikes = Hike.get_hikes()
+    user_id = session.get("user_id")
 
-    logged_in_email = session.get("user_email")
-
-    if logged_in_email is None:
+    if user_id is None:
         return render_template("all_hikes.html", search_hikes=search_hikes)
     
-    user = User.get_user_by_email(logged_in_email)
-    return render_template("all_hikes.html", user=user, search_hikes=search_hikes)
+    return render_template("all_hikes.html", user_id=user_id, search_hikes=search_hikes)
 
 
 @app.route("/hikes/search", methods=["GET"])
@@ -152,17 +160,13 @@ def search_box():
     """Search for hikes by search term"""
 
     search_term = request.args.get("search_term")
-
-    # Populate the list of hikes
     search_hikes = Hike.get_hike_by_keyword(search_term)
+    user_id = session.get("user_id")
 
-    logged_in_email = session.get("user_email")
-
-    if logged_in_email is None:
+    if user_id is None:
         return render_template("all_hikes.html", search_hikes=search_hikes)
-    
-    user = User.get_user_by_email(logged_in_email)
-    return render_template("all_hikes.html", user=user, search_hikes=search_hikes)
+
+    return render_template("all_hikes.html", user_id=user_id, search_hikes=search_hikes)
 
 
 @app.route("/hikes/advanced_search", methods=["GET"])
@@ -178,10 +182,11 @@ def advanced_search():
     length_min = request.args.get("length_min", "")
     length_max = request.args.get("length_max", "")
     parking = request.args.getlist("parking")
-    print(leash_rules, "leash_rules 191")
 
     # Populate the list of hike objects that fulfill the search criteria
-    search_hikes = Hike.get_hikes_by_advanced_search(keyword, difficulties, leash_rules, areas, cities, state, length_min, length_max, parking)
+    search_hikes = Hike.get_hikes_by_advanced_search(
+        keyword, difficulties, leash_rules, areas,
+        cities, state, length_min, length_max, parking)
 
     hikes_schema = HikeSchema(many=True, exclude=["comments", "check_ins", "bookmarks_lists"])
     hikes_json = hikes_schema.dump(search_hikes)
@@ -194,14 +199,13 @@ def show_hike(hike_id):
     """Show details on a particular hike."""
 
     hike = Hike.get_hike_by_id(hike_id)
+    user_id = session.get("user_id")
 
-    logged_in_email = session.get("user_email")
-
-    if logged_in_email is None:
+    if user_id is None:
         return render_template("hike_details.html", hike=hike, GOOGLE_KEY=GOOGLE_KEY)
-    else:
-        user = User.get_user_by_email(logged_in_email)
-        return render_template("hike_details.html", user=user, hike=hike, GOOGLE_KEY=GOOGLE_KEY)
+
+    return render_template("hike_details.html", user_id=user_id, hike=hike, GOOGLE_KEY=GOOGLE_KEY)
+
 
 @app.route("/edit-user", methods=["POST"])
 def edit_user():
@@ -229,11 +233,9 @@ def edit_user():
             session["user_email"] = user.email
             flash("Email updated ✓")
 
-
     if password != "":
         user.password = password
         flash("Password updated ✓")
-
 
     db.session.commit()
 
@@ -288,7 +290,6 @@ def add_pet():
     )
     db.session.add(pet)
     db.session.commit()
-    
 
     pet_schema = PetSchema()
     pet_json = pet_schema.dump(pet)
@@ -310,8 +311,6 @@ def edit_pet(pet_id):
     birthday = form_data["birthday"]
     breed = form_data["breed"]
     my_file = request.files.get("imageFile")
-
-    print(my_file)
 
     if gender != "":
         pet.gender = gender
@@ -372,8 +371,8 @@ def delete_pet(pet_id):
 def add_hike_check_in(hike_id):
     """Add check in for a hike."""
 
-    # logged_in_email = session.get("user_email")
-    # user = User.get_user_by_email(logged_in_email)
+    logged_in_email = session.get("user_email")
+    user = User.get_user_by_email(logged_in_email)
     hike = Hike.get_hike_by_id(hike_id)
     pets_checked = request.get_json().get("allPetOptions") # list of objects (select, pet_name, pet_id)
     date_hiked = request.get_json().get("dateHiked")
@@ -396,6 +395,7 @@ def add_hike_check_in(hike_id):
             pets_not_checked_in.append(pet_obj)
 
     check_in = CheckIn.create_check_in(
+        user,
         hike,
         pets_to_check_in,
         date_hiked,
@@ -417,8 +417,8 @@ def add_hike_check_in(hike_id):
 def add_check_in():
     """Add check in for a hike."""
 
-    # logged_in_email = session.get("user_email")
-    # user = User.get_user_by_email(logged_in_email)
+    logged_in_email = session.get("user_email")
+    user = User.get_user_by_email(logged_in_email)
     hike_id = request.get_json().get("hikeId")
     pets_checked = request.get_json().get("allPetOptions") # list of objects (select, pet_name, pet_id)
     date_hiked = request.get_json().get("dateHiked")
@@ -443,6 +443,7 @@ def add_check_in():
             pets_not_checked_in.append(pet_obj)
 
     check_in = CheckIn.create_check_in(
+        user,
         hike,
         pets_to_check_in,
         date_hiked,
@@ -454,7 +455,16 @@ def add_check_in():
     db.session.add(check_in)
     db.session.commit()
 
-    check_in_schema = CheckInSchema(only=["check_in_id","date_hiked","hike_id","miles_completed","notes","pets","total_time","hike.hike_name","hike.latitude","hike.longitude"])
+    check_in_schema = CheckInSchema(only=["check_in_id",
+                                          "date_hiked",
+                                          "hike_id",
+                                          "miles_completed",
+                                          "notes",
+                                          "pets",
+                                          "total_time",
+                                          "hike.hike_name",
+                                          "hike.latitude",
+                                          "hike.longitude"])
     check_in_json = check_in_schema.dump(check_in)
 
     return jsonify({"checkInAdded": check_in_json})
@@ -474,13 +484,13 @@ def edit_check_in(check_in_id):
     for pet in pets_to_add: # Add pets to check in
         select, _, pet_id = pet
         if pet[select] is True:
-            pet_check_in = Pet_check_ins.create_pet_check_in(pet[pet_id], check_in_id)
+            pet_check_in = PetCheckIn.create_pet_check_in(pet[pet_id], check_in_id)
             db.session.add(pet_check_in)
 
     for pet in pets_to_remove: # Remove pets from check in
         select, _, pet_id = pet
         if pet[select] is True:
-            pet_check_in = Pet_check_ins.get_pet_check_in_by_pet_id_check_in_id(pet[pet_id], check_in_id)
+            pet_check_in = PetCheckIn.get_pet_check_in_by_pet_id_check_in_id(pet[pet_id], check_in_id)
             db.session.delete(pet_check_in)
 
     check_in = CheckIn.get_check_ins_by_check_in_id(check_in_id)
@@ -511,8 +521,6 @@ def edit_check_in(check_in_id):
 def delete_check_in(check_in_id):
     """Delete a check-in"""
 
-    logged_in_email = session.get("user_email")
-
     check_in = CheckIn.get_check_ins_by_check_in_id(check_in_id)
     check_in.pets.clear()
 
@@ -532,7 +540,7 @@ def delete_pet_check_in():
         flash("You must log in to delete a check in.")
     else:
         pet_id, check_in_id = request.form.get("delete").split(",")
-        pet_check_in = Pet_check_ins.get_pet_check_in_by_pet_id_check_in_id(pet_id, check_in_id)
+        pet_check_in = PetCheckIn.get_pet_check_in_by_pet_id_check_in_id(pet_id, check_in_id)
         check_in = CheckIn.get_check_ins_by_check_in_id(check_in_id)
         pet = Pet.get_pet_by_id(pet_id)
 
@@ -550,12 +558,12 @@ def delete_pet_check_in():
 def create_bookmarks_list():
     """Create a bookmark list"""
 
-    user = User.get_user_by_email(session["user_email"])
+    user_id = session.get("user_id")
     bookmarks_list_name = request.get_json().get("bookmarksListName")
     hikes = []
 
     bookmarks_list = BookmarksList.create_bookmarks_list(
-        bookmarks_list_name, user.user_id, hikes
+        bookmarks_list_name, user_id, hikes
     )
 
     db.session.add(bookmarks_list)
@@ -597,23 +605,19 @@ def delete_bookmarks_list(bookmarks_list_id):
 def add_hikes_to_existing_bookmarks_list(bookmarks_list_id):
     """Add hikes to an existing bookmarks list"""
 
-    # hike = Hike.get_hike_by_id(hike_id)
-    hikes = request.get_json().get("allHikesOptions") # this will get a list of objects
-    print(hikes)
+    hikes = request.get_json().get("allHikesOptions") # list of Hike objects
     bookmarks_list = BookmarksList.get_bookmarks_list_by_bookmarks_list_id(bookmarks_list_id)
     bookmarks_list_hikes = bookmarks_list.hikes
-    print(bookmarks_list)
-    print(bookmarks_list_hikes)
 
     for hike in hikes:
         hike_obj = Hike.get_hike_by_id(hike["hike_id"])
         if hike["select"] is True and hike_obj not in bookmarks_list_hikes:
-            # if selected and already a connection, create connection
-            hike_bookmark = Hike_bookmarks_lists.create_hike_bookmarks_list(hike["hike_id"], bookmarks_list_id)
+            # if selected and no relationship, create relationship
+            hike_bookmark = HikeBookmarksList.create_hike_bookmarks_list(hike["hike_id"], bookmarks_list_id)
             db.session.add(hike_bookmark)
         elif hike["select"] is False and hike_obj in bookmarks_list_hikes:
-            # if unselected and there's a connection, delete connection
-            hike_bookmarks = Hike_bookmarks_lists.get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(hike["hike_id"], bookmarks_list_id)
+            # if unselected and there's a relationship, delete relationship
+            hike_bookmarks = HikeBookmarksList.get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(hike["hike_id"], bookmarks_list_id)
             for hike_bookmark in hike_bookmarks:
                 db.session.delete(hike_bookmark)
 
@@ -627,18 +631,18 @@ def add_hike_to_existing_bookmarks_list(hike_id):
     """Add hike to an existing bookmarks list"""
 
     hike = Hike.get_hike_by_id(hike_id)
-    bookmarks_list_options = request.get_json().get("allBookmarksListOptions") # this will get a list of objects
+    bookmarks_list_options = request.get_json().get("allBookmarksListOptions") # list of Bookmarks List objects
 
     for bookmarks_list in bookmarks_list_options:
         bookmarks_list_obj = BookmarksList.get_bookmarks_list_by_bookmarks_list_id(bookmarks_list["bookmarks_list_id"])
         bookmarks_list_hikes = bookmarks_list_obj.hikes
         if bookmarks_list["select"] is True and hike not in bookmarks_list_hikes:
-            # if selected, check if there's already a connection, else add connection
-            hike_bookmark = Hike_bookmarks_lists.create_hike_bookmarks_list(hike_id, bookmarks_list["bookmarks_list_id"])
+            # if selected, check if there's already a relationship, else add relationship
+            hike_bookmark = HikeBookmarksList.create_hike_bookmarks_list(hike_id, bookmarks_list["bookmarks_list_id"])
             db.session.add(hike_bookmark)
         elif bookmarks_list["select"] is False and hike in bookmarks_list_hikes:
-            # if unselected and there's a connection, delete connection
-            hike_bookmarks = Hike_bookmarks_lists.get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(hike_id, bookmarks_list["bookmarks_list_id"])
+            # if unselected and there's a relationship, delete relationship
+            hike_bookmarks = HikeBookmarksList.get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(hike_id, bookmarks_list["bookmarks_list_id"])
             for hike_bookmark in hike_bookmarks:
                 db.session.delete(hike_bookmark)
 
@@ -651,13 +655,12 @@ def add_hike_to_existing_bookmarks_list(hike_id):
 def add_hike_to_new_bookmarks_list(hike_id):
     """Add hike to a new bookmarks list"""
 
-    logged_in_email = session.get("user_email")
-    user = User.get_user_by_email(logged_in_email)
+    user_id = session.get("user_id")
 
     bookmarks_list_name = request.get_json().get("bookmarksListName")
     hikes = [Hike.get_hike_by_id(hike_id)]
     hike_bookmark = BookmarksList.create_bookmarks_list(
-        bookmarks_list_name, user.user_id, hikes
+        bookmarks_list_name, user_id, hikes
     )
 
     db.session.add(hike_bookmark)
@@ -670,11 +673,7 @@ def add_hike_to_new_bookmarks_list(hike_id):
 def remove_hike(bookmarks_list_id, hike_id):
     """Delete a hike from a bookmarks list"""
 
-    hike = Hike.get_hike_by_id(hike_id)
-    bookmarks_list = BookmarksList.get_bookmarks_list_by_bookmarks_list_id(
-        bookmarks_list_id
-    )
-    hikes_bookmarks_lists = Hike_bookmarks_lists.get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(
+    hikes_bookmarks_lists = HikeBookmarksList.get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(
         hike_id, bookmarks_list_id
     )
 
@@ -787,6 +786,7 @@ def process_login():
     else:
         # Log in user by storing the user's email in session
         session["user_email"] = user.email
+        session["user_id"] = user.user_id
         session["login"] = True
         flash(f"Welcome back, {user.full_name}!")
 
@@ -800,27 +800,10 @@ def process_logout():
     Delete the login session
     """
 
-    del session["login"]
-    del session["user_email"]
+    session.clear()
+
     flash("Successfully logged out!")
     return redirect(request.referrer)
-
-
-@app.route("/login_session.json")
-def login_session_json():
-    """Return a JSON response for a login."""
-
-    logged_in_email = session.get("user_email")
-
-    if logged_in_email is None:
-        login = "False"
-        user_id = "None"
-    else:
-        user = User.get_user_by_email(logged_in_email)
-        login = "True"
-        user_id = user.user_id
-
-    return jsonify({"login": login, "user_id": user_id})
 
 
 @app.route("/hikes/<hike_id>/comments.json")
@@ -829,10 +812,8 @@ def get_hike_comments_json(hike_id):
     
     comments = Comment.get_comment_by_hike_id(hike_id)
 
-    sorted_comments = sorted(comments, key=lambda x: x.date_created, reverse=True)
-
     comments_schema = CommentSchema(many=True)
-    comments_json = comments_schema.dump(sorted_comments)
+    comments_json = comments_schema.dump(comments)
 
     return jsonify({"comments": comments_json})
 
@@ -841,14 +822,11 @@ def get_hike_comments_json(hike_id):
 def get_user_comments_json():
     """Return a JSON response for all user's comments."""
     
-    logged_in_email = session.get("user_email")
-    user = User.get_user_by_email(logged_in_email)
-    comments = Comment.get_comment_by_user_id(user.user_id)
-
-    sorted_comments = sorted(comments, key=lambda x: x.date_created, reverse=True)
+    user_id = session.get("user_id")
+    comments = Comment.get_comment_by_user_id(user_id)
 
     comments_schema = CommentSchema(many=True)
-    comments_json = comments_schema.dump(sorted_comments)
+    comments_json = comments_schema.dump(comments)
 
     return jsonify({"comments": comments_json})
 
@@ -856,31 +834,24 @@ def get_user_comments_json():
 @app.route("/check_in/<check_in_id>.json")
 def get_check_in_json(check_in_id):
     """Return a JSON response for a check in."""
-    
-    logged_in_email = session.get("user_email")
-    user = (db.session.query(User).filter(User.email == logged_in_email)
-                                 .options(db.joinedload('pets'))
-                                 .first())
-    check_in = (db.session.query(CheckIn).filter_by(check_in_id=check_in_id)
-                                        .options(db.joinedload('pets'))
-                                        .one())
 
-    # check_in.pets = sorted(check_in.pets, key=lambda x: x.pet_name)
+    user_id = session.get("user_id")
+    check_in = CheckIn.get_check_in_by_check_in_id(check_in_id)
+    pets = Pet.get_pets_by_user_id(user_id)
 
     check_in_schema = CheckInSchema()
-    check_in_json = check_in_schema.dump(check_in)
     pet_schema = PetSchema()
 
+    check_in_json = check_in_schema.dump(check_in)
     check_in_json["pets_not_on_hike"] = []
     check_in_json["pets"] = []
 
-    for pet in user.pets:
+    for pet in pets:
         pet_json = pet_schema.dump(pet)
         if pet not in check_in.pets:
             check_in_json["pets_not_on_hike"].append(pet_json)
         else:
             check_in_json["pets"].append(pet_json)
-
 
     return jsonify({"checkIn": check_in_json})
 
@@ -888,10 +859,9 @@ def get_check_in_json(check_in_id):
 @app.route("/hikes/<hike_id>/user_check_ins.json")
 def get_hike_check_ins_json(hike_id):
     """Return a JSON response for a hike's check ins."""
-    logged_in_email = session.get("user_email")
-    user = User.get_user_by_email(logged_in_email)
+    user_id = session.get("user_id")
 
-    check_ins = CheckIn.get_check_ins_by_user_id_hike_id(user.user_id, hike_id)
+    check_ins = CheckIn.get_check_ins_by_user_id_hike_id(user_id, hike_id)
 
     check_ins_schema = CheckInSchema(many=True)
     check_ins_json = check_ins_schema.dump(check_ins)
@@ -908,17 +878,14 @@ def get_hike_check_ins_json(hike_id):
 @app.route("/user_check_ins.json")
 def get_user_check_ins_json():
     """Return a JSON response for a user's check ins."""
-    logged_in_email = session.get("user_email")
-
-    user = User.get_user_by_email(logged_in_email)
-    check_ins = User.get_check_ins_by_user_id(user.user_id)
-    sorted_check_ins = sorted(check_ins, key=lambda x: x.date_hiked, reverse=True)
+    user_id = session.get("user_id")
+    check_ins = CheckIn.get_check_ins_by_user_id(user_id)
 
     check_ins_schema = CheckInSchema(many=True, only=["check_in_id","date_hiked","hike_id","miles_completed","notes","pets","total_time","hike.hike_name","hike.latitude","hike.longitude"])
-    check_ins_json = check_ins_schema.dump(sorted_check_ins)
+    check_ins_json = check_ins_schema.dump(check_ins)
     pets_schema = PetSchema(many=True, exclude=["check_ins"])
 
-    for idx, check_in in enumerate(sorted_check_ins):
+    for idx, check_in in enumerate(check_ins):
         pets_json = pets_schema.dump(sorted(check_in.pets, key=lambda x: x.pet_name.lower()))
         check_ins_json[idx]["pets"] = pets_json
 
@@ -929,10 +896,8 @@ def get_user_check_ins_json():
 def get_pets_json():
     """Return a JSON response with all pets given user."""
 
-    logged_in_email = session.get("user_email")
-
-    user = User.get_user_by_email(logged_in_email)
-    pets = Pet.get_pets_by_user_id(user.user_id)
+    user_id = session.get("user_id")
+    pets = Pet.get_pets_by_user_id(user_id)
 
     pets_schema = PetSchema(many=True)
     pets_json = pets_schema.dump(pets)
@@ -950,12 +915,10 @@ def get_pets_json():
 def get_check_ins_by_pets_json():
     """Return a JSON response with all check ins for each pet."""
 
-    logged_in_email = session.get("user_email")
-    user = User.get_user_by_email(logged_in_email)
-
+    user_id = session.get("user_id")
     # Get list of pet objects for the user
-    pets = Pet.get_pets_by_user_id(user.user_id)
-    
+    pets = Pet.get_pets_by_user_id(user_id)
+
     # For each pet:
     # Create a new object with pet_id, pet_name, and data
     # Sort the pet's check ins and append to data
@@ -965,27 +928,21 @@ def get_check_ins_by_pets_json():
 
     for pet in pets:
         pet_data = {"pet_id": pet.pet_id, "pet_name": pet.pet_name, "data": []}
-
         check_ins = Pet.get_check_ins_by_pet_id(pet.pet_id)
-
         sorted_check_ins = sorted(check_ins, key=lambda x: x.date_hiked, reverse=True)
 
         for check_in in sorted_check_ins:
             pet_data["data"].append({"date_hiked": check_in.date_hiked.isoformat(), "miles_completed": check_in.miles_completed})
-        
+
         check_in_data.append(pet_data)
 
     return jsonify({"petCheckIns": check_in_data})
-
-
 
 
 @app.route("/<bookmarks_list_id>/hikes.json")
 def get_bookmarks_hikes_json(bookmarks_list_id):
     """Return a JSON response for a bookmarks list's hikes."""
 
-    # get one bookmarks object with list of hikes
-    # convert to JSON
     hikes_by_bookmark = BookmarksList.get_bookmarks_list_by_bookmarks_list_id(bookmarks_list_id)
     bookmark_schema = BookmarksListSchema()
     bookmark_json = bookmark_schema.dump(hikes_by_bookmark)
@@ -1001,9 +958,10 @@ def get_bookmarks_hikes_json(bookmarks_list_id):
 @app.route("/hikes/<hike_id>/bookmarks.json")
 def get_hike_bookmarks_json(hike_id):
     """Return a JSON response for a hike's bookmarks."""
-    user = User.get_user_by_email(session["user_email"])
 
-    bookmarks_by_hike = BookmarksList.get_bookmarks_lists_by_user_id_and_hike_id(user.user_id, hike_id)
+    user_id = session.get("user_id")
+
+    bookmarks_by_hike = BookmarksList.get_bookmarks_lists_by_user_id_and_hike_id(user_id, hike_id)
 
     bookmarks_schema = BookmarksListSchema(many=True)
     bookmarks_json = bookmarks_schema.dump(bookmarks_by_hike)
@@ -1021,17 +979,13 @@ def get_hike_bookmarks_json(hike_id):
 def get_user_bookmarks_lists():
     """Return a JSON response with all bookmarks lists for a user."""
 
-    logged_in_email = session.get("user_email")
-    user = User.get_user_by_email(logged_in_email)
-
-    # Get list of bookmark objects for the user
-    bookmarks_by_user = BookmarksList.get_bookmarks_lists_by_user_id(user.user_id)
+    user_id = session.get("user_id")
+    bookmarks_by_user = BookmarksList.get_bookmarks_lists_by_user_id(user_id)
 
     bookmarks_schema = BookmarksListSchema(many=True)
     bookmarks_json = bookmarks_schema.dump(bookmarks_by_user)
 
     hikes_schema = HikeSchema(many=True, exclude=["comments", "check_ins", "bookmarks_lists"])
-    
 
     for idx, bookmark in enumerate(bookmarks_by_user):
         hikes_sorted_by_name = sorted(bookmark.hikes, key=lambda x: x.hike_name)
@@ -1040,7 +994,6 @@ def get_user_bookmarks_lists():
         bookmarks_json[idx]["hikes"] = hikes_json
 
     return jsonify({"bookmarksLists": bookmarks_json})
-
 
 
 @app.route("/hikes/<hike_id>.json")

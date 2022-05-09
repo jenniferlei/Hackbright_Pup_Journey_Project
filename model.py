@@ -23,6 +23,9 @@ class User(db.Model):
     pets = db.relationship("Pet", backref="user")
     bookmarks_lists = db.relationship("BookmarksList", backref="user")
 
+    # check_ins = A list of CheckIn objects
+    # (db.relationship("User", backref="check_ins") on CheckIn model)
+
     # comments = a list of Comment objects
     # (db.relationship("User", backref="comments") on Comment model)
 
@@ -44,29 +47,6 @@ class User(db.Model):
         """Return a user by email."""
 
         return db.session.query(cls).filter(cls.email == email).first()
-
-# FIX ME
-    @classmethod
-    def get_check_ins_by_user_id(cls, user_id):
-        """Return all check ins for a given user_id"""
-
-        # Find all pets for a user
-        # Find check ins for each pet and add to a list
-        # Convert to a set to remove duplicate Check In objects
-
-        user = (db.session.query(cls).filter_by(user_id = user_id)
-                                    .options(db.joinedload('pets'))
-                                    .one())
-
-        all_check_ins = []
-
-        for pet in user.pets:
-            check_ins = get_check_ins_by_pet_id(pet.pet_id)
-            all_check_ins.extend(pet.check_ins)
-
-        all_check_ins = set(all_check_ins)
-        
-        return list(all_check_ins)
 
 
 class Pet(db.Model):
@@ -123,12 +103,11 @@ class Pet(db.Model):
     def get_check_ins_by_pet_id(cls, pet_id):
         """Return all check ins for a given pet id"""
 
-        pet = (db.session.query(cls).options(db.joinedload('check_ins'))
-                                    .get(pet_id))
+        pet = (db.session.query(cls)
+                         .options(db.joinedload('check_ins'))
+                         .get(pet_id))
 
-        check_ins = pet.check_ins
-
-        return check_ins
+        return pet.check_ins
 
 
 class Hike(db.Model):
@@ -265,11 +244,11 @@ class Comment(db.Model):
         """Create and return a new comment."""
 
         comment = cls(user=user,
-                        hike=hike,
-                        body=body,
-                        date_created=date_created,
-                        edit=edit,
-                        date_edited=date_edited)
+                      hike=hike,
+                      body=body,
+                      date_created=date_created,
+                      edit=edit,
+                      date_edited=date_edited)
 
         return comment
 
@@ -277,17 +256,23 @@ class Comment(db.Model):
     def get_comment_by_user_id(cls, user_id):
         """Return all comments by user_id."""
 
-        return db.session.query(cls).filter_by(user_id=user_id).all()
+        return (db.session.query(cls)
+                          .filter_by(user_id=user_id)
+                          .order_by(cls.date_created.desc())
+                          .all())
 
     @classmethod
     def get_comment_by_hike_id(cls, hike_id):
         """Return all comments by hike_id."""
 
-        return db.session.query(cls).filter_by(hike_id=hike_id).all()
+        return (db.session.query(cls)
+                          .filter_by(hike_id=hike_id)
+                          .order_by(cls.date_created.desc())
+                          .all())
 
     @classmethod
     def get_comment_by_comment_id(cls, comment_id):
-        """Return all comments by hike_id."""
+        """Return comment by comment_id."""
 
         return db.session.query(cls).filter_by(comment_id=comment_id).one()
 
@@ -301,70 +286,76 @@ class CheckIn(db.Model):
         db.Integer, autoincrement=True, primary_key=True, nullable=False
     )
     hike_id = db.Column(db.Integer, db.ForeignKey("hikes.hike_id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
     date_hiked = db.Column(db.Date, nullable=False)
     miles_completed = db.Column(db.Float, nullable=False)
     total_time = db.Column(db.Float, nullable=True)
     notes = db.Column(db.Text, nullable=True)
 
     hike = db.relationship("Hike", backref="check_ins")
+    user = db.relationship("User", backref="check_ins")
 
     pets = db.relationship(
         "Pet", secondary="pets_check_ins", backref="check_ins"
     )
 
     def __repr__(self):
-        return f"<Check In check_in_id={self.check_in_id} hike_id={self.hike_id} date_hiked={self.date_hiked}>"
+        return (f"<Check In check_in_id={self.check_in_id} user_id={self.user_id} \
+                hike_id={self.hike_id} date_hiked={self.date_hiked}>")
 
     @classmethod
-    def create_check_in(cls, hike, pets, date_hiked, miles_completed, total_time, notes):
+    def create_check_in(cls, user, hike, pets, date_hiked, miles_completed, total_time, notes):
         """Create and return a new hike completed by a pet."""
 
-        check_in = cls(hike=hike,
-                            pets=pets,
-                            date_hiked=date_hiked,
-                            miles_completed=miles_completed,
-                            total_time=total_time,
-                            notes=notes)
+        check_in = cls(user=user,
+                       hike=hike,
+                       pets=pets,
+                       date_hiked=date_hiked,
+                       miles_completed=miles_completed,
+                       total_time=total_time,
+                       notes=notes)
 
         return check_in
+
+    @classmethod
+    def get_check_in_by_check_in_id(cls, check_in_id):
+        """Return all check ins for a given check in id"""
+
+        return db.session.query(cls).get(check_in_id)
 
     @classmethod
     def get_check_ins_by_hike_id(cls, hike_id):
         """Return all check ins for a given hike id"""
 
-        # get list of user's check in objects
-        check_ins = db.session.query(cls).filter_by(hike_id=hike_id).order_by(cls.date_hiked.desc()).all()
+        return (db.session.query(cls)
+                          .filter_by(hike_id=hike_id)
+                          .order_by(cls.date_hiked.desc())
+                          .all())
 
-        return check_ins
+    @classmethod
+    def get_check_ins_by_user_id(cls, user_id):
+        """Return all check ins for a given user_id"""
+        
+        return (db.session.query(cls)
+                               .filter_by(user_id=user_id)
+                               .order_by(cls.date_hiked.desc())
+                               .all())
 
     @classmethod
     def get_check_ins_by_user_id_hike_id(cls, user_id, hike_id):
         """Return all unique check ins for a given user id and hike id"""
 
-        # get list of user's check in objects
-        check_ins = (db.session.query(cls).filter_by(hike_id=hike_id)
-                                            .options(db.joinedload('pets'))
-                                            .all())
-
-        check_in_data = []
-
-        for check_in in check_ins:
-            for pet in check_in.pets:
-                if pet.user_id == user_id:
-                    check_in_data.append(check_in)
-                
-        check_in_data = list(set(check_in_data))
-        sorted_check_ins = sorted(check_in_data, key=lambda x: x.date_hiked, reverse=True)
-        
-        return sorted_check_ins
+        return (db.session.query(cls)
+                               .filter_by(hike_id=hike_id)
+                               .filter_by(user_id=user_id)
+                               .order_by(cls.date_hiked.desc())
+                               .all())
 
     @classmethod
     def get_check_ins_by_check_in_id(cls, check_in_id):
         """Return a check in for a given check in id"""
 
-        check_in = db.session.query(cls).filter_by(check_in_id=check_in_id).one()
-
-        return check_in
+        return db.session.query(cls).filter_by(check_in_id=check_in_id).one()
 
 
 class BookmarksList(db.Model):
@@ -389,41 +380,39 @@ class BookmarksList(db.Model):
     def create_bookmarks_list(cls, bookmarks_list_name, user_id, hikes):
         """Create and return a new bookmarks list."""
 
-        bookmarks_list = (cls(bookmarks_list_name=bookmarks_list_name,
-                                        user_id=user_id,
-                                        hikes=hikes))
-
-        return bookmarks_list
+        return (cls(bookmarks_list_name=bookmarks_list_name,
+                    user_id=user_id,
+                    hikes=hikes))
 
     @classmethod
     def get_bookmarks_list_by_bookmarks_list_id(cls, bookmarks_list_id):
         """Get a bookmarks list by bookmarks_list_id."""
-        
-        return (db.session.query(cls).options(db.joinedload('hikes'))
-                                            .get(bookmarks_list_id))
+
+        return (db.session.query(cls)
+                          .options(db.joinedload('hikes'))
+                          .get(bookmarks_list_id))
 
     @classmethod
     def get_bookmarks_lists_by_user_id(cls, user_id):
         """Return all bookmarks lists by user_id."""
 
-        return db.session.query(cls).filter_by(user_id=user_id).order_by(func.lower(cls.bookmarks_list_name).asc()).all()
+        return (db.session.query(cls)
+                          .filter_by(user_id=user_id)
+                          .order_by(func.lower(cls.bookmarks_list_name).asc())
+                          .all())
 
-# FIX ME
     @classmethod
     def get_bookmarks_lists_by_user_id_and_hike_id(cls, user_id, hike_id):
         """Return all bookmarks lists objects for a given user_id and hike_id."""
 
-        # Find all bookmarks lists for a given user_id
+        # List of Bookmarks List objects for a given user_id
         user_bookmarks_lists = (db.session.query(cls)
-                                    .options(db.joinedload('hikes'))
-                                    .filter_by(user_id=user_id)
-                                    .order_by(func.lower(cls.bookmarks_list_name).asc())
-                                    .all())
+                                          .options(db.joinedload('hikes'))
+                                          .filter_by(user_id=user_id)
+                                          .order_by(func.lower(cls.bookmarks_list_name).asc())
+                                          .all())
         
         hike = db.session.query(Hike).get(hike_id)
-
-        # For each list, check if there is a hike that matches the given hike_id
-        # If so, add the bookmark list to a new list of bookmark lists and return this list
 
         hike_user_bookmarks_lists = []
 
@@ -463,7 +452,9 @@ class PetCheckIn(db.Model):
     def get_pet_check_in_by_pet_id_check_in_id(cls, pet_id, check_in_id):
         """Return a pet check in object given a pet_id and check_in_id"""
 
-        return (db.session.query(cls).filter(cls.pet_id == pet_id, cls.check_in_id==check_in_id).one())
+        return (db.session.query(cls)
+                          .filter(cls.pet_id == pet_id, cls.check_in_id==check_in_id)
+                          .one())
 
 
 class HikeBookmarksList(db.Model):
@@ -483,7 +474,7 @@ class HikeBookmarksList(db.Model):
     # bookmarks_list
 
     def __repr__(self):
-        return f"<Hike on Bookmarks List hike_bookmarks_list_id={self.hike_bookmarks_list_id} hike_id={self.hike_id} bookmarks_list_id={self.bookmarks_list_id}>"
+        return f"<Hike Bookmark hike_bookmarks_list_id={self.hike_bookmarks_list_id} hike_id={self.hike_id} bookmarks_list_id={self.bookmarks_list_id}>"
 
     @classmethod
     def create_hike_bookmarks_list(cls, hike_id, bookmarks_list_id):
@@ -495,7 +486,7 @@ class HikeBookmarksList(db.Model):
 
     @classmethod
     def get_hike_bookmarks_list_by_hike_id_bookmarks_list_id(cls, hike_id, bookmarks_list_id):
-        """Return a hike bookmarks list object given a hike_id and bookmarks_list_id"""
+        """Return a list of hike bookmarks objects given a hike_id and bookmarks_list_id"""
 
         return (db.session.query(cls).filter(cls.hike_id==hike_id,
                                              cls.bookmarks_list_id==bookmarks_list_id).all())
@@ -533,7 +524,7 @@ def example_data():
     )
     test_user = User(full_name="Test User 1", email="test@test", password="test")
     test_pet = Pet(user=test_user, pet_name="Test Pet 1", gender="female", birthday=datetime.datetime(2014, 11, 10, 0, 0), breed="Shiba Inu", pet_imgURL="https://res.cloudinary.com/hbpupjourney/image/upload/v1644612543/hvtridjccxxvvsiqgoi6.jpg", img_public_id=None, check_ins=[])
-    test_check_in = CheckIn(hike=test_hike, pets=[test_pet], date_hiked=datetime.datetime(2022, 3, 12, 0, 0), miles_completed=2.3, total_time=1.5, notes="Fun hike with great views!")
+    test_check_in = CheckIn(user=test_user, hike=test_hike, pets=[test_pet], date_hiked=datetime.datetime(2022, 3, 12, 0, 0), miles_completed=2.3, total_time=1.5, notes="Fun hike with great views!")
     test_comment = Comment(user=test_user, hike=test_hike, body="Great hike! Would recommend", date_created=datetime.datetime.now(), edit=False, date_edited=None)
     test_bookmarks_list = BookmarksList(bookmarks_list_name="Test List", user_id=1, hikes=[test_hike])
     
