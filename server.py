@@ -457,43 +457,44 @@ def add_check_in():
 def edit_check_in(check_in_id):
     """Edit a check in"""
 
-    pets_to_add = request.get_json().get("addPet")
-    pets_to_remove = request.get_json().get("removePet")
+    check_in = CheckIn.get_check_in_by_id(check_in_id)
+
+    pets_hike_status = request.get_json().get("petHikeStatus") # [{select: t/f, pet_name: <>, pet_id: <>}]
     date_hiked = request.get_json().get("dateHiked")
     miles_completed = request.get_json().get("milesCompleted")
     total_time = request.get_json().get("totalTime")
     notes = request.get_json().get("notes")
 
-    for pet in pets_to_add: # Add pets to check in
-        select, _, pet_id = pet
-        if pet[select]:
-            pet_check_in = PetCheckIn.create_pet_check_in(pet[pet_id], check_in_id)
-            db.session.add(pet_check_in)
+    pet_on_hike = False
 
-    for pet in pets_to_remove: # Remove pets from check in
-        select, _, pet_id = pet
-        if pet[select]:
-            pet_check_in = PetCheckIn.get_pet_check_in_by_id_check_in_id(pet[pet_id], check_in_id)
-            db.session.delete(pet_check_in)
-
-    check_in = CheckIn.get_check_in_by_id(check_in_id)
-
-    if date_hiked == "": # if date_hiked is left blank, use previous date_hiked
-        date_hiked = check_in.date_hiked
-
-    if miles_completed == "": # if miles_completed is left blank, use previous miles_completed
-        miles_completed = check_in.miles_completed
-
-    if total_time == "": # if total_time is left blank, use previous total_time
-        total_time = check_in.total_time
-
-    check_in.date_hiked = date_hiked
-    check_in.miles_completed = miles_completed
-    check_in.total_time = total_time
-    check_in.notes = notes
-
-    if check_in.pets == []: # if there are no pets after pets have been updated, delete check in
+    for pet_status in pets_hike_status:
+        select, _, _ = pet_status
+        if pet_status[select]:
+            pet_on_hike = True
+            break
+    
+    if not pet_on_hike:
         db.session.delete(check_in)
+    else:
+        for pet_status in pets_hike_status: # Add pets to check in
+            select, _, pet_id = pet_status
+            if pet_status[select] and pet_status[pet_id] not in [pet.pet_id for pet in check_in.pets]:
+                pet_check_in = PetCheckIn.create_pet_check_in(pet_status[pet_id], check_in_id)
+                db.session.add(pet_check_in)
+            elif not pet_status[select] and pet_status[pet_id] in [pet.pet_id for pet in check_in.pets]:
+                pet_check_in = PetCheckIn.get_pet_check_in_by_id_check_in_id(pet_status[pet_id], check_in_id)
+                db.session.delete(pet_check_in)
+
+        if date_hiked == "": # if date_hiked is left blank, use previous date_hiked
+            date_hiked = check_in.date_hiked
+
+        if miles_completed == "": # if miles_completed is left blank, use previous miles_completed
+            miles_completed = check_in.miles_completed
+
+        check_in.date_hiked = date_hiked
+        check_in.miles_completed = miles_completed
+        check_in.total_time = total_time
+        check_in.notes = notes
 
     db.session.commit()
 
@@ -776,7 +777,7 @@ def get_check_in_json(check_in_id):
     pets = Pet.get_pets_by_user_id(user_id)
 
     check_in_schema = CheckInSchema()
-    pet_schema = PetSchema()
+    pet_schema = PetSchema(only=["pet_id","pet_name"])
 
     check_in_json = check_in_schema.dump(check_in)
     check_in_json["pets_not_on_hike"] = []

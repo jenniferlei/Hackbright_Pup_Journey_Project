@@ -131,13 +131,12 @@ function EditPetProfile(props) {
   // Process edit
 
   const [petName, setPetName] = React.useState(`${props.pet_name}`);
-  const [gender, setGender] = React.useState("");
-  const [birthday, setBirthday] = React.useState("");
-  const [breed, setBreed] = React.useState("");
+  const [gender, setGender] = React.useState(props.gender);
+  const [birthday, setBirthday] = React.useState(
+    moment(props.birthday).format("YYYY-MM-DD")
+  );
+  const [breed, setBreed] = React.useState(props.breed);
   const [imageFile, setImageFile] = React.useState("");
-
-  // console.log(addPet);
-  // console.log(removePet);
 
   function editExistingPetProfile() {
     const formData = new FormData();
@@ -210,7 +209,7 @@ function EditPetProfile(props) {
                   onChange={(event) => setGender(event.target.value)}
                   className="form-control"
                 >
-                  <option value=""></option>
+                  <option value={gender}>{gender}</option>
                   <option value="female">female</option>
                   <option value="male">male</option>
                 </select>

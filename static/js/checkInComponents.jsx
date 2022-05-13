@@ -104,52 +104,50 @@ function CheckIn(props) {
 function EditCheckIn(props) {
   const route = document.querySelector("title").innerHTML;
 
-  const [addPet, setAddPet] = React.useState([]);
-  const [removePet, setRemovePet] = React.useState([]);
-  const [dateHiked, setDateHiked] = React.useState("");
-  const [milesCompleted, setMilesCompleted] = React.useState("");
-  const [totalTime, setTotalTime] = React.useState("");
-  const [notes, setNotes] = React.useState("");
+  const [petHikeStatus, setPetHikeStatus] = React.useState([]);
+  const [dateHiked, setDateHiked] = React.useState(
+    moment(props.date_hiked).format("YYYY-MM-DD")
+  );
+  const [milesCompleted, setMilesCompleted] = React.useState(
+    props.miles_completed
+  );
+  const [totalTime, setTotalTime] = React.useState(props.total_time);
+  const [notes, setNotes] = React.useState(props.notes);
 
   // get the pets that are on the check in and not on the check in to set initial state of addPet and removePet
-  function setPetStates() {
+  const setPetStates = () => {
     fetch(`/check_in/${props.check_in_id}.json`).then((response) =>
       response.json().then((jsonResponse) => {
         const { checkIn } = jsonResponse;
-        const pets_on_hike = checkIn.pets;
-        const pets_not_on_hike = checkIn.pets_not_on_hike;
+        const petsOnHike = checkIn.pets;
+        const petsNotOnHike = checkIn.pets_not_on_hike;
 
-        const addPet = [];
-        const removePet = [];
+        const petHikeStatus = [];
 
-        pets_on_hike.map((pet) => {
-          removePet.push({
+        petsOnHike.map((pet) => {
+          petHikeStatus.push({
+            select: true,
+            pet_name: pet.pet_name,
+            pet_id: pet.pet_id,
+          });
+        });
+
+        petsNotOnHike.map((pet) => {
+          petHikeStatus.push({
             select: false,
             pet_name: pet.pet_name,
             pet_id: pet.pet_id,
           });
         });
 
-        pets_not_on_hike.map((pet) => {
-          addPet.push({
-            select: false,
-            pet_name: pet.pet_name,
-            pet_id: pet.pet_id,
-          });
-        });
-
-        setAddPet(addPet);
-        setRemovePet(removePet);
+        setPetHikeStatus(petHikeStatus);
       })
     );
-  }
+  };
 
   React.useEffect(() => {
     setPetStates();
   }, []);
-
-  // console.log(addPet);
-  // console.log(removePet);
 
   function editExistingCheckIn() {
     fetch(`/edit-check-in/${props.check_in_id}`, {
@@ -159,8 +157,7 @@ function EditCheckIn(props) {
         Accept: "application/json",
       },
       body: JSON.stringify({
-        addPet, // this will return a list of dictionary objects
-        removePet, // this will return a list of dictionary objects
+        petHikeStatus,
         dateHiked,
         milesCompleted,
         totalTime,
@@ -208,77 +205,38 @@ function EditCheckIn(props) {
             </div>
             <div className="modal-body">
               <div className="mb-3">
-                <div className="row">
-                  <div className="col">
-                    <label htmlFor="petIdInput">Add a Pet</label>
-                    {addPet.map((pet) => (
-                      <div
-                        className="form-check"
-                        key={`add-${props.check_in_id}-${pet.pet_id}`}
-                      >
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value={pet.pet_id}
-                          id={`add-to-check-in-${props.check_in_id}-${pet.pet_id}`}
-                          checked={pet.select}
-                          onChange={(event) => {
-                            let checked = event.target.checked;
-                            setAddPet(
-                              addPet.map((data) => {
-                                if (pet.pet_id === data.pet_id) {
-                                  data.select = checked;
-                                }
-                                return data;
-                              })
-                            );
-                          }}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor={`add-to-check-in-${pet.pet_id}`}
-                        >
-                          {pet.pet_name}
-                        </label>
-                      </div>
-                    ))}
+                <label htmlFor="petIdInput">Pets</label>
+                {petHikeStatus.map((pet) => (
+                  <div
+                    className="form-check"
+                    key={`add-${props.check_in_id}-${pet.pet_id}`}
+                  >
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      value={pet.pet_id}
+                      id={`add-to-check-in-${props.check_in_id}-${pet.pet_id}`}
+                      checked={pet.select}
+                      onChange={(event) => {
+                        let checked = event.target.checked;
+                        setPetHikeStatus(
+                          petHikeStatus.map((data) => {
+                            if (pet.pet_id === data.pet_id) {
+                              data.select = checked;
+                            }
+                            return data;
+                          })
+                        );
+                      }}
+                    />
+                    <label
+                      className="form-check-label"
+                      htmlFor={`add-to-check-in-${pet.pet_id}`}
+                    >
+                      {pet.pet_name}
+                    </label>
                   </div>
-
-                  <div className="col">
-                    <label htmlFor="pet_id">Remove a Pet</label>
-                    {removePet.map((pet) => (
-                      <div
-                        className="form-check"
-                        key={`remove-${props.check_in_id}-${pet.pet_id}`}
-                      >
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value={pet.pet_id}
-                          id={`remove-from-check-in-${pet.pet_id}`}
-                          checked={pet.select}
-                          onChange={(event) => {
-                            let checked = event.target.checked;
-                            setRemovePet(
-                              removePet.map((data) => {
-                                if (pet.pet_id === data.pet_id) {
-                                  data.select = checked;
-                                }
-                                return data;
-                              })
-                            );
-                          }}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor={`remove-from-check-in-${pet.pet_id}`}
-                        >
-                          {pet.pet_name}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
 
               <div className="mb-3">
@@ -319,7 +277,7 @@ function EditCheckIn(props) {
 
               <div className="mb-3">
                 <label htmlFor="notesInput">Notes</label>
-                <input
+                <textarea
                   type="text"
                   value={notes}
                   onChange={(event) => setNotes(event.target.value)}

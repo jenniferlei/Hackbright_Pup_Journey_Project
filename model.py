@@ -323,7 +323,9 @@ class CheckIn(db.Model):
     def get_check_in_by_id(cls, check_in_id):
         """Return a check in for a given check in id"""
 
-        return db.session.query(cls).get(check_in_id)
+        return (db.session.query(cls)
+                         .options(db.joinedload('pets'))
+                         .get(check_in_id))
 
     @classmethod
     def get_check_ins_by_param(cls, *args):
