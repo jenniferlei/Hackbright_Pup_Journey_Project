@@ -176,32 +176,29 @@ function EditComment(props) {
 
 // Add Hike Comment
 function AddHikeComment(props) {
-  const hike_id = document.querySelector("#hike_id").innerText;
-  const add_comment_url = `/hikes/${hike_id}/add-comment`;
+  const hikeId = document.querySelector("#hike_id").innerText;
   const session_login = document.querySelector("#login").innerText;
 
-  const [comment_body, setCommentBody] = React.useState("");
+  const [commentBody, setCommentBody] = React.useState("");
 
   function validateComment() {
     const alertText = "Please complete the following:\n• input comment";
 
-    if (comment_body === "") {
+    if (commentBody === "") {
       alert(alertText);
     } else {
       addNewComment();
     }
   }
 
-  // Add a POST request to hit the server /add-card endpoint and add a new card.
-
   function addNewComment() {
-    fetch(add_comment_url, {
+    fetch("/add-comment", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-      body: JSON.stringify({ comment_body }),
+      body: JSON.stringify({ hikeId, commentBody }),
     }).then((response) => {
       response.json().then((jsonResponse) => {
         props.getComments();
@@ -243,7 +240,7 @@ function AddHikeComment(props) {
                       rows="3"
                       className="form-control"
                       placeholder="Enter your comment here"
-                      value={comment_body}
+                      value={commentBody}
                       onChange={(event) => setCommentBody(event.target.value)}
                       required
                     ></textarea>

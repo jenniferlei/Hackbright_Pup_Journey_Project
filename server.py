@@ -619,8 +619,7 @@ def add_hike_to_new_bookmarks_list(hike_id):
     bookmarks_list_name = request.get_json().get("bookmarksListName")
     hikes = [Hike.get_hike_by_id(hike_id)]
     hike_bookmark = BookmarksList.create_bookmarks_list(
-        bookmarks_list_name, user_id, hikes
-    )
+        bookmarks_list_name, user_id, hikes)
 
     db.session.add(hike_bookmark)
     db.session.commit()
@@ -641,26 +640,6 @@ def remove_hike(bookmarks_list_id, hike_id):
     db.session.commit()
 
     return jsonify({"success": True})
-
-
-@app.route("/hikes/<hike_id>/add-comment", methods=["POST"])
-def add_hike_comment(hike_id):
-    """Add a comment for a hike"""
-
-    logged_in_email = session.get("user_email")
-    user = User.get_user_by_email(logged_in_email)
-    hike = Hike.get_hike_by_id(hike_id)
-    comment_body = request.get_json().get("comment_body")
-
-    comment = Comment.create_comment(
-        user, hike, comment_body, date_created=datetime.now(), edit=False, date_edited=None)
-    db.session.add(comment)
-    db.session.commit()
-
-    comment_schema = CommentSchema()
-    comment_json = comment_schema.dump(comment)
-
-    return jsonify({"commentAdded": comment_json, "login": True})
 
 
 @app.route("/add-comment", methods=["POST"])
