@@ -10,7 +10,7 @@ const DashboardMap = React.forwardRef((props, ref) => {
   }, []);
 
   // Initialize map with check ins from all time
-  function initMap() {
+  const initMap = () => {
     fetch("/user_check_ins.json")
       .then((response) => response.json())
       .then((jsonResponse) => {
@@ -88,7 +88,7 @@ const DashboardMap = React.forwardRef((props, ref) => {
       });
   }
 
-  function createMarkers(checkIns) {
+  const createMarkers = (checkIns) => {
     const markers = [];
     const uniqueHikes = [];
 
@@ -146,9 +146,9 @@ const DashboardMap = React.forwardRef((props, ref) => {
     setMapHikes(uniqueHikes);
     setMapMarkers(markers);
     setMapBounds(bounds);
-  }
+  };
 
-  function filterCheckInsByDate(checkIns, startDate, endDate) {
+  const filterCheckInsByDate = (checkIns, startDate, endDate) => {() {
     let filteredCheckIns = [];
 
     for (const checkIn of checkIns) {
@@ -309,7 +309,7 @@ const DashboardMapContainer = React.forwardRef((props, ref) => {
       );
   }, []);
 
-  function updateMapInfo() {
+  const updateMapInfo = () => {
     fetch("/user_check_ins.json")
       .then((response) => response.json())
       .then((jsonResponse) => {
@@ -400,7 +400,7 @@ const DashboardMapContainer = React.forwardRef((props, ref) => {
     setMapCheckIns(checkInsHikeCounts);
   };
 
-  function getMapData() {
+  const getMapData = () => {
     DashboardMapRef.current.updateMapData();
     updateMapInfo();
   }

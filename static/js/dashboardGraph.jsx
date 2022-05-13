@@ -17,7 +17,7 @@ const DashboardGraph = React.forwardRef((props, ref) => {
     initGraph();
   }, []);
 
-  function initGraph() {
+  const initGraph = () => {
     fetch("/check-ins-by-pets.json")
       .then((response) => response.json())
       .then((responseJson) => {
@@ -109,7 +109,7 @@ const DashboardGraph = React.forwardRef((props, ref) => {
 
         setMyChart(myLineChart);
       });
-  }
+  };
 
   React.useImperativeHandle(ref, () => ({
     getGraphData() {
@@ -209,7 +209,7 @@ const DashboardGraphContainer = React.forwardRef((props, ref) => {
     getAllTimeGraphInfo();
   }, []);
 
-  function getAllTimeGraphInfo() {
+  const getAllTimeGraphInfo = () => {
     fetch("/user_check_ins.json")
       .then((response) => response.json())
       .then(
@@ -237,13 +237,13 @@ const DashboardGraphContainer = React.forwardRef((props, ref) => {
           setError(error);
         }
       );
-  }
+  };
 
-  function parentUpdateGraphView() {
+  const parentUpdateGraphView = () => {
     DashboardGraphRef.current.updateGraphView();
-  }
+  };
 
-  function updateGraphInfo() {
+  const updateGraphInfo = () => {
     fetch("/user_check_ins.json")
       .then((response) => response.json())
       .then((jsonResponse) => {
@@ -279,7 +279,7 @@ const DashboardGraphContainer = React.forwardRef((props, ref) => {
           filterCheckInsByDate(checkIns, startDate, endDate);
         }
       });
-  }
+  };
 
   const filterCheckInsByDate = (checkIns, startDate, endDate) => {
     // let filteredCheckIns = checkIns.filter((checkIn) => {

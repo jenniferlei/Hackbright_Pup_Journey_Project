@@ -1,6 +1,6 @@
 "use strict";
 
-function FooterNavItemOffCanvas(props) {
+const FooterNavItemOffCanvas = (props) => {
   return (
     <li className="nav-item">
       <a
@@ -22,13 +22,13 @@ function FooterNavItemOffCanvas(props) {
       </a>
     </li>
   );
-}
+};
 
-function FooterSearchBar(props) {
+const FooterSearchBar = (props) => {
   const [keywordFilter, setKeywordFilter] = React.useState("");
   const [searchHikes, setSearchHikes] = React.useState([]);
 
-  function getFilteredHikes() {
+  const getFilteredHikes = () => {
     let url =
       "http://api.example.com/results?q=" +
       encodeURI(this.state.term) +
@@ -42,9 +42,9 @@ function FooterSearchBar(props) {
         this.setState(data);
       })
       .catch((error) => console.log(error));
-  }
+  };
 
-  function doNothing() {}
+  const doNothing = () => {};
   return (
     <React.Fragment>
       <ul className="navbar-nav me-auto">
@@ -86,7 +86,7 @@ function FooterSearchBar(props) {
       </ul>
     </React.Fragment>
   );
-}
+};
 
 // const useInfiniteScroll = (callback) => {
 //   const [isFetching, setIsFetching] = React.useState(false);

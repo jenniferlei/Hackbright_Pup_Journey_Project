@@ -62,9 +62,9 @@ const HikeDetailsBookmarksListContainer = React.forwardRef((props, ref) => {
     },
   }));
 
-  function parentSetHikesOptionState() {
+  const parentSetHikesOptionState = () => {
     AddMultHikesToExistingListRef.current.setHikesOptionsState();
-  }
+  };
 
   const allBookmarksLists = [];
   const allRenameBookmarksLists = [];
@@ -883,23 +883,23 @@ const HikeDetailsCommentContainer = () => {
   );
 };
 
-function HikeDetails() {
+const HikeDetails = () => {
   const HikeDetailsBookmarksListContainerRef = React.useRef();
   const DetailsAddHikeToNewOrExistingListRef = React.useRef();
 
   const session_login = document.querySelector("#login").innerText;
 
-  function parentGetBookmarksLists() {
+  const parentGetBookmarksLists = () => {
     if (session_login === "True") {
       HikeDetailsBookmarksListContainerRef.current.getHikeBookmarksLists();
     }
-  }
+  };
 
-  function parentSetListOptionsState() {
+  const parentSetListOptionsState = () => {
     if (session_login === "True") {
       DetailsAddHikeToNewOrExistingListRef.current.setListOptionsState();
     }
-  }
+  };
 
   return (
     <React.Fragment>
@@ -1015,6 +1015,6 @@ function HikeDetails() {
       </nav>
     </React.Fragment>
   );
-}
+};
 
 ReactDOM.render(<HikeDetails />, document.getElementById("hikeDetailsRoot"));

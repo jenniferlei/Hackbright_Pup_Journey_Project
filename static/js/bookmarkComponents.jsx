@@ -1,20 +1,18 @@
 "use strict";
 
 // Hikes in a Bookmarks List Component
-function HikeBookmark(props) {
+const HikeBookmark = (props) => {
   // Check if user wants to delete hike from list or not
-  function deleteConfirm(event) {
+  const deleteConfirm = () => {
     const validate = confirm("Do you want to remove this hike from this list?");
-    if (!validate) {
-      event.preventDefault();
-    } else {
+    if (validate) {
       removeExistingHikeFromList();
     }
-  }
+  };
 
   // Process deletion of a hike from a list if user confirms
   // Which will then run refreshLists() on parent component
-  function removeExistingHikeFromList() {
+  const removeExistingHikeFromList = () => {
     fetch(`/${props.bookmarks_list_id}/${props.hike_id}/remove-hike`, {
       method: "DELETE",
     })
@@ -22,7 +20,7 @@ function HikeBookmark(props) {
       .then((jsonResponse) => {
         props.refreshLists();
       });
-  }
+  };
 
   return (
     <React.Fragment>
@@ -60,7 +58,7 @@ function HikeBookmark(props) {
       </div>
     </React.Fragment>
   );
-}
+};
 
 // Bookmarks List Component
 const BookmarksList = React.forwardRef((props, ref) => {
@@ -92,22 +90,22 @@ const BookmarksList = React.forwardRef((props, ref) => {
 
   // this is a prop on removeExistingHikeFromList (to process deletion of a hike from a list)
   // props.getBookmarksLists will run the function on parent component (gets most up to date lists)
-  function refreshLists() {
+  const refreshLists = () => {
     props.getBookmarksLists();
     // props.parentUpdateHikeOptionsSet();
-  }
+  };
 
   // Check if user wants to delete existing bookmarks list or not
-  function deleteConfirm() {
+  const deleteConfirm = () => {
     const validate = confirm("Do you want to delete this list?");
     if (validate) {
       deleteExistingBookmarksList();
     }
-  }
+  };
 
   // Process deletion of a bookmarks list and all its hikes
   // props.getBookmarksLists will run the function on parent component (gets most up to date lists)
-  function deleteExistingBookmarksList() {
+  const deleteExistingBookmarksList = () => {
     fetch(`/delete-bookmarks-list/${props.bookmarks_list_id}`, {
       method: "DELETE",
     })
@@ -120,7 +118,7 @@ const BookmarksList = React.forwardRef((props, ref) => {
           props.parentSetListOptionsState();
         }
       });
-  }
+  };
 
   return (
     <React.Fragment>
@@ -206,14 +204,14 @@ const BookmarksList = React.forwardRef((props, ref) => {
   );
 });
 
-function RenameBookmarksList(props) {
+const RenameBookmarksList = (props) => {
   const hike_id = document.querySelector("#hike_id");
   // Process renaming bookmarks list name
   const [bookmarksListName, setBookmarksListName] = React.useState(
     `${props.bookmarks_list_name}`
   );
 
-  function editExistingBookmarksList() {
+  const editExistingBookmarksList = () => {
     fetch(`/edit-bookmarks-list/${props.bookmarks_list_id}`, {
       method: "POST",
       headers: {
@@ -234,7 +232,7 @@ function RenameBookmarksList(props) {
           props.parentSetListOptionsState();
         }
       });
-  }
+  };
 
   return (
     <React.Fragment>
@@ -296,16 +294,16 @@ function RenameBookmarksList(props) {
       </div>
     </React.Fragment>
   );
-}
+};
 
-function CreateBookmarksList(props) {
+const CreateBookmarksList = (props) => {
   const hike_id = document.querySelector("#hike_id");
 
   // Process creating a new bookmarks list
   const [bookmarksListName, setBookmarksListName] = React.useState("");
 
   // Validate form - need to make sure to validate each required item
-  function validateBookmarksList() {
+  const validateBookmarksList = () => {
     const alertText = "Please complete the following:\n• input list name";
 
     if (bookmarksListName === "") {
@@ -313,9 +311,9 @@ function CreateBookmarksList(props) {
     } else {
       createNewBookmarksList();
     }
-  }
+  };
 
-  function createNewBookmarksList() {
+  const createNewBookmarksList = () => {
     fetch("/create-bookmarks-list", {
       method: "POST",
       headers: {
@@ -336,7 +334,7 @@ function CreateBookmarksList(props) {
           props.parentSetListOptionsState();
         }
       });
-  }
+  };
 
   return (
     <React.Fragment>
@@ -399,7 +397,7 @@ function CreateBookmarksList(props) {
       </div>
     </React.Fragment>
   );
-}
+};
 
 const AddMultHikesToExistingList = React.forwardRef((props, ref) => {
   const session_login = document.querySelector("#login").innerText;
@@ -411,7 +409,7 @@ const AddMultHikesToExistingList = React.forwardRef((props, ref) => {
     setHikesOptionsState();
   }, []);
 
-  function setHikesOptionsState() {
+  const setHikesOptionsState = () => {
     fetch("/all_hikes.json")
       .then((response) => response.json())
       .then((jsonResponse) => {
@@ -437,9 +435,9 @@ const AddMultHikesToExistingList = React.forwardRef((props, ref) => {
         });
         setAllHikesOptions(allHikeOptions);
       });
-  }
+  };
 
-  function addHikesToBookmarksList() {
+  const addHikesToBookmarksList = () => {
     fetch(`/${props.bookmarks_list_id}/add-hikes`, {
       method: "POST",
       headers: {
@@ -454,7 +452,7 @@ const AddMultHikesToExistingList = React.forwardRef((props, ref) => {
         props.getBookmarksLists();
       });
     });
-  }
+  };
 
   return (
     <React.Fragment>

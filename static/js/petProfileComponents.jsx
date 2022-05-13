@@ -1,16 +1,16 @@
 "use strict";
 
-function PetProfile(props) {
+const PetProfile = (props) => {
   // Check if user wants to delete or not
-  function deleteConfirm(event) {
+  const deleteConfirm = () => {
     const validate = confirm("Do you want to delete this pet profile?");
     if (validate) {
       deleteExistingPetProfile();
     }
-  }
+  };
 
   // Process deletion
-  function deleteExistingPetProfile() {
+  const deleteExistingPetProfile = () => {
     fetch(`/delete-pet/${props.pet_id}`, {
       method: "DELETE",
     }).then((response) => {
@@ -19,7 +19,7 @@ function PetProfile(props) {
         props.getPetProfiles();
       });
     });
-  }
+  };
 
   return (
     <React.Fragment>
@@ -125,9 +125,9 @@ function PetProfile(props) {
       </div>
     </React.Fragment>
   );
-}
+};
 
-function EditPetProfile(props) {
+const EditPetProfile = (props) => {
   // Process edit
 
   const [petName, setPetName] = React.useState(`${props.pet_name}`);
@@ -138,7 +138,7 @@ function EditPetProfile(props) {
   const [breed, setBreed] = React.useState(props.breed);
   const [imageFile, setImageFile] = React.useState("");
 
-  function editExistingPetProfile() {
+  const editExistingPetProfile = () => {
     const formData = new FormData();
 
     formData.append("petName", petName);
@@ -166,7 +166,7 @@ function EditPetProfile(props) {
         // Need to add refresh to AddCheckIns petOptions
         console.log(jsonResponse);
       });
-  }
+  };
   return (
     <React.Fragment>
       <div
@@ -268,9 +268,9 @@ function EditPetProfile(props) {
       </div>
     </React.Fragment>
   );
-}
+};
 
-function AddPetProfile(props) {
+const AddPetProfile = (props) => {
   const session_login = document.querySelector("#login").innerText;
 
   const [petName, setPetName] = React.useState("");
@@ -279,7 +279,7 @@ function AddPetProfile(props) {
   const [breed, setBreed] = React.useState("");
   const [imageFile, setImageFile] = React.useState("");
 
-  function validatePetProfile() {
+  const validatePetProfile = () => {
     const alertText = "Please complete the following:\n• input pet name";
 
     if (petName === "") {
@@ -287,9 +287,9 @@ function AddPetProfile(props) {
     } else {
       addNewPetProfile();
     }
-  }
+  };
 
-  function addNewPetProfile() {
+  const addNewPetProfile = () => {
     const formData = new FormData();
 
     formData.append("petName", petName);
@@ -317,7 +317,7 @@ function AddPetProfile(props) {
         console.log(jsonResponse);
       });
     });
-  }
+  };
 
   // console.log();
 
@@ -423,7 +423,7 @@ function AddPetProfile(props) {
       </div>
     </React.Fragment>
   );
-}
+};
 
 // All Hikes and Hike Details Pet Profile container component
 const PetProfileContainer = React.forwardRef((props, ref) => {
@@ -435,7 +435,7 @@ const PetProfileContainer = React.forwardRef((props, ref) => {
     getPetProfiles();
   }, []);
 
-  function getPetProfiles() {
+  const getPetProfiles = () => {
     if (session_login === "True") {
       fetch("/pets.json")
         .then((response) => response.json())
@@ -443,7 +443,7 @@ const PetProfileContainer = React.forwardRef((props, ref) => {
           setPetProfiles(data.petProfiles);
         });
     }
-  }
+  };
 
   // Access getPetProfiles function from Footer component
   React.useImperativeHandle(ref, () => ({
@@ -607,7 +607,7 @@ const DashboardPetProfileContainer = React.forwardRef((props, ref) => {
     getPetProfiles();
   }, []);
 
-  function getPetProfiles() {
+  const getPetProfiles = () => {
     if (session_login === "True") {
       fetch("/pets.json")
         .then((response) => response.json())
@@ -615,7 +615,7 @@ const DashboardPetProfileContainer = React.forwardRef((props, ref) => {
           setPetProfiles(data.petProfiles);
         });
     }
-  }
+  };
 
   React.useImperativeHandle(ref, () => ({
     getPetProfiles() {

@@ -1,6 +1,6 @@
 "use strict";
 
-function SearchOffCanvas(props) {
+const SearchOffCanvas = (props) => {
   const stateOptions = ["California", "Oregon", "Washington"];
 
   const [cityOptions, setCityOptions] = React.useState([]);
@@ -512,4 +512,4 @@ function SearchOffCanvas(props) {
       </div>
     </React.Fragment>
   );
-}
+};

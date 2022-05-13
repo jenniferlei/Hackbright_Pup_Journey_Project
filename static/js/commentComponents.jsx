@@ -1,20 +1,20 @@
 "use strict";
 
 // comment body component with if session condition for edit and delete component
-function Comment(props) {
+const Comment = (props) => {
   const session_login = document.querySelector("#login").innerText;
   const session_user_id = document.querySelector("#user_id").innerText;
 
   // Check if user wants to delete or not
-  function deleteConfirm() {
+  const deleteConfirm = () => {
     const validate = confirm("Do you want to delete this comment?");
     if (validate) {
       deleteExistingComment(props.comment_id);
     }
-  }
+  };
 
   // Process deletion
-  function deleteExistingComment(comment_id) {
+  const deleteExistingComment = (comment_id) => {
     fetch(`/delete-comment/${comment_id}`, {
       method: "DELETE",
     }).then((response) => {
@@ -23,7 +23,7 @@ function Comment(props) {
         props.getComments();
       });
     });
-  }
+  };
 
   return (
     <React.Fragment>
@@ -89,13 +89,13 @@ function Comment(props) {
       </div>
     </React.Fragment>
   );
-}
+};
 
-function EditComment(props) {
+const EditComment = (props) => {
   // Process edit
   const [commentBody, setCommentBody] = React.useState(props.comment_body);
 
-  function editExistingComment() {
+  const editExistingComment = () => {
     fetch(`/edit-comment/${props.comment_id}`, {
       method: "POST",
       headers: {
@@ -111,7 +111,7 @@ function EditComment(props) {
         // console.log(jsonResponse);
         props.getComments();
       });
-  }
+  };
   return (
     <React.Fragment>
       <div
@@ -172,16 +172,16 @@ function EditComment(props) {
       </div>
     </React.Fragment>
   );
-}
+};
 
 // Add Hike Comment
-function AddHikeComment(props) {
+const AddHikeComment = (props) => {
   const hikeId = document.querySelector("#hike_id").innerText;
   const session_login = document.querySelector("#login").innerText;
 
   const [commentBody, setCommentBody] = React.useState("");
 
-  function validateComment() {
+  const validateComment = () => {
     const alertText = "Please complete the following:\n• input comment";
 
     if (commentBody === "") {
@@ -189,9 +189,9 @@ function AddHikeComment(props) {
     } else {
       addNewComment();
     }
-  }
+  };
 
-  function addNewComment() {
+  const addNewComment = () => {
     fetch("/add-comment", {
       method: "POST",
       headers: {
@@ -205,7 +205,7 @@ function AddHikeComment(props) {
         // console.log(jsonResponse);
       });
     });
-  }
+  };
 
   return (
     <React.Fragment>
@@ -270,24 +270,24 @@ function AddHikeComment(props) {
       </div>
     </React.Fragment>
   );
-}
+};
 
 // Add Hike Comment
-function AddComment(props) {
+const AddComment = (props) => {
   const session_login = document.querySelector("#login").innerText;
 
   const [allHikeOptions, setHikeOptions] = React.useState([]);
   const [commentBody, setCommentBody] = React.useState("");
   const [hikeId, setHikeId] = React.useState("");
 
-  function getHikeOptions() {
+  const getHikeOptions = () => {
     fetch("/all_hikes.json")
       .then((response) => response.json())
       .then((jsonResponse) => {
         const { hikes } = jsonResponse;
         setHikeOptions(hikes);
       });
-  }
+  };
 
   if (session_login === "True") {
     React.useEffect(() => {
@@ -296,7 +296,7 @@ function AddComment(props) {
   }
 
   // Validate form - need to make sure to validate each required item
-  function validateComment() {
+  const validateComment = () => {
     const alertText = "Please complete the following:";
     const hikeAlert = "\n• select a hike";
     const commentAlert = "\n• input comment";
@@ -313,9 +313,9 @@ function AddComment(props) {
     } else {
       addNewComment();
     }
-  }
+  };
 
-  function addNewComment() {
+  const addNewComment = () => {
     fetch("/add-comment", {
       method: "POST",
       headers: {
@@ -329,7 +329,7 @@ function AddComment(props) {
         // console.log(jsonResponse);
       });
     });
-  }
+  };
 
   return (
     <React.Fragment>
@@ -411,4 +411,4 @@ function AddComment(props) {
       </div>
     </React.Fragment>
   );
-}
+};

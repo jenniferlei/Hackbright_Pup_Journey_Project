@@ -818,7 +818,9 @@ def get_user_check_ins_json():
     user_id = session.get("user_id")
     check_ins = CheckIn.get_check_ins_by_param(("user_id", user_id))
 
-    check_ins_schema = CheckInSchema(many=True, only=["check_in_id","date_hiked","hike_id","miles_completed","notes","pets","total_time","hike.hike_name","hike.latitude","hike.longitude"])
+    check_ins_schema = CheckInSchema(many=True, only=["check_in_id","date_hiked",\
+        "hike_id","miles_completed","notes","pets","total_time","hike.hike_name",\
+        "hike.latitude","hike.longitude"])
     check_ins_json = check_ins_schema.dump(check_ins)
     pets_schema = PetSchema(many=True, exclude=["check_ins"])
 

@@ -1,18 +1,18 @@
 "use strict";
 
-function CheckIn(props) {
+const CheckIn = (props) => {
   const route = document.querySelector("title").innerHTML;
 
   // Check if user wants to delete or not
-  function deleteConfirm(event) {
+  const deleteConfirm = () => {
     const validate = confirm("Do you want to delete this check in?");
     if (validate) {
       deleteExistingCheckIn(props.check_in_id);
     }
-  }
+  };
 
   // Process deletion
-  function deleteExistingCheckIn(check_in_id) {
+  const deleteExistingCheckIn = (check_in_id) => {
     fetch(`/delete-check-in/${check_in_id}`, {
       method: "DELETE",
     }).then((response) => {
@@ -27,7 +27,7 @@ function CheckIn(props) {
         }
       });
     });
-  }
+  };
 
   return (
     <React.Fragment>
@@ -99,9 +99,9 @@ function CheckIn(props) {
       </div>
     </React.Fragment>
   );
-}
+};
 
-function EditCheckIn(props) {
+const EditCheckIn = (props) => {
   const route = document.querySelector("title").innerHTML;
 
   const [petHikeStatus, setPetHikeStatus] = React.useState([]);
@@ -149,7 +149,7 @@ function EditCheckIn(props) {
     setPetStates();
   }, []);
 
-  function editExistingCheckIn() {
+  const editExistingCheckIn = () => {
     fetch(`/edit-check-in/${props.check_in_id}`, {
       method: "POST",
       headers: {
@@ -177,7 +177,7 @@ function EditCheckIn(props) {
           props.parentGetMapData();
         }
       });
-  }
+  };
   return (
     <React.Fragment>
       <div
@@ -307,9 +307,9 @@ function EditCheckIn(props) {
       </div>
     </React.Fragment>
   );
-}
+};
 
-function AddCheckIn(props) {
+const AddCheckIn = (props) => {
   const route = document.querySelector("title").innerHTML;
   const session_login = document.querySelector("#login").innerText;
 
@@ -321,16 +321,16 @@ function AddCheckIn(props) {
   const [totalTime, setTotalTime] = React.useState("");
   const [notes, setNotes] = React.useState("");
 
-  function getHikeOptions() {
+  const getHikeOptions = () => {
     fetch("/all_hikes.json")
       .then((response) => response.json())
       .then((jsonResponse) => {
         const { hikes } = jsonResponse;
         setHikeOptions(hikes);
       });
-  }
+  };
 
-  function getPets() {
+  const getPets = () => {
     fetch("/pets.json").then((response) =>
       response.json().then((jsonResponse) => {
         const { petProfiles } = jsonResponse;
@@ -347,7 +347,7 @@ function AddCheckIn(props) {
         setAllPetOptions(allPetOptions);
       })
     );
-  }
+  };
 
   if (session_login === "True") {
     React.useEffect(() => {
@@ -357,7 +357,7 @@ function AddCheckIn(props) {
   }
 
   // Validate form - need to make sure to validate each required item
-  function validateCheckIn() {
+  const validateCheckIn = () => {
     const petCheckBoxes = document.querySelectorAll(
       "input[name=add-check-in-pet_id]"
     );
@@ -399,9 +399,9 @@ function AddCheckIn(props) {
     } else {
       addNewCheckIn();
     }
-  }
+  };
 
-  function addNewCheckIn() {
+  const addNewCheckIn = () => {
     fetch("/add-check-in", {
       method: "POST",
       headers: {
@@ -427,7 +427,7 @@ function AddCheckIn(props) {
         // console.log(jsonResponse);
       });
     });
-  }
+  };
 
   // console.log(allPetOptions);
 
@@ -590,9 +590,9 @@ function AddCheckIn(props) {
       </div>
     </React.Fragment>
   );
-}
+};
 
-function AddHikeCheckIn(props) {
+const AddHikeCheckIn = (props) => {
   const session_login = document.querySelector("#login").innerText;
 
   const [allPetOptions, setAllPetOptions] = React.useState([]);
@@ -601,7 +601,7 @@ function AddHikeCheckIn(props) {
   const [totalTime, setTotalTime] = React.useState("");
   const [notes, setNotes] = React.useState("");
 
-  function getPets() {
+  const getPets = () => {
     fetch("/pets.json").then((response) =>
       response.json().then((jsonResponse) => {
         const { petProfiles } = jsonResponse;
@@ -618,7 +618,7 @@ function AddHikeCheckIn(props) {
         setAllPetOptions(allPetOptions);
       })
     );
-  }
+  };
 
   if (session_login === "True") {
     React.useEffect(() => {
@@ -627,7 +627,7 @@ function AddHikeCheckIn(props) {
   }
 
   // Validate form - need to make sure to validate each required item
-  function validateCheckIn() {
+  const validateCheckIn = () => {
     const petCheckBoxes = document.querySelectorAll(
       "input[name=add-check-in-pet_id]"
     );
@@ -664,11 +664,11 @@ function AddHikeCheckIn(props) {
     } else {
       addNewCheckIn();
     }
-  }
+  };
 
   const hike_id = document.querySelector("#hike_id").innerText;
 
-  function addNewCheckIn() {
+  const addNewCheckIn = () => {
     fetch(`/hikes/${hike_id}/add-check-in`, {
       method: "POST",
       headers: {
@@ -688,7 +688,7 @@ function AddHikeCheckIn(props) {
         // console.log(jsonResponse);
       });
     });
-  }
+  };
 
   // console.log(allPetOptions);
 
@@ -830,4 +830,4 @@ function AddHikeCheckIn(props) {
       </div>
     </React.Fragment>
   );
-}
+};
