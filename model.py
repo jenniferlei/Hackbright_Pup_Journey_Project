@@ -60,7 +60,7 @@ class Pet(db.Model):
     gender = db.Column(db.String, nullable=True)
     birthday = db.Column(db.Date, nullable=True)
     breed = db.Column(db.String, nullable=True)
-    pet_imgURL = db.Column(db.String, nullable=True)
+    pet_img_url = db.Column(db.String, nullable=True)
     img_public_id = db.Column(db.String, nullable=True)
 
     # user = User object
@@ -73,7 +73,7 @@ class Pet(db.Model):
         return f"<Pet pet_id={self.pet_id} pet_name={self.pet_name}>"
 
     @classmethod
-    def create_pet(cls, user, pet_name, gender, birthday, breed, pet_imgURL, img_public_id, check_ins):
+    def create_pet(cls, user, pet_name, gender, birthday, breed, pet_img_url, img_public_id, check_ins):
         """Create and return a new pet."""
 
         pet = cls(user=user,
@@ -81,7 +81,7 @@ class Pet(db.Model):
                 gender=gender,
                 birthday=birthday,
                 breed=breed,
-                pet_imgURL=pet_imgURL,
+                pet_img_url=pet_img_url,
                 img_public_id=img_public_id,
                 check_ins=check_ins)
 
@@ -107,7 +107,7 @@ class Pet(db.Model):
                          .options(db.joinedload('check_ins'))
                          .get(pet_id))
 
-        return pet.check_ins
+        return sorted(pet.check_ins, key=lambda x: x.date_hiked, reverse=True)
 
 
 class Hike(db.Model):
@@ -141,7 +141,8 @@ class Hike(db.Model):
     # (db.relationship("Pet", backref="check_ins") on CheckIn model)
 
     # bookmarks_lists = A list of BookmarksList objects
-    # (db.relationship("Hike", secondary="hikes_bookmarks_lists", backref="bookmarks_lists") on BookmarksList model)
+    # (db.relationship("Hike", secondary="hikes_bookmarks_lists", backref="bookmarks_lists")
+    # on BookmarksList model)
 
     def __repr__(self):
         return f"<Hike hike_id={self.hike_id} hike_name={self.hike_name}>"
@@ -209,7 +210,8 @@ class Hike(db.Model):
         if len(parking) == 1:
             queries.append(cls.parking.ilike(f"%{parking[0]}%"))
         elif len(parking) == 2:
-            queries.append(cls.parking.ilike(f"%{parking[0]}%") | cls.parking.ilike(f"%{parking[1]}%"))
+            queries.append(cls.parking.ilike(f"%{parking[0]}%") | \
+            cls.parking.ilike(f"%{parking[1]}%"))
 
         return db.session.query(cls).filter(*queries).order_by(cls.hike_name.asc()).all()
 
@@ -300,8 +302,8 @@ class CheckIn(db.Model):
     )
 
     def __repr__(self):
-        return (f"<Check In check_in_id={self.check_in_id} user_id={self.user_id} \
-                hike_id={self.hike_id} date_hiked={self.date_hiked}>")
+        return f"<Check In check_in_id={self.check_in_id} user_id={self.user_id} \
+                hike_id={self.hike_id} date_hiked={self.date_hiked}>"
 
     @classmethod
     def create_check_in(cls, user, hike, pets, date_hiked, miles_completed, total_time, notes):
@@ -318,44 +320,21 @@ class CheckIn(db.Model):
         return check_in
 
     @classmethod
-    def get_check_in_by_check_in_id(cls, check_in_id):
-        """Return all check ins for a given check in id"""
+    def get_check_in_by_id(cls, check_in_id):
+        """Return a check in for a given check in id"""
 
         return db.session.query(cls).get(check_in_id)
 
     @classmethod
-    def get_check_ins_by_hike_id(cls, hike_id):
-        """Return all check ins for a given hike id"""
+    def get_check_ins_by_param(cls, *args):
+        """Return all check ins for given parameters"""
+
+        queries = [getattr(cls, attr)==val for attr, val in args]
 
         return (db.session.query(cls)
-                          .filter_by(hike_id=hike_id)
+                          .filter(*queries)
                           .order_by(cls.date_hiked.desc())
                           .all())
-
-    @classmethod
-    def get_check_ins_by_user_id(cls, user_id):
-        """Return all check ins for a given user_id"""
-        
-        return (db.session.query(cls)
-                               .filter_by(user_id=user_id)
-                               .order_by(cls.date_hiked.desc())
-                               .all())
-
-    @classmethod
-    def get_check_ins_by_user_id_hike_id(cls, user_id, hike_id):
-        """Return all unique check ins for a given user id and hike id"""
-
-        return (db.session.query(cls)
-                               .filter_by(hike_id=hike_id)
-                               .filter_by(user_id=user_id)
-                               .order_by(cls.date_hiked.desc())
-                               .all())
-
-    @classmethod
-    def get_check_ins_by_check_in_id(cls, check_in_id):
-        """Return a check in for a given check in id"""
-
-        return db.session.query(cls).filter_by(check_in_id=check_in_id).one()
 
 
 class BookmarksList(db.Model):
@@ -385,7 +364,7 @@ class BookmarksList(db.Model):
                     hikes=hikes))
 
     @classmethod
-    def get_bookmarks_list_by_bookmarks_list_id(cls, bookmarks_list_id):
+    def get_bookmarks_list_by_id(cls, bookmarks_list_id):
         """Get a bookmarks list by bookmarks_list_id."""
 
         return (db.session.query(cls)
@@ -411,7 +390,7 @@ class BookmarksList(db.Model):
                                           .filter_by(user_id=user_id)
                                           .order_by(func.lower(cls.bookmarks_list_name).asc())
                                           .all())
-        
+
         hike = db.session.query(Hike).get(hike_id)
 
         hike_user_bookmarks_lists = []
@@ -419,7 +398,7 @@ class BookmarksList(db.Model):
         for bookmarks_list in user_bookmarks_lists:
             if hike in bookmarks_list.hikes:
                 hike_user_bookmarks_lists.append(bookmarks_list)
-            
+
         return hike_user_bookmarks_lists
 
 
@@ -428,28 +407,20 @@ class PetCheckIn(db.Model):
 
     __tablename__ = "pets_check_ins"
 
-    pet_check_in_id = db.Column(
-        db.Integer, autoincrement=True, primary_key=True, nullable=False
-    )
+    pet_check_in_id = db.Column(db.Integer, autoincrement=True, primary_key=True, nullable=False)
     pet_id = db.Column(db.Integer, db.ForeignKey("pets.pet_id"), nullable=False)
-    check_in_id = db.Column(
-        db.Integer, db.ForeignKey("check_ins.check_in_id"), nullable=False
-    )
-
-    def __repr__(self):
-        return f"<Pet on Check In pet_check_in_id={self.pet_check_in_id} pet_id={self.pet_id} check_in_id={self.check_in_id}>"
+    check_in_id = db.Column(db.Integer, db.ForeignKey("check_ins.check_in_id"), nullable=False)
 
     @classmethod
     def create_pet_check_in(cls, pet_id, check_in_id):
         """Create and return a new pet check in object."""
 
-        pet_check_in = (cls(pet_id=pet_id,
-                                check_in_id=check_in_id))
+        pet_check_in = cls(pet_id=pet_id, check_in_id=check_in_id)
 
         return pet_check_in
 
     @classmethod
-    def get_pet_check_in_by_pet_id_check_in_id(cls, pet_id, check_in_id):
+    def get_pet_check_in_by_id_check_in_id(cls, pet_id, check_in_id):
         """Return a pet check in object given a pet_id and check_in_id"""
 
         return (db.session.query(cls)
@@ -523,7 +494,7 @@ def example_data():
         hike_imgURL="",
     )
     test_user = User(full_name="Test User 1", email="test@test", password="test")
-    test_pet = Pet(user=test_user, pet_name="Test Pet 1", gender="female", birthday=datetime.datetime(2014, 11, 10, 0, 0), breed="Shiba Inu", pet_imgURL="https://res.cloudinary.com/hbpupjourney/image/upload/v1644612543/hvtridjccxxvvsiqgoi6.jpg", img_public_id=None, check_ins=[])
+    test_pet = Pet(user=test_user, pet_name="Test Pet 1", gender="female", birthday=datetime.datetime(2014, 11, 10, 0, 0), breed="Shiba Inu", pet_img_url="https://res.cloudinary.com/hbpupjourney/image/upload/v1644612543/hvtridjccxxvvsiqgoi6.jpg", img_public_id=None, check_ins=[])
     test_check_in = CheckIn(user=test_user, hike=test_hike, pets=[test_pet], date_hiked=datetime.datetime(2022, 3, 12, 0, 0), miles_completed=2.3, total_time=1.5, notes="Fun hike with great views!")
     test_comment = Comment(user=test_user, hike=test_hike, body="Great hike! Would recommend", date_created=datetime.datetime.now(), edit=False, date_edited=None)
     test_bookmarks_list = BookmarksList(bookmarks_list_name="Test List", user_id=1, hikes=[test_hike])

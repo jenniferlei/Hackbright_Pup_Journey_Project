@@ -487,7 +487,7 @@ const PetProfileContainer = React.forwardRef((props, ref) => {
           gender={currentPetProfile.gender}
           birthday={currentPetProfile.birthday}
           breed={currentPetProfile.breed}
-          pet_img_URL={currentPetProfile.pet_imgURL}
+          pet_img_URL={currentPetProfile.pet_img_url}
           check_ins={currentPetProfile.check_ins}
           total_miles={total_miles}
           getPetProfiles={getPetProfiles}

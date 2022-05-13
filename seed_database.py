@@ -3,8 +3,7 @@
 import os
 import json
 
-from model import (connect_to_db, db, User, CheckIn, Pet, HikeBookmarksList,
-PetCheckIn, Hike, BookmarksList, Comment)
+from model import (connect_to_db, db, User, Pet, Hike, BookmarksList)
 import server
 
 # Run dropdb and createdb to re-create database
